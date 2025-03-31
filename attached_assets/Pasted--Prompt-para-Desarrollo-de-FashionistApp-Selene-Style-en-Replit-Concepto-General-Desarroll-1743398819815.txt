@@ -1,0 +1,142 @@
+# Prompt para Desarrollo de "FashionistApp - Selene Style" en Replit
+
+## Concepto General
+
+Desarrollar "FashionistApp" (Selene Style), una aplicación móvil sofisticada que utiliza inteligencia artificial para crear outfits personalizados basados en prendas subidas por el usuario y sus preferencias de estilo. La aplicación también integra diseños artesanales exclusivos creados por Selene, abogada con talento creativo especializada en personalización de calzado, blusas y accesorios con perlas y apliques.
+
+## Tecnologías a Utilizar
+
+- **Frontend**: Flutter/React Native
+- **Backend**: Node.js/Express o Flask (en Replit)
+- **APIs de IA**: ChatGPT-4, Claude 3.7, Gemini (ya disponibles en Replit)
+- **Integración**: Google Calendar, Google Lens
+- **Base de datos**: MongoDB/PostgreSQL
+
+## Arquitectura Técnica
+
+### Procesamiento Híbrido de IA
+
+Implementar un sistema que utilice diferentes modelos de IA según la tarea:
+
+1. **Gemini**: Procesamiento de imágenes, reconocimiento y clasificación de prendas
+2. **Claude 3.7**: Análisis contextual profundo, preferencias de usuario y ocasiones
+3. **ChatGPT-4**: Generación de descripciones detalladas y recomendaciones de estilo
+4. **Google Calendar API**: Integración para sugerencias basadas en eventos futuros
+
+### Flujo Principal de Datos
+
+```
+Entrada (foto/texto) → Análisis de Imagen (Gemini) → Almacenamiento → 
+Análisis de Preferencias (Claude) → Generación de Outfits (ChatGPT) → 
+Verificación de Calendario → Presentación al Usuario
+```
+
+## Funcionalidades Clave
+
+### MVP (Fase 1)
+
+1. **Múltiples Puntos de Entrada**:
+   - Subir foto de prenda individual para generar outfit completo
+   - Subir outfit parcial para completarlo
+   - Describir necesidad por texto ("outfit formal para reunión ejecutiva")
+
+2. **Sistema de Preferencias**:
+   - Estilos preferidos (casual, formal, etc.)
+   - Ocasiones (trabajo, viaje, evento)
+   - Temporada y clima
+
+3. **Visualización de Outfits**:
+   - Presentación elegante tipo revista de moda
+   - Descripción detallada del outfit y razones de combinación
+   - Opciones para guardar y compartir
+
+4. **Sección "Diseños de Selene"**:
+   - Catálogo de creaciones artesanales exclusivas
+   - Categorías (calzado, blusas, accesorios)
+   - Información de contacto para pedidos personalizados
+
+### Fases Futuras (2 y 3)
+
+- Integración completa con e-commerce
+- Planificador de outfits por calendario
+- Exportación a PDF estilo revista de moda
+- Preparación de maletas para viajes
+- Armario digital completo
+
+## Diseño Visual y UI/UX
+
+### Identidad Visual: "Elegancia Francesa con Toque Artesanal"
+
+**Paleta de Colores**:
+- **Negro elegante**: #000000 (fondo principal)
+- **Dorado metálico**: Degradados desde #FFD700 hasta #B8860B
+- **Ámbar profundo**: #AA6C39 (acentos)
+- **Crema suave**: #FFF8E7 (textos e interfaces)
+
+**Tipografía**:
+- Títulos: Didot o similar (serif francesa elegante)
+- Textos: Cormorant Garamond (sofisticada y legible)
+- UI: Montserrat Light (limpia y refinada)
+
+**Elementos de Diseño**:
+- Bordes sutiles dorados
+- Botones con degradados metálicos
+- Fondos negros con efectos de "luz de reflector"
+- Espaciado generoso y minimalismo elegante
+
+**Logotipo**:
+- Silueta frontal inclinada de rostro femenino
+- Cabellera estilizada en dorado metálico
+- Fondo negro elegante
+
+## Detalles de Implementación en Replit
+
+### Estructura de Directorios Sugerida
+
+```
+/fashionista-app/
+  /frontend/        # Código de la aplicación móvil
+  /backend/         # API y servicios en Replit
+    /services/      # Servicios específicos (imagen, recomendación, etc.)
+    /models/        # Definiciones de modelos de datos
+    /routes/        # Endpoints de API
+    /ai/            # Integraciones con APIs de IA
+    /utils/         # Funciones auxiliares
+  /database/        # Esquemas y conexiones de BD
+  /design/          # Guías de estilo y assets
+```
+
+### Endpoints API Clave
+
+- `/api/items` - Gestión de prendas (subida, categorización)
+- `/api/outfits` - Generación y gestión de outfits
+- `/api/recommendations` - Recomendaciones basadas en preferencias
+- `/api/calendar` - Integración con Google Calendar
+- `/api/selene-designs` - Catálogo de diseños exclusivos
+
+### Algoritmo de Recomendación
+
+1. Analizar imagen/texto de entrada
+2. Identificar características clave (color, estilo, ocasión)
+3. Consultar preferencias del usuario
+4. Generar 3-5 combinaciones posibles
+5. Verificar eventos en calendario para contexto adicional
+6. Presentar las mejores opciones con explicaciones
+
+## Notas Especiales
+
+- La aplicación debe mantener un equilibrio entre sofisticación visual y usabilidad
+- El tono de comunicación debe ser profesional pero cálido, como un asesor de moda personal
+- Priorizar la velocidad de respuesta en el MVP, con procesamiento asíncrono para tareas complejas
+- Implementar cache inteligente para optimizar consumo de APIs de IA
+- Diseñar con capacidad de expansión para futuras integraciones (e-commerce, redes sociales)
+
+## Referencias de Diseño y Estética
+
+La aplicación debe transmitir la sensación de una revista de moda de alta gama, con un toque personal y artesanal que refleja el talento creativo de Selene en la personalización de prendas y accesorios.
+
+---
+
+### Información de Contacto
+
+Para consultas sobre el desarrollo, elementos visuales específicos o clarificaciones sobre el concepto, por favor contactar directamente.
