@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 38 100% 97%;
+    
+    --card: 0 0% 0%;
+    --card-foreground: 38 100% 97%;
+    
+    --popover: 0 0% 0%;
+    --popover-foreground: 38 100% 97%;
+    
+    --primary: 43 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    
+    --secondary: 35 76% 42%;
+    --secondary-foreground: 38 100% 97%;
+    
+    --muted: 0 0% 10%;
+    --muted-foreground: 38 100% 90%;
+    
+    --accent: 35 76% 42%;
+    --accent-foreground: 38 100% 97%;
+    
+    --destructive: 0 85% 60%;
+    --destructive-foreground: 38 100% 97%;
+    
+    --border: 35 76% 42%;
+    --input: 35 76% 42%;
+    --ring: 43 100% 50%;
+    
+    --radius: 0.5rem;
+  }
+  
+  * {
+    @apply border-border;
+  }
+  
+  body {
+    @apply font-sans antialiased bg-background text-foreground;
+  }
+  
+  /* Custom Utility Classes */
+  .spotlight {
+    @apply relative;
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+  }
+  
+  .gold-border {
+    @apply border border-amber-deep transition-all;
+  }
+  
+  .gold-text {
+    @apply text-transparent bg-clip-text bg-gradient-to-r from-gold-light to-gold-dark;
+  }
+  
+  .gold-button {
+    @apply bg-gradient-to-r from-gold-light to-gold-dark text-black-elegant transition-all
+            hover:bg-gradient-to-r hover:from-gold-dark hover:to-gold-light
+            hover:shadow-[0_0_10px_rgba(255,215,0,0.5)];
+  }
+}
+
+/* Font Overrides */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+}
+
+p, span, div {
+  font-family: 'Cormorant Garamond', serif;
+}
+
+button, a, input, select, textarea {
+  font-family: 'Montserrat', sans-serif;
+}
