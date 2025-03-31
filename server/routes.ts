@@ -10,7 +10,7 @@ import {
   insertOutfitSchema,
   insertSeleneDesignSchema 
 } from "@shared/schema";
-import { generateOutfitSuggestions, analyzeGarmentImage } from "./services/openai-service";
+import { generateOutfitSuggestions, analyzeGarmentImage, generateOutfitsFromImage } from "./services/openai-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
 
 // Setup file upload with multer for memory storage
@@ -327,6 +327,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ suggestions });
     } catch (error) {
       res.status(500).json({ message: error.message });
+    }
+  });
+
+  // New endpoint for generating outfits from a garment image
+  app.post("/api/generate-outfits", upload.single("image"), async (req: Request, res: Response) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ success: false, error: "No image uploaded" });
+      }
+
+      // Read the uploaded image file
+      const base64Image = req.file.buffer.toString('base64');
+      
+      // Get user preferences from the request body if available
+      const preferences = req.body.preferences ? JSON.parse(req.body.preferences) : undefined;
+      
+      // Generate outfit suggestions using OpenAI
+      const outfitSuggestions = await generateOutfitsFromImage(base64Image, preferences);
+      
+      // Return the generated outfit suggestions
+      res.json({
+        success: true, 
+        outfits: outfitSuggestions.map((outfit, index) => ({
+          id: index + 1,
+          name: outfit.name,
+          description: outfit.description,
+          occasion: outfit.occasion,
+          season: outfit.season || "Any",
+          pieces: outfit.pieces,
+          reasoning: outfit.reasoning,
+          imageUrl: "" // Placeholder for future image generation
+        }))
+      });
+    } catch (error: any) {
+      console.error("Error generating outfits:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message || "An error occurred while generating outfits" 
+      });
     }
   });
 

@@ -1,10 +1,14 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
-interface Outfit {
+export interface Outfit {
   id: number;
   name: string;
   description: string;
   occasion: string;
+  season?: string;
+  pieces?: string[];
+  reasoning?: string;
   imageUrl: string;
 }
 
@@ -17,6 +21,9 @@ interface OutfitContextType {
   savedOutfits: Outfit[];
   saveOutfit: (outfit: Outfit) => void;
   removeOutfit: (outfitId: number) => void;
+  isLoading: boolean;
+  uploadImage: (file: File) => Promise<void>;
+  error: string | null;
 }
 
 const OutfitContext = createContext<OutfitContextType | undefined>(undefined);
@@ -25,9 +32,55 @@ export const OutfitProvider = ({ children }: { children: ReactNode }) => {
   const [isTextModalOpen, setIsTextModalOpen] = useState(false);
   const [generatedOutfits, setGeneratedOutfits] = useState<Outfit[]>([]);
   const [savedOutfits, setSavedOutfits] = useState<Outfit[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
   const openTextModal = () => setIsTextModalOpen(true);
   const closeTextModal = () => setIsTextModalOpen(false);
+
+  const uploadImage = async (file: File) => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      // Add user preferences if available
+      // This would typically come from the preferences context
+      // const userPreferences = { /* preferences data */ };
+      // formData.append('preferences', JSON.stringify(userPreferences));
+      
+      const response = await fetch('/api/generate-outfits', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await response.json();
+      
+      if (!data.success) {
+        throw new Error(data.error || 'Error generating outfits');
+      }
+      
+      setGeneratedOutfits(data.outfits);
+      
+      toast({
+        title: "Success!",
+        description: `Generated ${data.outfits.length} outfit suggestions`,
+      });
+    } catch (err: any) {
+      const errorMessage = err.message || 'Unexpected error occurred';
+      setError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const saveOutfit = (outfit: Outfit) => {
     setSavedOutfits(prev => {
@@ -36,6 +89,11 @@ export const OutfitProvider = ({ children }: { children: ReactNode }) => {
         return prev;
       }
       return [...prev, outfit];
+    });
+    
+    toast({
+      title: "Outfit Saved",
+      description: `"${outfit.name}" saved to your collection`,
     });
   };
 
@@ -54,6 +112,9 @@ export const OutfitProvider = ({ children }: { children: ReactNode }) => {
         savedOutfits,
         saveOutfit,
         removeOutfit,
+        isLoading,
+        uploadImage,
+        error
       }}
     >
       {children}

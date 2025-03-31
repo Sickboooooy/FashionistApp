@@ -1,9 +1,13 @@
-import { useQuery } from '@tanstack/react-query';
-import OutfitCard from './outfit-card';
-import GoldText from './ui/gold-text';
 import { useOutfit } from '../contexts/outfit-context';
+import GoldText from './ui/gold-text';
+import ImageUploader from './image-uploader';
+import OutfitResults from './outfit-results';
+import OutfitCard from './outfit-card';
+import { Button } from '@/components/ui/button';
+import { Link } from 'wouter';
 
-const MOCK_OUTFITS = [
+// Example outfits to show when no outfits have been generated
+const SAMPLE_OUTFITS = [
   {
     id: 1,
     name: 'Executive Elegance',
@@ -28,28 +32,80 @@ const MOCK_OUTFITS = [
 ];
 
 const OutfitShowcase = () => {
-  const { generatedOutfits } = useOutfit();
+  const { generatedOutfits, savedOutfits, isLoading } = useOutfit();
   
-  // In a real application, we would fetch outfits from the API
-  // For now, we'll use the context or mock data
-  const outfits = generatedOutfits.length > 0 ? generatedOutfits : MOCK_OUTFITS;
-
+  // Determine which outfits to show
+  const showSampleOutfits = !isLoading && generatedOutfits.length === 0;
+  
   return (
     <section id="outfit-showcase" className="py-12 px-4 md:px-8">
       <div className="container mx-auto">
-        <h2 className="font-playfair text-2xl md:text-3xl mb-2 text-center">
-          <GoldText>Personalized</GoldText> Style Suggestions
-        </h2>
-        <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
-          AI-crafted outfits based on your preferences, occasion, and style
-        </p>
-        
-        {/* Outfit Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {outfits.map((outfit) => (
-            <OutfitCard key={outfit.id} outfit={outfit} />
-          ))}
+        {/* Main Outfit Generation Section */}
+        <div className="mb-16">
+          <h2 className="font-playfair text-2xl md:text-3xl mb-2 text-center">
+            <GoldText>Create Your</GoldText> Perfect Outfit
+          </h2>
+          <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
+            Upload a garment image and our AI stylist will craft personalized outfit combinations
+          </p>
+          
+          {/* Image Uploader */}
+          <div className="max-w-md mx-auto mb-8">
+            <ImageUploader />
+          </div>
+          
+          {/* Generated Outfit Results */}
+          <OutfitResults />
         </div>
+        
+        {/* Sample Outfits or Saved Collections */}
+        {showSampleOutfits && (
+          <div>
+            <h3 className="font-playfair text-xl md:text-2xl mb-2 text-center">
+              <GoldText>Curated</GoldText> Style Inspirations
+            </h3>
+            <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
+              Explore these sample looks or create your own personalized outfits above
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {SAMPLE_OUTFITS.map((outfit) => (
+                <OutfitCard key={outfit.id} outfit={outfit} />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        {/* Saved Outfits Section (if any) */}
+        {savedOutfits.length > 0 && (
+          <div className="mt-20">
+            <h3 className="font-playfair text-xl md:text-2xl mb-2 text-center">
+              <GoldText>Your Saved</GoldText> Collection
+            </h3>
+            <p className="font-cormorant text-center text-lg mb-6 opacity-80 max-w-2xl mx-auto">
+              Outfits you've saved for future reference
+            </p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {savedOutfits.slice(0, 3).map((outfit) => (
+                <OutfitCard key={outfit.id} outfit={outfit} />
+              ))}
+            </div>
+            
+            {savedOutfits.length > 3 && (
+              <div className="text-center mt-8">
+                <Link href="/my-closet">
+                  <Button 
+                    variant="outline" 
+                    className="border-gold-light text-gold-light hover:bg-amber-deep/10"
+                  >
+                    View All Saved Outfits
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </section>
   );
