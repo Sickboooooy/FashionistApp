@@ -1,28 +1,23 @@
-import { FC, ReactNode } from 'react';
+import { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-interface GoldTextProps {
-  children: ReactNode;
-  className?: string;
-  as?: 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p' | 'span' | 'div';
-}
+interface GoldTextProps extends HTMLAttributes<HTMLSpanElement> {}
 
-const GoldText: FC<GoldTextProps> = ({
-  children,
+const GoldText = ({ 
   className,
-  as = 'span',
-}) => {
-  const Component = as;
-  
+  children,
+  ...props
+}: GoldTextProps) => {
   return (
-    <Component 
+    <span 
       className={cn(
-        'gold-text',
+        "gold-text",
         className
       )}
+      {...props}
     >
       {children}
-    </Component>
+    </span>
   );
 };
 

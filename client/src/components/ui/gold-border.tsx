@@ -1,36 +1,20 @@
-import { FC, ReactNode, DragEvent } from 'react';
+import { HTMLAttributes } from 'react';
 import { cn } from '@/lib/utils';
 
-export interface GoldBorderProps {
-  children: ReactNode;
-  className?: string;
-  spotlight?: boolean;
-  hover?: boolean;
-  onDragOver?: (e: DragEvent<HTMLDivElement>) => void;
-  onDragLeave?: () => void;
-  onDrop?: (e: DragEvent<HTMLDivElement>) => void;
-}
+interface GoldBorderProps extends HTMLAttributes<HTMLDivElement> {}
 
-const GoldBorder: FC<GoldBorderProps> = ({
-  children,
+const GoldBorder = ({ 
   className,
-  spotlight = false,
-  hover = false,
-  onDragOver,
-  onDragLeave,
-  onDrop,
-}) => {
+  children,
+  ...props
+}: GoldBorderProps) => {
   return (
     <div 
       className={cn(
-        'gold-border bg-black rounded-lg',
-        spotlight && 'spotlight',
-        hover && 'transition-transform hover:scale-[1.02]',
+        "border border-amber-deep/40 rounded-md overflow-hidden bg-black-elegant",
         className
       )}
-      onDragOver={onDragOver}
-      onDragLeave={onDragLeave}
-      onDrop={onDrop}
+      {...props}
     >
       {children}
     </div>

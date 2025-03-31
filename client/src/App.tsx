@@ -9,6 +9,7 @@ import Home from "@/pages/home";
 import MyCloset from "@/pages/my-closet";
 import SeleneDesignsPage from "@/pages/selene-designs-page";
 import Profile from "@/pages/profile";
+import MagazineView from "@/pages/magazine-view";
 import { TextInputModal } from "@/components/text-input-modal";
 import { OutfitProvider } from "@/contexts/outfit-context";
 import { PreferencesProvider } from "@/contexts/preferences-context";
@@ -23,6 +24,7 @@ function Router() {
           <Route path="/closet" component={MyCloset} />
           <Route path="/selene-designs" component={SeleneDesignsPage} />
           <Route path="/profile" component={Profile} />
+          <Route path="/magazine" component={MagazineView} />
           <Route component={NotFound} />
         </Switch>
       </main>

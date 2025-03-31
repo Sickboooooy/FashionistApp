@@ -11,6 +11,7 @@ import {
   insertSeleneDesignSchema 
 } from "@shared/schema";
 import { generateOutfitSuggestions, analyzeGarmentImage, generateOutfitsFromImage } from "./services/openai-service";
+import { generateMagazineContent } from "./services/magazine-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
 
 // Setup file upload with multer for memory storage
@@ -365,6 +366,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ 
         success: false, 
         error: error.message || "An error occurred while generating outfits" 
+      });
+    }
+  });
+
+  // Generate magazine content
+  app.post("/api/generate-magazine", async (req: Request, res: Response) => {
+    try {
+      const requestSchema = z.object({
+        outfits: z.array(z.object({
+          id: z.number(),
+          name: z.string(),
+          description: z.string(),
+          occasion: z.string(),
+          season: z.string().optional(),
+          pieces: z.array(z.string()).optional(),
+          reasoning: z.string().optional(),
+          imageUrl: z.string().optional()
+        })),
+        template: z.string(),
+        userId: z.number().optional(),
+        userName: z.string().optional()
+      });
+      
+      // Validate the request body
+      const request = requestSchema.parse(req.body);
+      
+      // Get user preferences if userId provided
+      let userPreferences;
+      if (request.userId) {
+        userPreferences = await storage.getUserPreferences(request.userId);
+      }
+      
+      // Generate magazine content
+      const magazineContent = await generateMagazineContent({
+        outfits: request.outfits,
+        template: request.template,
+        userPreferences,
+        userName: request.userName
+      });
+      
+      res.json({
+        success: true,
+        magazine: magazineContent
+      });
+    } catch (error: any) {
+      console.error("Error generando contenido de revista:", error);
+      res.status(500).json({
+        success: false,
+        error: error.message || "Error al generar el contenido de la revista"
       });
     }
   });
