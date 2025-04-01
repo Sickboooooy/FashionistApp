@@ -19,10 +19,10 @@ const Footer = () => {
             <div className="text-center md:text-left">
               <h3 className="font-playfair text-sm mb-3 gold-text">NAVEGACIÓN</h3>
               <ul className="space-y-2 font-montserrat text-xs">
-                <li><Link href="/"><a className="hover:gold-text transition-colors">Inicio</a></Link></li>
-                <li><Link href="/closet"><a className="hover:gold-text transition-colors">Mi Armario</a></Link></li>
-                <li><Link href="/selene-designs"><a className="hover:gold-text transition-colors">Diseños Selene</a></Link></li>
-                <li><Link href="/profile"><a className="hover:gold-text transition-colors">Perfil de Estilo</a></Link></li>
+                <li><Link href="/" className="hover:gold-text transition-colors">Inicio</Link></li>
+                <li><Link href="/closet" className="hover:gold-text transition-colors">Mi Armario</Link></li>
+                <li><Link href="/selene-designs" className="hover:gold-text transition-colors">Diseños Selene</Link></li>
+                <li><Link href="/profile" className="hover:gold-text transition-colors">Perfil de Estilo</Link></li>
               </ul>
             </div>
             

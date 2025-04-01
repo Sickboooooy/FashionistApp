@@ -36,7 +36,7 @@ const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
           <>
             <Separator className="my-4 bg-amber-deep/30" />
             <div className="mt-4">
-              <h4 className="text-sm uppercase tracking-wider text-amber-deep mb-2">Pieces</h4>
+              <h4 className="text-sm uppercase tracking-wider text-amber-deep mb-2">Prendas</h4>
               <ul className="list-disc pl-5 font-cormorant text-cream-soft space-y-1">
                 {outfit.pieces.map((piece, idx) => (
                   <li key={idx}>{piece}</li>
@@ -48,7 +48,7 @@ const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
         
         {outfit.reasoning && (
           <div className="mt-4 border-t border-amber-deep/30 pt-4">
-            <h4 className="text-sm uppercase tracking-wider text-amber-deep mb-2">Style Notes</h4>
+            <h4 className="text-sm uppercase tracking-wider text-amber-deep mb-2">Notas de Estilo</h4>
             <p className="font-cormorant italic text-cream-soft/90">
               {outfit.reasoning}
             </p>
@@ -61,7 +61,7 @@ const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
             variant="outline"
             className="border-gold-light text-gold-light hover:bg-amber-deep/10"
           >
-            Save to My Collection
+            Guardar en Mi Colección
           </Button>
         </div>
       </div>
@@ -72,7 +72,7 @@ const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
 const LoadingState = () => (
   <div className="w-full max-w-3xl mx-auto mt-12 px-4">
     <h2 className="font-playfair text-2xl text-center gold-text mb-8">
-      Generating Your Outfits
+      Generando tus Conjuntos
     </h2>
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
       {[1, 2, 3].map((i) => (
@@ -98,17 +98,17 @@ const LoadingState = () => (
 const ErrorState = ({ error }: { error: string }) => (
   <div className="w-full max-w-xl mx-auto mt-12 px-4">
     <GoldBorder className="p-6 bg-black-elegant">
-      <h2 className="font-playfair text-xl gold-text mb-4">Error Generating Outfits</h2>
+      <h2 className="font-playfair text-xl gold-text mb-4">Error al Generar Conjuntos</h2>
       <p className="font-cormorant text-cream-soft mb-6">
-        {error || "There was an error processing your request. Please try again."}
+        {error || "Hubo un error al procesar tu solicitud. Por favor, intenta de nuevo."}
       </p>
       <p className="font-cormorant text-cream-soft/80 italic text-sm mb-4">
-        Possible solutions:
+        Posibles soluciones:
       </p>
       <ul className="list-disc pl-5 font-cormorant text-cream-soft/80 space-y-1 text-sm">
-        <li>Try uploading a different image</li>
-        <li>Ensure the image clearly shows a garment</li>
-        <li>Check your internet connection</li>
+        <li>Intenta subir una imagen diferente</li>
+        <li>Asegúrate de que la imagen muestre claramente una prenda</li>
+        <li>Comprueba tu conexión a internet</li>
       </ul>
     </GoldBorder>
   </div>
@@ -132,11 +132,11 @@ const OutfitResults = () => {
   return (
     <div className="w-full max-w-7xl mx-auto mt-12 px-4">
       <h2 className="font-playfair text-3xl text-center gold-text mb-2">
-        Your Curated Looks
+        Tus Looks Seleccionados
       </h2>
       <p className="font-cormorant text-center text-cream-soft/80 mb-10 max-w-2xl mx-auto">
-        Selene's AI stylist has created these outfit suggestions based on your garment.
-        Each look is elegantly crafted to match your style preferences.
+        El estilista de IA de Selene ha creado estas sugerencias de conjuntos basadas en tu prenda.
+        Cada look ha sido elegantemente diseñado para adaptarse a tus preferencias de estilo.
       </p>
       
       <div 

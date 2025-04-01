@@ -21,24 +21,26 @@ const Navbar = () => {
   return (
     <header className="py-4 px-4 md:px-8 border-b border-amber-deep">
       <div className="container mx-auto flex justify-between items-center">
-        <Link href="/">
-          <a className="flex items-center">
+        <div className="flex items-center">
+          <Link href="/">
             <Logo />
-          </a>
-        </Link>
+          </Link>
+        </div>
         
         <nav className={`
           hidden md:flex space-x-6 font-montserrat text-sm
           ${isMobileMenuOpen ? 'flex flex-col absolute top-16 right-4 bg-black z-50 p-4 rounded-lg gold-border space-y-4' : 'hidden'}
         `}>
           {navItems.map((item) => (
-            <Link key={item.path} href={item.path}>
-              <a className={`
+            <Link 
+              key={item.path} 
+              href={item.path}
+              className={`
                 text-cream-soft hover:gold-text transition-colors
                 ${location === item.path ? 'gold-text' : ''}
-              `}>
-                {item.name}
-              </a>
+              `}
+            >
+              {item.name}
             </Link>
           ))}
         </nav>
@@ -47,7 +49,7 @@ const Navbar = () => {
           <button
             className="text-cream-soft focus:outline-none"
             onClick={toggleMobileMenu}
-            aria-label="Toggle navigation menu"
+            aria-label="Alternar menú de navegación"
           >
             <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
           </button>
