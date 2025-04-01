@@ -7,11 +7,11 @@ const Navbar = () => {
   const [location] = useLocation();
 
   const navItems = [
-    { name: 'HOME', path: '/' },
-    { name: 'MY CLOSET', path: '/closet' },
-    { name: 'SELENE DESIGNS', path: '/selene-designs' },
-    { name: 'MAGAZINE', path: '/magazine' },
-    { name: 'PROFILE', path: '/profile' },
+    { name: 'INICIO', path: '/' },
+    { name: 'MI ARMARIO', path: '/closet' },
+    { name: 'DISEÑOS SELENE', path: '/selene-designs' },
+    { name: 'REVISTA', path: '/magazine' },
+    { name: 'PERFIL', path: '/profile' },
   ];
 
   const toggleMobileMenu = () => {

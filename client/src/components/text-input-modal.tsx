@@ -69,10 +69,10 @@ export const TextInputModal = () => {
       // and navigate to a results page or section
 
       closeTextModal();
-    } catch (error) {
+    } catch (error: any) {
       toast({
-        title: 'Error Generating Outfits',
-        description: error.message,
+        title: 'Error al Generar Conjuntos',
+        description: error?.message || 'Ocurrió un error inesperado',
         variant: 'destructive',
       });
     } finally {
@@ -90,22 +90,22 @@ export const TextInputModal = () => {
     >
       <div className="bg-black gold-border rounded-lg max-w-lg w-full p-6 spotlight">
         <div className="flex justify-between items-center mb-6">
-          <h3 className="font-playfair text-xl gold-text">Describe Your Style Needs</h3>
+          <h3 className="font-playfair text-xl gold-text">Describe tus Necesidades de Estilo</h3>
           <button 
             className="text-cream-soft hover:text-amber-deep"
             onClick={closeTextModal}
-            aria-label="Close modal"
+            aria-label="Cerrar modal"
           >
             <i className="fas fa-times"></i>
           </button>
         </div>
         
         <div className="mb-6">
-          <label className="block font-cormorant text-sm mb-2">What are you looking for?</label>
+          <label className="block font-cormorant text-sm mb-2">¿Qué estás buscando?</label>
           <textarea 
             rows={4} 
             className="w-full bg-black gold-border rounded p-3 text-cream-soft font-cormorant focus:border-amber-deep focus:outline-none"
-            placeholder="Example: 'A business casual outfit for a summer conference' or 'Something elegant for a dinner date'"
+            placeholder="Ejemplo: 'Un conjunto business casual para una conferencia de verano' o 'Algo elegante para una cena romántica'"
             value={styleDescription}
             onChange={(e) => setStyleDescription(e.target.value)}
           />
@@ -113,31 +113,31 @@ export const TextInputModal = () => {
         
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <label className="block font-cormorant text-sm mb-2">Season</label>
+            <label className="block font-cormorant text-sm mb-2">Temporada</label>
             <select 
               className="w-full bg-black gold-border rounded p-3 text-cream-soft font-cormorant focus:border-amber-deep focus:outline-none"
               value={season}
               onChange={(e) => setSeason(e.target.value)}
             >
-              <option>Summer</option>
-              <option>Fall</option>
-              <option>Winter</option>
-              <option>Spring</option>
+              <option>Verano</option>
+              <option>Otoño</option>
+              <option>Invierno</option>
+              <option>Primavera</option>
             </select>
           </div>
           
           <div>
-            <label className="block font-cormorant text-sm mb-2">Occasion</label>
+            <label className="block font-cormorant text-sm mb-2">Ocasión</label>
             <select 
               className="w-full bg-black gold-border rounded p-3 text-cream-soft font-cormorant focus:border-amber-deep focus:outline-none"
               value={occasion}
               onChange={(e) => setOccasion(e.target.value)}
             >
-              <option>Work</option>
+              <option>Trabajo</option>
               <option>Casual</option>
               <option>Formal</option>
-              <option>Special Event</option>
-              <option>Travel</option>
+              <option>Evento Especial</option>
+              <option>Viaje</option>
             </select>
           </div>
         </div>
@@ -148,7 +148,7 @@ export const TextInputModal = () => {
             onClick={handleGenerateOutfits}
             disabled={isGenerating}
           >
-            {isGenerating ? 'GENERATING...' : 'GENERATE OUTFITS'}
+            {isGenerating ? 'GENERANDO...' : 'GENERAR CONJUNTOS'}
           </GoldButton>
         </div>
       </div>

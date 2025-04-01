@@ -15,12 +15,12 @@ const HeroSection = () => {
     <SpotlightContainer className="pt-10 pb-16">
       <div className="container mx-auto text-center max-w-3xl">
         <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl mb-6 leading-tight">
-          Your Personal <GoldText>AI Stylist</GoldText><br />
-          <span className="font-light">with an Artisanal Touch</span>
+          Tu <GoldText>Estilista IA</GoldText> Personal<br />
+          <span className="font-light">con un Toque Artesanal</span>
         </h2>
         <p className="font-cormorant text-lg md:text-xl mb-10 mx-auto max-w-2xl">
-          Upload your garments or describe your needs for personalized outfit suggestions, 
-          enhanced with exclusive handcrafted designs by Selene.
+          Sube tus prendas o describe tus necesidades para obtener sugerencias de conjuntos personalizados,
+          mejorados con diseños exclusivos artesanales de Selene.
         </p>
         
         <InputMethods />
@@ -30,7 +30,7 @@ const HeroSection = () => {
             variant="rounded" 
             onClick={scrollToShowcase}
           >
-            EXPLORE INSPIRATIONS
+            EXPLORAR INSPIRACIONES
           </GoldButton>
         </div>
       </div>
