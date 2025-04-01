@@ -39,8 +39,11 @@ export const garments = pgTable("garments", {
   name: text("name").notNull(),
   type: text("type").notNull(),
   color: text("color"),
+  material: text("material"),
   pattern: text("pattern"),
   season: text("season"),
+  style: text("style"),
+  occasions: json("occasions").$type<string[]>().default([]),
   imageUrl: text("image_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });

@@ -1,4 +1,4 @@
-import type { Express, Request, Response } from "express";
+import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
@@ -14,6 +14,8 @@ import {
 import { generateOutfitSuggestions, analyzeGarmentImage, generateOutfitsFromImage } from "./services/openai-service";
 import { generateMagazineContent } from "./services/magazine-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
+import { validateImageAnalysis, validateOutfitGeneration, validateMagazineGeneration } from "./middleware/validator";
+import optimizeImage from "./middleware/imageOptimizer";
 
 // Función de ayuda para convertir null a undefined en las preferencias
 function formatPreferences(prefs: UserPreferences | undefined) {
@@ -117,7 +119,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // API endpoint for image analysis
-  app.post("/api/analyze-garment", upload.single("image"), async (req: Request, res: Response) => {
+  app.post("/api/analyze-garment", upload.single("image"), validateImageAnalysis, async (req: Request, res: Response) => {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No image uploaded" });
@@ -128,7 +130,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       res.json(analysis);
     } catch (error) {
-      res.status(500).json({ message: error.message });
+      res.status(500).json({ message: error instanceof Error ? error.message : "Error desconocido" });
     }
   });
 
@@ -344,7 +346,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // New endpoint for generating outfits from a garment image
-  app.post("/api/generate-outfits", upload.single("image"), async (req: Request, res: Response) => {
+  app.post("/api/generate-outfits", upload.single("image"), optimizeImage, validateOutfitGeneration, async (req: Request, res: Response) => {
     try {
       if (!req.file) {
         return res.status(400).json({ success: false, error: "No image uploaded" });
@@ -383,7 +385,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Generate magazine content
-  app.post("/api/generate-magazine", async (req: Request, res: Response) => {
+  app.post("/api/generate-magazine", validateMagazineGeneration, async (req: Request, res: Response) => {
     try {
       const requestSchema = z.object({
         outfits: z.array(z.object({

@@ -1,10 +1,12 @@
 import OpenAI from "openai";
+import crypto from "crypto";
 import { Garment } from "@shared/schema";
+import { cacheService } from "./cacheService";
 
-// the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-const MODEL = "gpt-4o";
-const VISION_MODEL = "gpt-4o";
+// Inicializar el cliente de OpenAI con la API key del .env
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
+// Interfaz para la solicitud de generación de outfits
 interface OutfitGenerationRequest {
   garments?: Garment[];
   preferences?: {
@@ -17,6 +19,7 @@ interface OutfitGenerationRequest {
   occasion?: string;
 }
 
+// Interfaz para la respuesta de sugerencia de outfit
 interface OutfitSuggestion {
   name: string;
   description: string;
@@ -26,61 +29,165 @@ interface OutfitSuggestion {
   reasoning: string;
 }
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
-
+/**
+ * Genera sugerencias de outfit basadas en prendas y preferencias
+ */
 export async function generateOutfitSuggestions(request: OutfitGenerationRequest): Promise<OutfitSuggestion[]> {
-  console.log("Generando outfits con OpenAI...");
   try {
-    const { garments, preferences, textPrompt, season, occasion } = request;
-    
-    // Construir el contexto para el prompt
-    let context = "Usa toda la información disponible para crear outfits personalizados.";
-    
-    if (garments && garments.length > 0) {
-      context += `\n\nPrendas disponibles: ${JSON.stringify(garments, null, 2)}`;
+    // Generar hash para caché
+    let preferenceHash: string | undefined;
+    if (request.preferences) {
+      const prefStr = JSON.stringify(request.preferences);
+      preferenceHash = crypto.createHash('md5').update(prefStr).digest('hex');
     }
     
-    if (preferences) {
-      context += `\n\nPreferencias de estilo: ${JSON.stringify(preferences, null, 2)}`;
+    let garmentHash: string | undefined;
+    if (request.garments && request.garments.length > 0) {
+      const garmentStr = JSON.stringify(request.garments);
+      garmentHash = crypto.createHash('md5').update(garmentStr).digest('hex');
     }
     
-    if (textPrompt) {
-      context += `\n\nInstrucciones específicas: ${textPrompt}`;
+    // Clave para caché
+    const cacheKey = cacheService.getOutfitsKey({
+      imageHash: garmentHash,
+      textPrompt: request.textPrompt,
+      preferenceHash,
+      season: request.season,
+      occasion: request.occasion
+    });
+    
+    // Revisar caché
+    const cachedOutfits = cacheService.get<OutfitSuggestion[]>(cacheKey);
+    if (cachedOutfits) {
+      console.log('Usando sugerencias de outfits de la caché');
+      return cachedOutfits;
     }
     
-    if (season) {
-      context += `\n\nTemporada a considerar: ${season}`;
+    // Construir el prompt para OpenAI
+    let prompt = "Genera 3 sugerencias de outfits de moda basados en la siguiente información:\n\n";
+    
+    // Añadir información de prendas si existen
+    if (request.garments && request.garments.length > 0) {
+      prompt += "Prendas disponibles:\n";
+      request.garments.forEach((garment, index) => {
+        prompt += `${index + 1}. ${garment.name} - ${garment.type} - ${garment.color}${garment.material ? ` - ${garment.material}` : ''}${garment.pattern ? ` - ${garment.pattern}` : ''}\n`;
+      });
+      prompt += "\n";
     }
     
-    if (occasion) {
-      context += `\n\nOcasión para el outfit: ${occasion}`;
+    // Añadir información de preferencias si existen
+    if (request.preferences) {
+      if (request.preferences.styles && request.preferences.styles.length > 0) {
+        prompt += `Estilos preferidos: ${request.preferences.styles.join(", ")}\n`;
+      }
+      
+      if (request.preferences.occasions && request.preferences.occasions.length > 0) {
+        const sortedOccasions = [...request.preferences.occasions]
+          .sort((a, b) => b.priority - a.priority)
+          .map(o => o.name);
+        prompt += `Ocasiones prioritarias: ${sortedOccasions.join(", ")}\n`;
+      }
+      
+      if (request.preferences.seasons && request.preferences.seasons.length > 0) {
+        prompt += `Temporadas favoritas: ${request.preferences.seasons.join(", ")}\n`;
+      }
+      
+      prompt += "\n";
     }
     
+    // Añadir información específica de temporada u ocasión
+    if (request.season) {
+      prompt += `Temporada objetivo: ${request.season}\n`;
+    }
+    
+    if (request.occasion) {
+      prompt += `Ocasión objetivo: ${request.occasion}\n`;
+    }
+    
+    // Añadir prompt de texto si existe
+    if (request.textPrompt) {
+      prompt += `Instrucciones adicionales: ${request.textPrompt}\n`;
+    }
+    
+    prompt += "\nPara cada outfit, proporciona los siguientes detalles en formato JSON:\n";
+    prompt += "1. name: nombre creativo del outfit\n";
+    prompt += "2. description: descripción detallada del outfit\n";
+    prompt += "3. occasion: ocasión para la que es adecuado\n";
+    prompt += "4. season: temporada recomendada\n";
+    prompt += "5. pieces: array de piezas que componen el outfit\n";
+    prompt += "6. reasoning: explicación de por qué este outfit funciona\n";
+    
+    // Llamar a OpenAI
+    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
     const response = await openai.chat.completions.create({
-      model: MODEL,
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "Eres un estilista de moda experto que crea outfits personalizados. Respondes con JSON estructurado para facilitar la integración."
+          content: "Eres un estilista de moda experto. Genera outfit completos detallados y creativos en español, adaptados a las preferencias, ocasiones y temporadas solicitadas."
         },
         {
           role: "user",
-          content: `Genera 3 outfits completos basados en la siguiente información:\n\n${context}\n\nDevuelve un objeto JSON con la propiedad 'outfits' que contenga un array de objetos, donde cada objeto contiene:\n- name: nombre creativo del outfit\n- description: descripción detallada\n- occasion: ocasión adecuada\n- season: temporada ideal\n- pieces: array con todas las prendas y accesorios\n- reasoning: explicación de por qué este outfit funciona\n\nFormato esperado: { "outfits": [...] }`
+          content: prompt
         }
       ],
+      temperature: 0.7,
       response_format: { type: "json_object" }
     });
     
-    // Parsear la respuesta y extraer los outfits
-    const content = response.choices[0].message.content ?? "{}";
-    const result = JSON.parse(content);
-    return result.outfits || [];
+    // Procesar la respuesta
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("No se recibió respuesta del modelo");
+    }
+    
+    // Parsear la respuesta JSON
+    try {
+      const parsedResponse = JSON.parse(content);
+      let outfits: OutfitSuggestion[];
+      
+      // Verificar el formato de la respuesta
+      if (Array.isArray(parsedResponse)) {
+        outfits = parsedResponse;
+      } else if (parsedResponse.outfits && Array.isArray(parsedResponse.outfits)) {
+        outfits = parsedResponse.outfits;
+      } else if (parsedResponse.suggestions && Array.isArray(parsedResponse.suggestions)) {
+        outfits = parsedResponse.suggestions;
+      } else {
+        // Intentar extraer los outfits de las propiedades del objeto
+        const extractedOutfits = [];
+        for (const key in parsedResponse) {
+          if (typeof parsedResponse[key] === 'object' && parsedResponse[key] !== null) {
+            const outfit = parsedResponse[key];
+            if (outfit.name && outfit.description) {
+              extractedOutfits.push(outfit);
+            }
+          }
+        }
+        
+        if (extractedOutfits.length > 0) {
+          outfits = extractedOutfits;
+        } else {
+          throw new Error("Formato de respuesta no reconocido");
+        }
+      }
+      
+      // Guardar en caché
+      cacheService.set(cacheKey, outfits);
+      
+      return outfits;
+    } catch (error) {
+      console.error("Error parsing OpenAI response:", error);
+      console.error("Raw response:", content);
+      throw new Error("Error procesando la respuesta del modelo");
+    }
   } catch (error) {
-    console.error("Error generando outfits:", error instanceof Error ? error.message : String(error));
-    throw new Error(`Error generando outfits: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    console.error("Error generating outfit suggestions:", error);
+    throw error;
   }
 }
 
+// Interfaz para análisis de prendas
 interface GarmentAnalysis {
   type: string;
   color: string;
@@ -91,22 +198,37 @@ interface GarmentAnalysis {
   pattern?: string;
 }
 
+/**
+ * Analiza una imagen de prenda para extraer características
+ */
 export async function analyzeGarmentImage(base64Image: string): Promise<Partial<Garment>> {
-  console.log("Analizando imagen de prenda con OpenAI Vision...");
   try {
+    // Convertir base64 a buffer para generar hash
+    const buffer = Buffer.from(base64Image, 'base64');
+    const cacheKey = cacheService.getImageAnalysisKey(buffer);
+    
+    // Revisar caché
+    const cachedAnalysis = cacheService.get<Partial<Garment>>(cacheKey);
+    if (cachedAnalysis) {
+      console.log('Usando análisis de imagen de la caché');
+      return cachedAnalysis;
+    }
+    
+    // Llamar a OpenAI Vision API
+    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
     const response = await openai.chat.completions.create({
-      model: VISION_MODEL,
+      model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content: "Eres un experto en moda que analiza prendas de vestir con gran precisión."
+          content: "Eres un experto en análisis de moda. Analiza la prenda en la imagen y proporciona detalles técnicos en formato JSON."
         },
         {
           role: "user",
           content: [
             {
               type: "text",
-              text: "Analiza esta prenda de ropa y proporciona los siguientes datos en formato JSON: type (tipo de prenda), color (color principal), pattern (patrón o estampado si existe), season (temporada adecuada). Responde SOLO con el JSON, sin explicaciones adicionales."
+              text: "Analiza esta prenda de vestir y proporciona los siguientes detalles en formato JSON:\n1. type: tipo de prenda\n2. color: color predominante\n3. style: estilo de la prenda\n4. material: material principal si es identificable\n5. occasions: array de ocasiones apropiadas para esta prenda\n6. season: temporada más adecuada para esta prenda\n7. pattern: patrón o estampado si tiene"
             },
             {
               type: "image_url",
@@ -117,75 +239,81 @@ export async function analyzeGarmentImage(base64Image: string): Promise<Partial<
           ]
         }
       ],
-      max_tokens: 800,
+      temperature: 0.2,
       response_format: { type: "json_object" }
     });
     
-    // Extraer el contenido de la respuesta 
-    const content = response.choices[0].message.content || "{}";
+    const content = response.choices[0].message.content;
+    if (!content) {
+      throw new Error("No se recibió respuesta del modelo");
+    }
     
     try {
-      // Al usar response_format: { type: "json_object" } el contenido ya viene en formato JSON
-      const jsonData = JSON.parse(content) as GarmentAnalysis;
+      const analysis = JSON.parse(content) as GarmentAnalysis;
       
-      // Convertir a estructura Garment
-      return {
-        type: jsonData.type || "Unknown",
-        color: jsonData.color || undefined,
-        pattern: jsonData.pattern || undefined,
-        season: jsonData.season || undefined,
-        name: jsonData.type || "Prenda",  // Requerido por el esquema
+      // Convertir el análisis al formato de Garment
+      const garment: Partial<Garment> = {
+        type: analysis.type,
+        color: analysis.color,
+        style: analysis.style,
+        material: analysis.material,
+        occasions: analysis.occasions || [],
+        season: analysis.season,
+        pattern: analysis.pattern
       };
-    } catch (parseError) {
-      console.error("Error parseando respuesta:", parseError);
-      return {
-        type: "Unknown",
-        color: undefined,
-        pattern: undefined,
-        season: undefined,
-        name: "Prenda",
-      };
+      
+      // Guardar en caché
+      cacheService.set(cacheKey, garment);
+      
+      return garment;
+    } catch (error) {
+      console.error("Error parsing OpenAI response:", error);
+      throw new Error("Error procesando el análisis de la imagen");
     }
   } catch (error) {
-    console.error("Error en análisis de imagen:", error instanceof Error ? error.message : String(error));
-    return {
-      type: "Unknown",
-      color: undefined,
-      pattern: undefined,
-      season: undefined,
-      name: "Prenda",
-    };
+    console.error("Error analyzing garment image:", error);
+    throw error;
   }
 }
 
+/**
+ * Genera sugerencias de outfit basadas en una imagen de prenda
+ */
 export async function generateOutfitsFromImage(base64Image: string, preferences?: {
   styles?: string[];
   occasions?: { name: string; priority: number }[];
   seasons?: string[];
 }): Promise<OutfitSuggestion[]> {
   try {
-    // Primero analizamos la imagen para obtener información de la prenda
-    const garmentData = await analyzeGarmentImage(base64Image);
+    // Primero analizamos la prenda en la imagen
+    const garmentAnalysis = await analyzeGarmentImage(base64Image);
     
-    // Para evitar errores al pasar datos incompletos de Garment, creamos un objeto simplificado
-    // con la información relevante para la generación de outfits
-    const garmentInfo = {
-      type: garmentData.type || "Prenda",
-      name: garmentData.name || "Prenda",
-      color: garmentData.color || "Sin especificar",
-      pattern: garmentData.pattern || "Sin patrón",
-      season: garmentData.season || "Todas las temporadas"
+    // Crear una prenda con los resultados del análisis
+    const garment: Garment = {
+      id: 0, // ID temporal
+      userId: 0, // Usuario temporal
+      name: garmentAnalysis.type || "Prenda",
+      type: garmentAnalysis.type || "Desconocido",
+      color: garmentAnalysis.color || "Desconocido",
+      style: garmentAnalysis.style || null,
+      material: garmentAnalysis.material || null,
+      occasions: Array.isArray(garmentAnalysis.occasions) ? garmentAnalysis.occasions : [],
+      season: garmentAnalysis.season || null,
+      pattern: garmentAnalysis.pattern || null,
+      imageUrl: null,
+      createdAt: new Date()
     };
     
     // Luego generamos outfits basados en la prenda analizada
     const outfitRequest: OutfitGenerationRequest = {
-      garments: [garmentInfo as any], // Usar 'any' aquí para evitar problemas con la estructura completa de Garment
-      preferences
+      garments: [garment],
+      preferences: preferences,
+      textPrompt: "Genera outfits que incluyan esta prenda como pieza central."
     };
     
     return await generateOutfitSuggestions(outfitRequest);
   } catch (error) {
-    console.error("Error en el proceso de generación de outfits:", error instanceof Error ? error.message : String(error));
-    throw new Error(`Error generando outfits: ${error instanceof Error ? error.message : 'Error desconocido'}`);
+    console.error("Error generating outfits from image:", error);
+    throw error;
   }
 }

@@ -1,10 +1,16 @@
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { setupSecurity } from "./middleware/security";
+import compression from "compression";
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+app.use(compression()); // Compresión para todas las respuestas
+app.use(express.json({ limit: '10mb' })); // Límite de tamaño para peticiones JSON
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
+
+// Configurar middlewares de seguridad
+setupSecurity(app);
 
 app.use((req, res, next) => {
   const start = Date.now();
