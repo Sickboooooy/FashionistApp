@@ -3,53 +3,24 @@ import FileUpload from './ui/file-upload';
 import GoldBorder from './ui/gold-border';
 import { useOutfit } from '../contexts/outfit-context';
 import { useToast } from '@/hooks/use-toast';
-import { apiRequest } from '@/lib/queryClient';
 
 const InputMethods = () => {
   const [isUploading, setIsUploading] = useState(false);
-  const { openTextModal } = useOutfit();
+  const { openTextModal, uploadImage, isLoading } = useOutfit();
   const { toast } = useToast();
 
   const handleFileUpload = async (file: File) => {
-    setIsUploading(true);
+    if (!file) return;
     
+    setIsUploading(true);
     try {
-      // Create form data for file upload
-      const formData = new FormData();
-      formData.append('image', file);
+      // Usar la función de uploadImage del contexto
+      await uploadImage(file);
       
-      // Call API to analyze the garment image
-      const response = await fetch('/api/analyze-garment', {
-        method: 'POST',
-        body: formData,
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to analyze image');
-      }
-      
-      const garmentData = await response.json();
-      
-      // Show success toast
-      toast({
-        title: 'Image Analyzed Successfully',
-        description: `Detected: ${garmentData.name || 'Garment'}`,
-      });
-      
-      // Generate outfit suggestions based on the garment
-      // This would call another endpoint with the garment data
-      // For now, we'll just show a toast
-      toast({
-        title: 'Generating outfit suggestions',
-        description: 'Your personalized outfits will be ready soon',
-      });
-      
+      // No need for additional toast since uploadImage already includes them
     } catch (error) {
-      toast({
-        title: 'Error analyzing image',
-        description: error.message,
-        variant: 'destructive',
-      });
+      // Error handling is already done in the uploadImage function
+      console.error("Error handling file upload:", error);
     } finally {
       setIsUploading(false);
     }
@@ -64,7 +35,7 @@ const InputMethods = () => {
           label="Upload Garment"
           description="Create outfits with your clothes"
           icon={<i className="fas fa-tshirt"></i>}
-          className={isUploading ? 'opacity-70 pointer-events-none' : ''}
+          isLoading={isUploading || isLoading}
         />
       </div>
       

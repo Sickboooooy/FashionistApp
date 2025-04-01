@@ -9,6 +9,7 @@ interface FileUploadProps {
   description?: string;
   accept?: string;
   className?: string;
+  isLoading?: boolean;
 }
 
 const FileUpload: FC<FileUploadProps> = ({
@@ -18,6 +19,7 @@ const FileUpload: FC<FileUploadProps> = ({
   description,
   accept = 'image/*',
   className,
+  isLoading = false,
 }) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -82,21 +84,31 @@ const FileUpload: FC<FileUploadProps> = ({
       className={cn(
         'relative gold-border rounded-lg p-6 bg-black hover:spotlight transition-all cursor-pointer h-48 flex flex-col items-center justify-center text-center group',
         isDragOver && 'border-gold-light spotlight',
+        isLoading && 'opacity-70 cursor-wait',
         className
       )}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      onClick={handleClick}
+      onClick={isLoading ? undefined : handleClick}
     >
-      {icon && (
-        <div className="text-3xl mb-4 text-amber-deep group-hover:gold-text transition-colors">
-          {icon}
+      {isLoading ? (
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="w-8 h-8 border-4 border-t-gold-light border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+          <p className="font-cormorant text-gold-light">Processing...</p>
         </div>
-      )}
-      <h3 className="font-playfair text-lg mb-2 gold-text">{label}</h3>
-      {description && (
-        <p className="font-cormorant text-sm opacity-80 mb-4">{description}</p>
+      ) : (
+        <>
+          {icon && (
+            <div className="text-3xl mb-4 text-amber-deep group-hover:gold-text transition-colors">
+              {icon}
+            </div>
+          )}
+          <h3 className="font-playfair text-lg mb-2 gold-text">{label}</h3>
+          {description && (
+            <p className="font-cormorant text-sm opacity-80 mb-4">{description}</p>
+          )}
+        </>
       )}
       <input
         ref={fileInputRef}
@@ -104,6 +116,7 @@ const FileUpload: FC<FileUploadProps> = ({
         className="hidden"
         accept={accept}
         onChange={handleFileChange}
+        disabled={isLoading}
       />
     </div>
   );

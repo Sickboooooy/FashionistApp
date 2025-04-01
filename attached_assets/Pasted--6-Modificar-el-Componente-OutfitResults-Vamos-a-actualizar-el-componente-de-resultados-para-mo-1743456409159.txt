@@ -1,0 +1,292 @@
+### 6. Modificar el Componente OutfitResults
+
+Vamos a actualizar el componente de resultados para mostrar la información completa:
+
+```jsx
+// client/src/components/OutfitResults.jsx
+import React from 'react';
+import { useOutfit } from '../context/OutfitProvider';
+import ApiStatusIndicator from './ApiStatusIndicator';
+import { Link } from 'react-router-dom'; // Asume que usas React Router
+
+export default function OutfitResults() {
+  const { outfits, garmentData, stylePreferences, isLoading, error } = useOutfit();
+
+  if (isLoading) {
+    return (
+      <div className="w-full max-w-md mx-auto mt-8 p-4 text-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="h-32 w-32 bg-gray-300 rounded-full mb-4"></div>
+          <div className="h-4 w-3/4 bg-gray-300 rounded mb-2"></div>
+          <div className="h-4 w-1/2 bg-gray-300 rounded"></div>
+        </div>
+        <p className="mt-4 text-gray-600">Nuestro sistema híbrido de IA está analizando tu estilo...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="w-full max-w-md mx-auto mt-8 p-4 bg-red-50 border border-red-200 rounded-lg text-center">
+        <p className="text-red-600">{error}</p>
+        <button className="mt-4 px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700">
+          Intentar nuevamente
+        </button>
+      </div>
+    );
+  }
+
+  if (outfits.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="w-full max-w-5xl mx-auto mt-8">
+      {/* Indicador de estado de las APIs */}
+      <ApiStatusIndicator />
+      
+      {/* Análisis de la prenda */}
+      {garmentData && (
+        <div className="mb-10 p-6 bg-gray-50 rounded-lg border border-gray-200">
+          <h3 className="text-xl font-serif mb-4 text-gray-900">Análisis de Prenda</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="p-3 bg-white rounded shadow-sm">
+              <p className="text-sm font-medium text-gray-500">Tipo de Prenda</p>
+              <p className="text-lg font-serif">{garmentData.type || 'No identificado'}</p>
+            </div>
+            <div className="p-3 bg-white rounded shadow-sm">
+              <p className="text-sm font-medium text-gray-500">Color Principal</p>
+              <div className="flex items-center">
+                <div 
+                  className="w-6 h-6 rounded-full mr-2" 
+                  style={{ backgroundColor: garmentData.color?.includes('#') ? garmentData.color : '#888' }}
+                ></div>
+                <p className="text-lg font-serif">{garmentData.color || 'No identificado'}</p>
+              </div>
+            </div>
+            <div className="p-3 bg-white rounded shadow-sm">
+              <p className="text-sm font-medium text-gray-500">Estilo</p>
+              <p className="text-lg font-serif">{garmentData.style || 'No identificado'}</p>
+            </div>
+            <div className="p-3 bg-white rounded shadow-sm">
+              <p className="text-sm font-medium text-gray-500">Material</p>
+              <p className="text-lg font-serif">{garmentData.material || 'No identificado'}</p>
+            </div>
+            <div className="p-3 bg-white rounded shadow-sm">
+              <p className="text-sm font-medium text-gray-500">Ocasiones</p>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {garmentData.occasions?.map((occasion, idx) => (
+                  <span key={idx} className="px-2 py-1 bg-amber-50 text-amber-800 text-xs rounded-full">
+                    {occasion}
+                  </span>
+                )) || 'No identificado'}
+              </div>
+            </div>
+            <div className="p-3 bg-white rounded shadow-sm">
+              <p className="text-sm font-medium text-gray-500">Temporada</p>
+              <p className="text-lg font-serif">{garmentData.season || 'No identificado'}</p>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Recomendaciones de estilo */}
+      {stylePreferences && (
+        <div className="mb-10 p-6 bg-gradient-to-r from-amber-50 to-amber-100 rounded-lg border border-amber-200">
+          <h3 className="text-xl font-serif mb-4 text-amber-900">Tu Perfil de Estilo</h3>
+          
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-amber-800 mb-2">Elementos de Estilo</h4>
+            <div className="flex flex-wrap gap-2">
+              {stylePreferences.styleElements?.map((element, idx) => (
+                <span key={idx} className="px-3 py-1 bg-white text-amber-800 text-sm rounded-full border border-amber-200">
+                  {element}
+                </span>
+              ))}
+            </div>
+          </div>
+          
+          <div className="mb-4">
+            <h4 className="text-sm font-medium text-amber-800 mb-2">Paleta de Colores</h4>
+            <div className="flex flex-wrap gap-2">
+              {stylePreferences.colorPalette?.map((color, idx) => (
+                <div key={idx} className="flex items-center px-3 py-1 bg-white text-amber-800 text-sm rounded-full border border-amber-200">
+                  <div 
+                    className="w-4 h-4 rounded-full mr-2" 
+                    style={{ backgroundColor: color.includes('#') ? color.match(/#[0-9a-fA-F]{6}/)[0] : '#888' }}
+                  ></div>
+                  {color}
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="text-sm text-amber-700 italic">
+            <p>{stylePreferences.rationale}</p>
+          </div>
+        </div>
+      )}
+      
+      {/* Outfits generados */}
+      <h2 className="text-2xl font-serif text-center mb-8">Tus Outfits Personalizados</h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        {outfits.map((outfit) => (
+          <div key={outfit.id} className="bg-white rounded-lg overflow-hidden shadow-lg border border-gray-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+            <div className="p-6">
+              <h3 className="text-xl font-serif font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-pink-500">
+                {outfit.name}
+              </h3>
+              
+              <div className="mb-4">
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2">Prendas</h4>
+                <ul className="text-gray-700 space-y-1">
+                  {outfit.items.map((item, idx) => (
+                    <li key={idx} className="flex items-start">
+                      <span className="inline-block w-1 h-1 rounded-full bg-amber-500 mt-2 mr-2"></span>
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              
+              <div className="flex justify-between mb-4">
+                <div>
+                  <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">Ocasión</h4>
+                  <p className="text-gray-700">{outfit.occasion}</p>
+                </div>
+                
+                <div>
+                  <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-1">Estilo</h4>
+                  <p className="text-gray-700">{outfit.style}</p>
+                </div>
+              </div>
+              
+              <div className="mt-4 pt-4 border-t border-gray-100">
+                <h4 className="text-xs font-medium uppercase tracking-wider text-gray-500 mb-2">Consejo de Estilismo</h4>
+                <p className="text-gray-600 italic">{outfit.stylingTip}</p>
+              </div>
+              
+              <div className="mt-6 flex justify-end">
+                <button className="text-amber-600 hover:text-amber-800 font-medium flex items-center gap-1">
+                  Guardar
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+      
+      {/* Botón para crear revista */}
+      <div className="text-center mt-12">
+        <Link 
+          to="/magazine" 
+          className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-700 hover:to-amber-600 shadow-lg hover:shadow-xl transition-all duration-300"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+          </svg>
+          Crear Artículo de Revista
+        </Link>
+      </div>
+    </div>
+  );
+}
+```
+
+### 7. Actualizar Configuración del Servidor
+
+Finalmente, vamos a actualizar el archivo principal del servidor para incluir nuestras nuevas rutas:
+
+```javascript
+// server/index.js
+const express = require('express');
+const path = require('path');
+const dotenv = require('dotenv');
+const apiRoutes = require('./routes/api');
+
+// Cargar variables de entorno
+dotenv.config();
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Servir archivos estáticos desde la carpeta client/build
+app.use(express.static(path.join(__dirname, '../client/build')));
+
+// Rutas de API
+app.use('/api', apiRoutes);
+
+// Ruta catch-all para SPA
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+});
+
+// Iniciar servidor
+app.listen(PORT, () => {
+  console.log(`Servidor corriendo en http://localhost:${PORT}`);
+  console.log('Modo:', process.env.NODE_ENV || 'development');
+});
+```
+
+## Consideraciones Finales
+
+### Uso Eficiente de las APIs
+
+1. **Implementa estrategias de caché**:
+   - Almacena los resultados de análisis de prendas por un tiempo determinado
+   - Utiliza localStorage para guardar los outfits generados
+
+2. **Optimización de imágenes**:
+   - Comprime las imágenes antes de enviarlas a las APIs
+   - Utiliza una resolución máxima adecuada (ej. 1024x1024)
+
+3. **Manejo de errores inteligente**:
+   - Los fallbacks entre servicios permiten alta disponibilidad
+   - Feedback claro al usuario cuando un servicio está caído
+
+### Extensiones Futuras
+
+1. **Integración con Google Calendar**:
+   - Añadir un nuevo servicio que consulte eventos del calendario
+   - Generar outfits específicos para próximos eventos
+
+2. **Integración con Google Lens**:
+   - Permitir búsqueda de prendas similares en tiendas online
+   - Mostrar recomendaciones de compra cerca de la ubicación del usuario
+
+3. **Sección de Diseños de Selene**:
+   - Implementar una base de datos para almacenar los diseños exclusivos
+   - Crear un sistema de recomendación que combine prendas del usuario con diseños artesanales
+
+## Instrucciones de Implementación
+
+1. Instala las dependencias necesarias:
+   ```bash
+   npm install axios dotenv multer
+   ```
+
+2. Asegúrate de que las variables de entorno estén configuradas correctamente en Replit:
+   - OPENAI_API_KEY
+   - GEMINI_API_KEY
+   - CLAUDE_API_KEY
+
+3. Implementa primero el servicio de IA y verifica que puedas conectarte a todas las APIs
+
+4. Luego implementa los controladores y rutas
+
+5. Finalmente, actualiza el frontend para utilizar la nueva funcionalidad
+
+La implementación híbrida permitirá a FashionistApp aprovechar las fortalezas de cada modelo:
+- Gemini para un análisis visual preciso de prendas
+- Claude para un análisis contextual y de preferencias sofisticado
+- OpenAI para generación creativa de outfits y contenido editorial
+
+Esto posicionará a la aplicación como una solución de moda verdaderamente inteligente y diferenciada en el mercado.

@@ -1,169 +1,412 @@
-import React from 'react';
-import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { FC, useEffect, useState } from 'react';
+import { MagazineTemplate } from './template-selector';
+import { Outfit } from '@/contexts/outfit-context';
 import GoldBorder from '@/components/ui/gold-border';
-import PdfExporter from './pdf-exporter';
+import GoldText from '@/components/ui/gold-text';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { apiRequest } from '@/lib/queryClient';
+import { Loader2, RefreshCw } from 'lucide-react';
 
-export interface MagazineContentType {
+export interface MagazineContent {
   title: string;
   subtitle: string;
   introduction: string;
-  outfits: Array<{
-    id: number;
-    name: string;
-    description: string;
-    occasion: string;
-    season?: string;
-    pieces?: string[];
-    reasoning?: string;
-    imageUrl?: string;
-    editorial: string;
-  }>;
+  outfits: Array<Outfit & { editorial: string }>;
   conclusion: string;
   template: string;
-  date?: string;
 }
 
 interface MagazinePreviewProps {
-  content: MagazineContentType | null;
-  templateName: string;
-  showWatermark: boolean;
-  onBackClick: () => void;
-  isGenerating: boolean;
+  selectedTemplate: MagazineTemplate;
+  selectedOutfits: Outfit[];
+  userPreferences?: {
+    styles?: string[];
+    occasions?: { name: string; priority: number }[];
+    seasons?: string[];
+  };
+  userName?: string;
+  isPremiumUser?: boolean;
+  onContentGenerated?: (content: MagazineContent) => void;
 }
 
-const MagazinePreview: React.FC<MagazinePreviewProps> = ({
-  content,
-  templateName,
-  showWatermark,
-  onBackClick,
-  isGenerating
+const MagazinePreview: FC<MagazinePreviewProps> = ({
+  selectedTemplate,
+  selectedOutfits,
+  userPreferences,
+  userName,
+  isPremiumUser = false,
+  onContentGenerated
 }) => {
-  const shareMagazine = () => {
-    // This would be replaced with actual sharing logic
-    alert("Función de compartir disponible próximamente");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [magazineContent, setMagazineContent] = useState<MagazineContent | null>(null);
+  const [activeTab, setActiveTab] = useState('preview');
+
+  useEffect(() => {
+    // Reset magazine content when inputs change
+    setMagazineContent(null);
+  }, [selectedTemplate, selectedOutfits]);
+
+  const generateMagazineContent = async () => {
+    if (selectedOutfits.length === 0) {
+      setError('Selecciona al menos un conjunto para generar la revista.');
+      return;
+    }
+
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('/api/generate-magazine', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          outfits: selectedOutfits,
+          template: selectedTemplate,
+          userPreferences,
+          userName
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la respuesta del servidor');
+      }
+      
+      const data = await response.json();
+      setMagazineContent(data);
+      
+      if (onContentGenerated) {
+        onContentGenerated(data);
+      }
+    } catch (err: any) {
+      setError(err.message || 'Ha ocurrido un error al generar el contenido de la revista.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  if (!content) return null;
-
-  return (
-    <div>
-      <div className="flex justify-end mb-4 space-x-3">
-        <Button 
-          variant="outline" 
-          className="border-gold-light text-gold-light hover:bg-amber-deep/10"
-          onClick={onBackClick}
-        >
-          Volver a Editar
-        </Button>
-        <Button 
-          variant="outline" 
-          className="border-gold-light text-gold-light hover:bg-amber-deep/10"
-          onClick={shareMagazine}
-        >
-          Compartir
-        </Button>
-        <PdfExporter 
-          magazineContent={content} 
-          isGenerating={isGenerating}
-          showWatermark={showWatermark} 
-        />
+  const renderWatermark = () => {
+    if (isPremiumUser) return null;
+    
+    return (
+      <div className="absolute bottom-6 right-6 opacity-50">
+        <p className="text-xs text-amber-deep">
+          Versión gratuita - Actualiza a Premium para eliminar la marca de agua
+        </p>
       </div>
-      
-      <GoldBorder className="p-2 md:p-6 gold-glow">
-        {/* Magazine Preview Layout */}
-        <div className="magazine-layout bg-white text-black relative">
-          {/* Magazine header */}
-          <div className="magazine-header bg-black p-8 text-center">
-            <h1 className="font-playfair text-3xl text-amber-deep mb-1">
-              {content.title}
+    );
+  };
+
+  const renderMagazineCover = () => {
+    if (!magazineContent) {
+      return (
+        <div className="aspect-[3/4] w-full max-w-xl mx-auto bg-black-elegant border border-amber-deep/40 flex flex-col items-center justify-center p-8 text-center">
+          <GoldText className="text-2xl mb-4">Vista Previa no Disponible</GoldText>
+          <p className="text-muted-foreground mb-6">
+            Genera el contenido de la revista para ver una vista previa.
+          </p>
+          <Button 
+            onClick={generateMagazineContent}
+            disabled={isLoading || selectedOutfits.length === 0}
+            className="gold-button"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generando...
+              </>
+            ) : (
+              'Generar Contenido'
+            )}
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="aspect-[3/4] w-full max-w-xl mx-auto relative">
+        <GoldBorder className="w-full h-full p-8 flex flex-col">
+          <div className="text-center mb-6">
+            <h1 className="text-4xl font-bold mb-2">
+              <GoldText>{magazineContent.title}</GoldText>
             </h1>
-            <h2 className="font-cormorant text-xl text-gold-light mb-4">
-              {content.subtitle}
-            </h2>
-            <p className="font-cormorant text-cream-soft/90 max-w-2xl mx-auto">
-              {content.introduction}
-            </p>
-            <div className="mt-4 text-amber-deep/60 text-sm font-cormorant">
-              {content.date} • {templateName} Edition
-            </div>
+            <p className="text-amber-deep/70 text-sm">{magazineContent.subtitle}</p>
           </div>
-          
-          {/* Magazine content */}
-          <div className="magazine-content grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
-            {content.outfits.map((outfit, index) => (
-              <div key={outfit.id} className="magazine-article">
-                {/* Article header */}
-                <h3 className="font-playfair text-xl text-amber-deep mb-2">
-                  {outfit.name}
-                </h3>
-                
-                <div className="flex flex-col md:flex-row gap-4">
-                  {/* Image placeholder */}
-                  <div className="md:w-1/2 aspect-square bg-gray-100 flex items-center justify-center rounded overflow-hidden">
-                    {outfit.imageUrl ? (
+
+          {/* Template-specific cover layout */}
+          <div className="flex-1 overflow-hidden">
+            {selectedTemplate === 'vogue' && (
+              <div className="h-full flex flex-col">
+                <div className="flex-1 overflow-hidden mb-4">
+                  {magazineContent.outfits[0] && (
+                    <img 
+                      src={magazineContent.outfits[0].imageUrl} 
+                      alt={magazineContent.outfits[0].name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground italic">
+                  {magazineContent.introduction.split('.')[0]}.
+                </p>
+              </div>
+            )}
+
+            {selectedTemplate === 'elle' && (
+              <div className="h-full flex space-x-4">
+                <div className="flex-1 overflow-hidden">
+                  {magazineContent.outfits[0] && (
+                    <img 
+                      src={magazineContent.outfits[0].imageUrl} 
+                      alt={magazineContent.outfits[0].name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  {magazineContent.outfits[1] ? (
+                    <img 
+                      src={magazineContent.outfits[1].imageUrl} 
+                      alt={magazineContent.outfits[1].name}
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-black-elegant/50 flex items-center justify-center">
+                      <p className="text-amber-deep/50 text-sm">Selecciona más conjuntos</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {selectedTemplate === 'bazaar' && (
+              <div className="h-full flex flex-col">
+                <div className="flex-1 overflow-hidden mb-4">
+                  {magazineContent.outfits[0] && (
+                    <img 
+                      src={magazineContent.outfits[0].imageUrl} 
+                      alt={magazineContent.outfits[0].name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="h-24 flex space-x-4">
+                  <div className="flex-1 overflow-hidden">
+                    {magazineContent.outfits[1] ? (
                       <img 
-                        src={outfit.imageUrl} 
-                        alt={outfit.name} 
+                        src={magazineContent.outfits[1].imageUrl} 
+                        alt={magazineContent.outfits[1].name}
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <span className="text-gray-400">Imagen del outfit</span>
+                      <div className="w-full h-full bg-black-elegant/50 flex items-center justify-center">
+                        <p className="text-amber-deep/50 text-xs">+</p>
+                      </div>
                     )}
                   </div>
-                  
-                  {/* Article content */}
-                  <div className="md:w-1/2 flex flex-col space-y-3">
-                    <p className="text-sm italic text-gray-600">
-                      Para {outfit.occasion}
-                    </p>
-                    <p className="text-sm">
-                      {outfit.editorial}
-                    </p>
-                    
-                    {outfit.pieces && outfit.pieces.length > 0 && (
-                      <div>
-                        <p className="text-xs text-amber-deep uppercase font-semibold mt-2 mb-1">
-                          Piezas Destacadas
-                        </p>
-                        <ul className="text-xs text-gray-700 list-disc pl-4">
-                          {outfit.pieces.slice(0, 3).map((piece, i) => (
-                            <li key={i}>{piece}</li>
-                          ))}
-                        </ul>
+                  <div className="flex-1 overflow-hidden">
+                    {magazineContent.outfits[2] ? (
+                      <img 
+                        src={magazineContent.outfits[2].imageUrl} 
+                        alt={magazineContent.outfits[2].name}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-black-elegant/50 flex items-center justify-center">
+                        <p className="text-amber-deep/50 text-xs">+</p>
                       </div>
                     )}
                   </div>
                 </div>
-                
-                <Separator className="my-6 bg-amber-deep/30" />
+              </div>
+            )}
+
+            {selectedTemplate === 'vanity' && (
+              <div className="h-full flex flex-col">
+                <p className="text-amber-deep/90 text-sm italic mb-4">
+                  {magazineContent.introduction.split('.').slice(0, 2).join('.') + '.'}
+                </p>
+                <div className="flex-1 overflow-hidden">
+                  {magazineContent.outfits[0] && (
+                    <img 
+                      src={magazineContent.outfits[0].imageUrl} 
+                      alt={magazineContent.outfits[0].name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+
+            {selectedTemplate === 'selene' && (
+              <div className="h-full border-4 border-amber-deep/20 p-4 flex flex-col">
+                <div className="flex-1 overflow-hidden">
+                  {magazineContent.outfits[0] && (
+                    <img 
+                      src={magazineContent.outfits[0].imageUrl} 
+                      alt={magazineContent.outfits[0].name}
+                      className="w-full h-full object-cover"
+                    />
+                  )}
+                </div>
+                <div className="mt-4 text-center">
+                  <p className="text-amber-deep font-semibold">
+                    Selene Signature Collection
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        </GoldBorder>
+        {renderWatermark()}
+      </div>
+    );
+  };
+
+  const renderEditorView = () => {
+    if (!magazineContent) {
+      return (
+        <div className="w-full flex flex-col items-center justify-center py-8">
+          <p className="text-muted-foreground mb-4">
+            Genera el contenido de la revista para ver los detalles.
+          </p>
+          <Button 
+            onClick={generateMagazineContent}
+            disabled={isLoading || selectedOutfits.length === 0}
+            className="gold-button"
+          >
+            {isLoading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Generando...
+              </>
+            ) : (
+              'Generar Contenido'
+            )}
+          </Button>
+        </div>
+      );
+    }
+
+    return (
+      <div className="w-full overflow-auto p-4">
+        <div className="mb-6">
+          <h2 className="text-xl font-bold">
+            <GoldText>Título y Subtítulo</GoldText>
+          </h2>
+          <div className="mt-2 p-4 bg-black-elegant/50 rounded-md">
+            <p className="font-bold text-lg">{magazineContent.title}</p>
+            <p className="text-sm text-muted-foreground">{magazineContent.subtitle}</p>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h2 className="text-xl font-bold">
+            <GoldText>Introducción</GoldText>
+          </h2>
+          <div className="mt-2 p-4 bg-black-elegant/50 rounded-md">
+            <p className="text-sm">{magazineContent.introduction}</p>
+          </div>
+        </div>
+
+        <div className="mb-6">
+          <h2 className="text-xl font-bold">
+            <GoldText>Conjuntos y Reseñas</GoldText>
+          </h2>
+          <div className="mt-2 space-y-4">
+            {magazineContent.outfits.map((outfit, index) => (
+              <div key={outfit.id} className="p-4 bg-black-elegant/50 rounded-md">
+                <div className="flex items-start gap-4">
+                  <div className="w-24 h-24 flex-shrink-0">
+                    <GoldBorder className="w-full h-full overflow-hidden">
+                      <img 
+                        src={outfit.imageUrl} 
+                        alt={outfit.name}
+                        className="w-full h-full object-cover"
+                      />
+                    </GoldBorder>
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-bold text-amber-deep">{outfit.name}</p>
+                    <p className="text-xs text-muted-foreground mb-2">
+                      {outfit.occasion} • {outfit.season}
+                    </p>
+                    <p className="text-sm">{outfit.editorial}</p>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
-          
-          {/* Magazine footer */}
-          <div className="magazine-footer p-8 bg-black">
-            <p className="font-cormorant text-center text-cream-soft italic">
-              {content.conclusion}
-            </p>
-            
-            <div className="flex justify-center mt-6">
-              <span className="text-amber-deep font-playfair text-lg">
-                SELENE STYLE
-              </span>
-            </div>
-          </div>
-          
-          {/* Watermark for non-premium users */}
-          {showWatermark && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="rotate-45 text-amber-deep/20 text-8xl font-playfair">
-                SELENE PREVIEW
-              </div>
-            </div>
-          )}
         </div>
-      </GoldBorder>
+
+        <div className="mb-6">
+          <h2 className="text-xl font-bold">
+            <GoldText>Conclusión</GoldText>
+          </h2>
+          <div className="mt-2 p-4 bg-black-elegant/50 rounded-md">
+            <p className="text-sm">{magazineContent.conclusion}</p>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  return (
+    <div className="w-full py-6">
+      <div className="mb-8 text-center">
+        <h2 className="text-3xl font-bold mb-2">
+          <GoldText>Previsualización de Revista</GoldText>
+        </h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Vista previa de tu revista personalizada. Genera el contenido para ver cómo quedará el resultado final.
+        </p>
+      </div>
+
+      {error && (
+        <div className="mb-6 p-4 bg-red-900/20 border border-red-800 rounded-md text-center">
+          <p className="text-red-400">{error}</p>
+        </div>
+      )}
+
+      <div className="mb-4 flex justify-center">
+        {magazineContent && (
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={generateMagazineContent}
+            disabled={isLoading}
+            className="flex items-center"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            Regenerar Contenido
+          </Button>
+        )}
+      </div>
+
+      <Tabs 
+        value={activeTab} 
+        onValueChange={setActiveTab}
+        className="w-full"
+      >
+        <div className="flex justify-center mb-6">
+          <TabsList>
+            <TabsTrigger value="preview">Vista Previa</TabsTrigger>
+            <TabsTrigger value="editor">Contenido</TabsTrigger>
+          </TabsList>
+        </div>
+        
+        <TabsContent value="preview" className="mt-0">
+          {renderMagazineCover()}
+        </TabsContent>
+        
+        <TabsContent value="editor" className="mt-0">
+          {renderEditorView()}
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

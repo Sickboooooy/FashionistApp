@@ -8,11 +8,23 @@ import {
   insertUserPreferencesSchema,
   insertGarmentSchema, 
   insertOutfitSchema,
-  insertSeleneDesignSchema 
+  insertSeleneDesignSchema,
+  UserPreferences
 } from "@shared/schema";
 import { generateOutfitSuggestions, analyzeGarmentImage, generateOutfitsFromImage } from "./services/openai-service";
 import { generateMagazineContent } from "./services/magazine-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
+
+// Función de ayuda para convertir null a undefined en las preferencias
+function formatPreferences(prefs: UserPreferences | undefined) {
+  if (!prefs) return undefined;
+  
+  return {
+    styles: prefs.styles || undefined,
+    occasions: prefs.occasions || undefined,
+    seasons: prefs.seasons || undefined
+  };
+}
 
 // Setup file upload with multer for memory storage
 const upload = multer({ storage: multer.memoryStorage() });
@@ -319,7 +331,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Generate outfit suggestions
       const suggestions = await generateOutfitSuggestions({
         garments,
-        preferences: userPreferences,
+        preferences: formatPreferences(userPreferences),
         textPrompt: request.textPrompt,
         season: request.season,
         occasion: request.occasion
@@ -385,6 +397,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
           imageUrl: z.string().optional()
         })),
         template: z.string(),
+        userPreferences: z.object({
+          styles: z.array(z.string()).optional(),
+          occasions: z.array(z.object({
+            name: z.string(),
+            priority: z.number()
+          })).optional(),
+          seasons: z.array(z.string()).optional()
+        }).optional(),
         userId: z.number().optional(),
         userName: z.string().optional()
       });
@@ -392,10 +412,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate the request body
       const request = requestSchema.parse(req.body);
       
-      // Get user preferences if userId provided
-      let userPreferences;
-      if (request.userId) {
-        userPreferences = await storage.getUserPreferences(request.userId);
+      // Get user preferences if userId provided and not already in request
+      let userPreferences = request.userPreferences;
+      if (!userPreferences && request.userId) {
+        userPreferences = formatPreferences(await storage.getUserPreferences(request.userId));
       }
       
       // Generate magazine content
@@ -406,15 +426,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userName: request.userName
       });
       
-      res.json({
-        success: true,
-        magazine: magazineContent
-      });
+      res.json(magazineContent);
     } catch (error: any) {
       console.error("Error generando contenido de revista:", error);
       res.status(500).json({
-        success: false,
         error: error.message || "Error al generar el contenido de la revista"
+      });
+    }
+  });
+  
+  // Export magazine to PDF
+  app.post("/api/export-magazine-pdf", async (req: Request, res: Response) => {
+    try {
+      const requestSchema = z.object({
+        content: z.object({
+          title: z.string(),
+          subtitle: z.string(),
+          introduction: z.string(),
+          outfits: z.array(z.object({
+            id: z.number(),
+            name: z.string(),
+            description: z.string(),
+            occasion: z.string(),
+            season: z.string().optional(),
+            imageUrl: z.string().optional(),
+            editorial: z.string()
+          })),
+          conclusion: z.string(),
+          template: z.string()
+        }),
+        isPremiumUser: z.boolean().optional()
+      });
+      
+      // Validate the request body
+      const request = requestSchema.parse(req.body);
+      
+      // En una implementación real, aquí generaríamos un PDF con una biblioteca como PDFKit
+      // Por ahora, simplemente devolvemos un PDF vacío con el nombre correcto
+      
+      // Crear un buffer simple para simular un PDF
+      const buffer = Buffer.from("PDF simulado para " + request.content.title);
+      
+      // Configurar la respuesta para descargar el PDF
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename="${request.content.title.replace(/\s+/g, '_').toLowerCase()}_magazine.pdf"`);
+      
+      // Enviar el buffer como respuesta
+      res.send(buffer);
+    } catch (error: any) {
+      console.error("Error exportando revista a PDF:", error);
+      res.status(500).json({
+        error: error.message || "Error al exportar la revista a PDF"
       });
     }
   });
