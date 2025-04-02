@@ -5,6 +5,8 @@ import { setupSecurity } from "./middleware/security";
 import compression from "compression";
 
 const app = express();
+// Habilitar trust proxy para que express-rate-limit funcione correctamente con X-Forwarded-For
+app.set('trust proxy', true);
 app.use(compression()); // Compresión para todas las respuestas
 app.use(express.json({ limit: '10mb' })); // Límite de tamaño para peticiones JSON
 app.use(express.urlencoded({ extended: false, limit: '10mb' }));
