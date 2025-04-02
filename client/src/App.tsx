@@ -10,6 +10,7 @@ import MyCloset from "@/pages/my-closet";
 import SeleneDesignsPage from "@/pages/selene-designs-page";
 import Profile from "@/pages/profile";
 import MagazineView from "@/pages/magazine-view";
+import AIImageGeneratorPage from "@/pages/ai-image-generator";
 import { TextInputModal } from "@/components/text-input-modal";
 import { OutfitProvider } from "@/contexts/outfit-context";
 import { PreferencesProvider } from "@/contexts/preferences-context";
@@ -25,6 +26,7 @@ function Router() {
           <Route path="/selene-designs" component={SeleneDesignsPage} />
           <Route path="/profile" component={Profile} />
           <Route path="/magazine" component={MagazineView} />
+          <Route path="/ai-images" component={AIImageGeneratorPage} />
           <Route component={NotFound} />
         </Switch>
       </main>

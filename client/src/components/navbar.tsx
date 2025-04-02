@@ -11,6 +11,7 @@ const Navbar = () => {
     { name: 'MI ARMARIO', path: '/closet' },
     { name: 'DISEÑOS SELENE', path: '/selene-designs' },
     { name: 'REVISTA', path: '/magazine' },
+    { name: 'IMÁGENES IA', path: '/ai-images' },
     { name: 'PERFIL', path: '/profile' },
   ];
 

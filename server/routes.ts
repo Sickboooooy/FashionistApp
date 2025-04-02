@@ -14,6 +14,7 @@ import {
 import { generateOutfitSuggestions, analyzeGarmentImage, generateOutfitsFromImage } from "./services/openai-service";
 import { generateMagazineContent } from "./services/magazine-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
+import { generateFashionImage } from "./services/image-generation-service";
 import { validateImageAnalysis, validateOutfitGeneration, validateMagazineGeneration } from "./middleware/validator";
 import optimizeImage from "./middleware/imageOptimizer";
 
@@ -479,6 +480,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error("Error exportando revista a PDF:", error);
       res.status(500).json({
         error: error.message || "Error al exportar la revista a PDF"
+      });
+    }
+  });
+  
+  // Endpoint para generar imágenes de moda con IA
+  app.post("/api/generate-fashion-image", async (req: Request, res: Response) => {
+    try {
+      const requestSchema = z.object({
+        prompt: z.string(),
+        style: z.enum(["vivid", "natural"]).optional(),
+        size: z.enum(["1024x1024", "1792x1024", "1024x1792"]).optional(),
+        quality: z.enum(["standard", "hd"]).optional()
+      });
+      
+      // Validar el cuerpo de la solicitud
+      const request = requestSchema.parse(req.body);
+      
+      // Generar imagen
+      const imagePath = await generateFashionImage({
+        prompt: request.prompt,
+        style: request.style,
+        size: request.size,
+        quality: request.quality
+      });
+      
+      // Devolver la ruta de la imagen
+      res.json({ 
+        success: true, 
+        imagePath 
+      });
+    } catch (error: any) {
+      console.error("Error generando imagen de moda:", error);
+      res.status(500).json({ 
+        success: false, 
+        error: error.message || "Error al generar la imagen de moda" 
       });
     }
   });
