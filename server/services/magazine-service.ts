@@ -81,7 +81,7 @@ export async function generateMagazineContent(request: MagazineGenerationRequest
     // Clave de caché completa
     const cacheKey = cacheService.getMagazineKey({
       outfitsHash,
-      preferencesHash,
+      preferenceHash: preferencesHash, // Corregido de preferencesHash a preferenceHash
       template: request.template,
       userName: request.userName
     });

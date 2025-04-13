@@ -32,7 +32,17 @@ export function setupSecurity(app: Express): void {
     max: 100, // Máximo 100 solicitudes por ventana
     standardHeaders: true, // Devuelve info de límite en encabezados `RateLimit-*`
     legacyHeaders: false, // Deshabilita los encabezados `X-RateLimit-*`
-    message: { error: "Demasiadas solicitudes, por favor intente nuevamente después" }
+    message: { error: "Demasiadas solicitudes, por favor intente nuevamente después" },
+    // En lugar de usar trustProxy, usamos keyGenerator personalizado
+    // que considera la primera IP en X-Forwarded-For
+    keyGenerator: (req, res) => {
+      // Obtener la IP real del cliente en entornos como Replit
+      const realIp = req.headers['x-forwarded-for'] as string;
+      if (realIp) {
+        return realIp.split(',')[0].trim();
+      }
+      return (req.ip || '').toString();
+    }
   });
   
   // Aplicar límite a todas las rutas de API
@@ -42,7 +52,15 @@ export function setupSecurity(app: Express): void {
   const authLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
     max: 10, // Máximo 10 solicitudes por hora
-    message: { error: "Demasiados intentos, por favor intente nuevamente después" }
+    message: { error: "Demasiados intentos, por favor intente nuevamente después" },
+    // Usar el mismo keyGenerator personalizado
+    keyGenerator: (req, res) => {
+      const realIp = req.headers['x-forwarded-for'] as string;
+      if (realIp) {
+        return realIp.split(',')[0].trim();
+      }
+      return (req.ip || '').toString();
+    }
   });
   
   // Aplicar limites más estrictos a rutas de IA intensivas
