@@ -4,7 +4,7 @@ import { log } from "../vite";
 import { Garment } from "@shared/schema";
 
 // Inicializar cliente de Google Generative AI como modelo principal
-const genAI = new GoogleGenerativeAI(process.env.FASHION_GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.GEMINI2APIKEY || "");
 // Usar "gemini-1.5-flash" que es el modelo recomendado tras la descontinuación de los modelos anteriores
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
