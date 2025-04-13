@@ -266,12 +266,12 @@ const AIImageGenerator = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creando tu diseño...
+                      Creando tu diseño con Gemini...
                     </>
                   ) : (
                     <>
                       <i className="fas fa-wand-magic-sparkles mr-2"></i>
-                      Crear Diseño
+                      Crear Diseño con Gemini
                     </>
                   )}
                 </Button>

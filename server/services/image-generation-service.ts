@@ -1,22 +1,9 @@
-import OpenAI from "openai";
 import { ensureUploadsDir } from "./image-service";
-import { v4 as uuidv4 } from "uuid";
 import fs from "fs";
 import path from "path";
 import { cacheService } from "./cacheService";
 import { log } from "../vite";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-
-// Inicializar cliente de OpenAI
-let openai: OpenAI | null = null;
-try {
-  openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
-  log("Cliente OpenAI inicializado correctamente para generación de imágenes", "openai");
-} catch (error) {
-  log(`Error al inicializar cliente OpenAI para generación de imágenes: ${error}`, "openai-error");
-}
 
 // Inicializar cliente de Google Gemini
 let genAI: GoogleGenerativeAI | null = null;
@@ -40,7 +27,7 @@ interface ImageGenerationOptions {
 }
 
 /**
- * Genera una imagen usando OpenAI DALL-E 3 con respaldo a Gemini
+ * Genera una imagen usando exclusivamente Gemini
  */
 export async function generateFashionImage(options: ImageGenerationOptions): Promise<string> {
   const { prompt, style = "vivid", size = "1024x1024", quality = "standard" } = options;
@@ -58,56 +45,23 @@ export async function generateFashionImage(options: ImageGenerationOptions): Pro
   }
   
   try {
-    // Verificar si tenemos cliente de OpenAI
-    if (!openai) {
-      log("Cliente OpenAI no disponible para generación de imágenes, intentando con Gemini", "openai-fallback");
-      return await generateImageWithGemini(enhancedPrompt);
-    }
-
-    log("Generando imagen con DALL-E 3...", "image-gen");
+    log("Generando imagen con Gemini...", "gemini");
     
-    // Generar imagen con DALL-E 3
-    const response = await openai.images.generate({
-      model: "dall-e-3",
-      prompt: enhancedPrompt,
-      n: 1,
-      size: size,
-      quality: quality,
-      style: style,
-    });
-    
-    // Guardar imagen
-    const imageUrl = response.data[0].url;
-    if (!imageUrl) {
-      throw new Error("No se recibió URL de imagen de OpenAI");
-    }
-    
-    const localImagePath = await saveImageFromUrl(imageUrl);
+    // Generar imagen con Gemini
+    const localImagePath = await generateImageWithGemini(enhancedPrompt);
     
     // Guardar en caché
     cacheService.set(cacheKey, localImagePath);
     
     return localImagePath;
   } catch (error: any) {
-    log(`Error generando imagen con DALL-E 3: ${error}. Intentando con Gemini como respaldo...`, "openai-error");
-    
-    try {
-      // Intentar con Gemini como respaldo
-      const localImagePath = await generateImageWithGemini(enhancedPrompt);
-      
-      // Guardar en caché
-      cacheService.set(cacheKey, localImagePath);
-      
-      return localImagePath;
-    } catch (geminiError: any) {
-      log(`Error también en generación con Gemini: ${geminiError}`, "gemini-error");
-      throw new Error("No se pudo generar la imagen con ningún proveedor disponible.");
-    }
+    log(`Error en generación de imagen con Gemini: ${error}`, "gemini-error");
+    throw new Error("No se pudo generar la imagen con Gemini. Verifica tu API key y vuelve a intentarlo.");
   }
 }
 
 /**
- * Genera imagen usando Google Gemini Pro Vision
+ * Genera imagen usando Google Gemini
  */
 async function generateImageWithGemini(prompt: string): Promise<string> {
   if (!genAI) {
@@ -117,12 +71,19 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
   try {
     log("Generando imagen con Gemini...", "gemini");
     
-    // Usar el modelo gemini-1.5-pro que tiene mejores capacidades para descripción detallada
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    // Usar el modelo gemini-1.5-flash que es más rápido y adecuado para descripciones
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-flash",
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.9,
+        maxOutputTokens: 1024,
+      }
+    });
     
     // Mejorar el prompt para obtener descripciones más detalladas orientadas a moda
     const enhancedPrompt = `
-      Actúa como un diseñador de moda y generador de imágenes especializado. 
+      Actúa como un diseñador de moda profesional y generador de imágenes especializado. 
       Necesito una descripción extremadamente detallada para crear una imagen de moda basada en:
       "${prompt}"
       
@@ -145,10 +106,6 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
     try {
       const descriptionResult = await model.generateContent({
         contents: [{ role: "user", parts: [{ text: enhancedPrompt }] }],
-        generationConfig: {
-          temperature: 0.7,
-          maxOutputTokens: 1024,
-        }
       });
       
       clearTimeout(timeoutId);
@@ -194,7 +151,7 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
         <rect x="15" y="15" width="994" height="994" fill="none" stroke="url(#goldGradient)" stroke-width="2" rx="12" ry="12"/>
         
         <text x="512" y="80" font-family="Arial, sans-serif" font-size="40" fill="url(#goldGradient)" text-anchor="middle" filter="url(#dropShadow)">
-          Selene Style - Diseño de Moda
+          Selene Style - Diseño de Moda con Gemini
         </text>
         
         <text x="512" y="130" font-family="Arial, sans-serif" font-size="24" fill="#f9f295" text-anchor="middle">
@@ -221,7 +178,7 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
         </text>
         
         <text x="512" y="960" font-family="Arial, sans-serif" font-size="14" fill="#555" text-anchor="middle">
-          * Esta descripción podría utilizarse con un servicio de generación de imágenes compatible *
+          * Imagen generada exclusivamente con Gemini *
         </text>
       </svg>
       `;
@@ -255,11 +212,11 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
         <rect x="10" y="10" width="1004" height="1004" fill="#1a0000" rx="15" ry="15"/>
         
         <text x="512" y="400" font-family="Arial, sans-serif" font-size="30" fill="#ff5555" text-anchor="middle">
-          No se pudo generar la imagen
+          No se pudo generar la imagen con Gemini
         </text>
         
         <text x="512" y="450" font-family="Arial, sans-serif" font-size="20" fill="#aaa" text-anchor="middle">
-          Por favor, intenta de nuevo con otra descripción
+          Por favor, verifica tu API key y vuelve a intentarlo
         </text>
         
         <text x="512" y="500" font-family="Arial, sans-serif" font-size="16" fill="#777" text-anchor="middle">
@@ -285,33 +242,4 @@ function enhanceFashionPrompt(basePrompt: string): string {
   return `Imagen profesional de moda de alta calidad: ${basePrompt}. 
   Estilo de fotografía profesional, iluminación perfecta, composición elegante, 
   detalles nítidos, fondo estético que complementa la prenda.`;
-}
-
-/**
- * Guarda una imagen desde una URL externa
- */
-async function saveImageFromUrl(url: string): Promise<string> {
-  try {
-    // Asegurar que existe el directorio de uploads
-    ensureUploadsDir();
-    
-    // Obtener la imagen
-    const response = await fetch(url);
-    if (!response.ok) throw new Error(`Error descargando imagen: ${response.statusText}`);
-    
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    
-    // Generar nombre de archivo único
-    const fileName = `fashionai_${uuidv4()}.png`;
-    const filePath = path.join("uploads", fileName);
-    
-    // Guardar archivo
-    fs.writeFileSync(filePath, buffer);
-    
-    return filePath;
-  } catch (error: any) {
-    log(`Error guardando imagen: ${error}`, "image-save-error");
-    throw new Error("No se pudo guardar la imagen generada.");
-  }
 }
