@@ -20,7 +20,7 @@ import { useState, useEffect } from "react";
 // Ruta base para despliegue
 const basePath = ""; // Si se despliega en una subruta, cambia esto a "/subruta"
 
-function Router() {
+function AppRouter() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
@@ -47,7 +47,7 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <PreferencesProvider>
         <OutfitProvider>
-          <Router />
+          <AppRouter />
           <Toaster />
         </OutfitProvider>
       </PreferencesProvider>

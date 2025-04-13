@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import SpotlightContainer from './ui/spotlight-container';
 import GoldText from './ui/gold-text';
 import InputMethods from './input-methods';
