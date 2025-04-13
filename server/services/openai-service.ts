@@ -1,33 +1,27 @@
-
-import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
-import crypto from "crypto";
+import OpenAI from "openai";
 import { Garment } from "@shared/schema";
 import { cacheService } from "./cacheService";
+import { log } from "../vite";
+import { 
+  generateOutfitSuggestionsWithGemini, 
+  analyzeGarmentImageWithGemini 
+} from "./gemini-service";
 
-// Inicializar el cliente de Gemini con la API key del .env
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+// El modelo más reciente es "gpt-4o" que se lanzó en mayo de 2024. No lo cambies a menos que el usuario lo solicite explícitamente
+const DEFAULT_MODEL = "gpt-4o";
 
-// Configuración de seguridad de Gemini
-const safetySettings = [
-  {
-    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-  {
-    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
-    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
-  },
-];
+// Inicializar cliente de OpenAI
+let openai: OpenAI | null = null;
+try {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  log("Cliente OpenAI inicializado correctamente", "openai");
+} catch (error) {
+  log(`Error al inicializar cliente OpenAI: ${error}`, "openai-error");
+}
 
-// Interfaz para la solicitud de generación de outfits
+// Interfaz para solicitud de generación de outfit
 interface OutfitGenerationRequest {
   garments?: Garment[];
   preferences?: {
@@ -40,7 +34,7 @@ interface OutfitGenerationRequest {
   occasion?: string;
 }
 
-// Interfaz para la respuesta de sugerencia de outfit
+// Interfaz para sugerencia de outfit
 interface OutfitSuggestion {
   name: string;
   description: string;
@@ -52,143 +46,65 @@ interface OutfitSuggestion {
 
 /**
  * Genera sugerencias de outfit basadas en prendas y preferencias
+ * Con respaldo a Gemini si OpenAI falla
  */
 export async function generateOutfitSuggestions(request: OutfitGenerationRequest): Promise<OutfitSuggestion[]> {
   try {
-    // Generar hash para caché
-    let preferenceHash: string | undefined;
-    if (request.preferences) {
-      const prefStr = JSON.stringify(request.preferences);
-      preferenceHash = crypto.createHash('md5').update(prefStr).digest('hex');
-    }
+    // Intentar obtener resultado de caché primero
+    const cacheKey = cacheService.getOutfitsKey(request);
+    const cachedResult = cacheService.get<OutfitSuggestion[]>(cacheKey);
     
-    let garmentHash: string | undefined;
-    if (request.garments && request.garments.length > 0) {
-      const garmentStr = JSON.stringify(request.garments);
-      garmentHash = crypto.createHash('md5').update(garmentStr).digest('hex');
+    if (cachedResult) {
+      log("Utilizando resultados en caché para generación de outfits", "openai");
+      return cachedResult;
     }
+
+    // Verificar si tenemos cliente de OpenAI
+    if (!openai) {
+      log("Cliente OpenAI no disponible, utilizando Gemini como respaldo", "openai-fallback");
+      return await generateOutfitSuggestionsWithGemini(request);
+    }
+
+    const { garments = [], preferences = {}, textPrompt, season, occasion } = request;
     
-    // Clave para caché
-    const cacheKey = cacheService.getOutfitsKey({
-      imageHash: garmentHash,
-      textPrompt: request.textPrompt,
-      preferenceHash,
-      season: request.season,
-      occasion: request.occasion
+    const prompt = `Actúa como un estilista experto en moda. Necesito que generes 3 sugerencias de outfits.`;
+    
+    const systemMessage = `Eres un experto asistente de moda que ayuda a generar sugerencias de outfits personalizados.
+Debes proporcionar respuestas detalladas, completas y en formato JSON.`;
+
+    log("Solicitando generación de outfits a OpenAI...", "openai");
+    
+    const messages = [
+      { role: "system", content: systemMessage },
+      { role: "user", content: generateOutfitPrompt(request) }
+    ];
+    
+    const completion = await openai.chat.completions.create({
+      model: DEFAULT_MODEL,
+      messages: messages as any,
+      temperature: 0.7,
+      response_format: { type: "json_object" },
     });
     
-    // Revisar caché
-    const cachedOutfits = cacheService.get<OutfitSuggestion[]>(cacheKey);
-    if (cachedOutfits) {
-      console.log('Usando sugerencias de outfits de la caché');
-      return cachedOutfits;
-    }
+    const content = completion.choices[0].message.content;
     
-    // Construir el prompt para Gemini
-    let prompt = "Genera 3 sugerencias de outfits de moda basados en la siguiente información:\n\n";
-    
-    // Añadir información de prendas si existen
-    if (request.garments && request.garments.length > 0) {
-      prompt += "Prendas disponibles:\n";
-      request.garments.forEach((garment, index) => {
-        prompt += `${index + 1}. ${garment.name} - ${garment.type} - ${garment.color}${garment.material ? ` - ${garment.material}` : ''}${garment.pattern ? ` - ${garment.pattern}` : ''}\n`;
-      });
-      prompt += "\n";
-    }
-    
-    // Añadir información de preferencias si existen
-    if (request.preferences) {
-      if (request.preferences.styles && request.preferences.styles.length > 0) {
-        prompt += `Estilos preferidos: ${request.preferences.styles.join(", ")}\n`;
-      }
-      
-      if (request.preferences.occasions && request.preferences.occasions.length > 0) {
-        const sortedOccasions = [...request.preferences.occasions]
-          .sort((a, b) => b.priority - a.priority)
-          .map(o => o.name);
-        prompt += `Ocasiones prioritarias: ${sortedOccasions.join(", ")}\n`;
-      }
-      
-      if (request.preferences.seasons && request.preferences.seasons.length > 0) {
-        prompt += `Temporadas favoritas: ${request.preferences.seasons.join(", ")}\n`;
-      }
-      
-      prompt += "\n";
-    }
-    
-    // Añadir información específica de temporada u ocasión
-    if (request.season) {
-      prompt += `Temporada objetivo: ${request.season}\n`;
-    }
-    
-    if (request.occasion) {
-      prompt += `Ocasión objetivo: ${request.occasion}\n`;
-    }
-    
-    // Añadir prompt de texto si existe
-    if (request.textPrompt) {
-      prompt += `Instrucciones adicionales: ${request.textPrompt}\n`;
-    }
-    
-    prompt += "\nPara cada outfit, proporciona los siguientes detalles en formato JSON:\n";
-    prompt += "1. name: nombre creativo del outfit\n";
-    prompt += "2. description: descripción detallada del outfit\n";
-    prompt += "3. occasion: ocasión para la que es adecuado\n";
-    prompt += "4. season: temporada recomendada\n";
-    prompt += "5. pieces: array de piezas que componen el outfit\n";
-    prompt += "6. reasoning: explicación de por qué este outfit funciona\n";
-    
-    // Inicializar el modelo de Gemini
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
-      safetySettings
-    });
-    
-    // Llamar a Gemini
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 2048,
-        topP: 0.8,
-        topK: 40,
-      }
-    });
-    
-    const response = result.response;
-    const content = response.text();
-    
-    // Procesar la respuesta
     if (!content) {
       throw new Error("No se recibió respuesta del modelo");
     }
     
-    // Extraer la respuesta JSON
-    const jsonContent = content.match(/```json\n([\s\S]*?)\n```/) || 
-                       content.match(/```\n([\s\S]*?)\n```/) || 
-                       content.match(/\{[\s\S]*\}/);
-    
-    let jsonString = '';
-    if (jsonContent) {
-      jsonString = jsonContent[0].replace(/```json\n|```\n|```/g, '');
-    } else {
-      jsonString = content;
-    }
-    
-    // Parsear la respuesta JSON
     try {
-      const parsedResponse = JSON.parse(jsonString);
+      const parsedResponse = JSON.parse(content);
       let outfits: OutfitSuggestion[];
       
       // Verificar el formato de la respuesta
-      if (Array.isArray(parsedResponse)) {
-        outfits = parsedResponse;
-      } else if (parsedResponse.outfits && Array.isArray(parsedResponse.outfits)) {
+      if (parsedResponse.outfits && Array.isArray(parsedResponse.outfits)) {
         outfits = parsedResponse.outfits;
       } else if (parsedResponse.suggestions && Array.isArray(parsedResponse.suggestions)) {
         outfits = parsedResponse.suggestions;
+      } else if (Array.isArray(parsedResponse)) {
+        outfits = parsedResponse;
       } else {
-        // Intentar extraer los outfits de las propiedades del objeto
+        // Intentar extraer los outfits de propiedades numeradas (outfit1, outfit2, etc.)
         const extractedOutfits = [];
         for (const key in parsedResponse) {
           if (typeof parsedResponse[key] === 'object' && parsedResponse[key] !== null) {
@@ -211,17 +127,85 @@ export async function generateOutfitSuggestions(request: OutfitGenerationRequest
       
       return outfits;
     } catch (error) {
-      console.error("Error parsing Gemini response:", error);
-      console.error("Raw response:", content);
-      throw new Error("Error procesando la respuesta del modelo");
+      log(`Error al procesar respuesta de OpenAI: ${error}. Utilizando Gemini como respaldo`, "openai-error");
+      return await generateOutfitSuggestionsWithGemini(request);
     }
   } catch (error) {
-    console.error("Error generating outfit suggestions:", error);
-    throw error;
+    log(`Error en generación de outfits con OpenAI: ${error}. Utilizando Gemini como respaldo`, "openai-error");
+    return await generateOutfitSuggestionsWithGemini(request);
   }
 }
 
-// Interfaz para análisis de prendas
+/**
+ * Genera el prompt para OpenAI
+ */
+function generateOutfitPrompt(request: OutfitGenerationRequest): string {
+  const { garments = [], preferences = {}, textPrompt, season, occasion } = request;
+  
+  let prompt = `Actúa como un estilista experto en moda. Necesito que generes 3 sugerencias de outfits.`;
+  
+  // Añadir información sobre las prendas disponibles
+  if (garments.length > 0) {
+    prompt += `\n\nPrendas disponibles:`;
+    garments.forEach(garment => {
+      prompt += `\n- ${garment.name} (Tipo: ${garment.type}, Color: ${garment.color}`;
+      if (garment.material) prompt += `, Material: ${garment.material}`;
+      if (garment.style) prompt += `, Estilo: ${garment.style}`;
+      if (garment.pattern) prompt += `, Patrón: ${garment.pattern}`;
+      if (garment.season) prompt += `, Temporada: ${garment.season}`;
+      prompt += `)`;
+    });
+  }
+  
+  // Añadir información sobre preferencias
+  if (preferences.styles && preferences.styles.length > 0) {
+    prompt += `\n\nEstilos preferidos: ${preferences.styles.join(", ")}`;
+  }
+  
+  if (preferences.occasions && preferences.occasions.length > 0) {
+    const sortedOccasions = [...preferences.occasions].sort((a, b) => b.priority - a.priority);
+    prompt += `\n\nOcasiones (por prioridad): ${sortedOccasions.map(o => o.name).join(", ")}`;
+  }
+  
+  if (preferences.seasons && preferences.seasons.length > 0) {
+    prompt += `\n\nTemporadas preferidas: ${preferences.seasons.join(", ")}`;
+  }
+  
+  // Añadir información específica de la solicitud
+  if (textPrompt) {
+    prompt += `\n\nSolicitud específica: ${textPrompt}`;
+  }
+  
+  if (season) {
+    prompt += `\n\nTemporada para el outfit: ${season}`;
+  }
+  
+  if (occasion) {
+    prompt += `\n\nOcasión para el outfit: ${occasion}`;
+  }
+  
+  // Indicaciones para el formato de la respuesta
+  prompt += `\n\nPor favor, proporciona tus sugerencias en formato JSON con la siguiente estructura:
+{
+  "outfits": [
+    {
+      "name": "Nombre del outfit",
+      "description": "Descripción detallada del outfit",
+      "occasion": "Ocasión para la que es adecuado",
+      "season": "Temporada del año",
+      "pieces": ["Prenda 1", "Prenda 2", ...],
+      "reasoning": "Explicación de por qué estas prendas funcionan bien juntas"
+    },
+    ...
+  ]
+}`;
+
+  return prompt;
+}
+
+/**
+ * Estructura de análisis de prendas
+ */
 interface GarmentAnalysis {
   type: string;
   color: string;
@@ -234,88 +218,82 @@ interface GarmentAnalysis {
 
 /**
  * Analiza una imagen de prenda para extraer características
+ * Con respaldo a Gemini si OpenAI falla
  */
 export async function analyzeGarmentImage(base64Image: string): Promise<Partial<Garment>> {
   try {
-    // Convertir base64 a buffer para generar hash
-    const buffer = Buffer.from(base64Image, 'base64');
-    const cacheKey = cacheService.getImageAnalysisKey(buffer);
+    // Intentar obtener resultado de caché primero
+    const cacheKey = cacheService.getImageAnalysisKey(Buffer.from(base64Image, 'base64'));
+    const cachedResult = cacheService.get<Partial<Garment>>(cacheKey);
     
-    // Revisar caché
-    const cachedAnalysis = cacheService.get<Partial<Garment>>(cacheKey);
-    if (cachedAnalysis) {
-      console.log('Usando análisis de imagen de la caché');
-      return cachedAnalysis;
+    if (cachedResult) {
+      log("Utilizando resultados en caché para análisis de imagen", "openai");
+      return cachedResult;
     }
+
+    // Verificar si tenemos cliente de OpenAI
+    if (!openai) {
+      log("Cliente OpenAI no disponible, utilizando Gemini como respaldo para análisis de imagen", "openai-fallback");
+      return await analyzeGarmentImageWithGemini(base64Image);
+    }
+
+    log("Solicitando análisis de imagen a OpenAI...", "openai");
     
-    // Inicializar modelo de Gemini
-    const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-pro",
-      safetySettings
-    });
-    
-    // Llamar a Gemini Vision
-    const prompt = "Analiza esta prenda de vestir y proporciona los siguientes detalles en formato JSON:\n" +
-                  "1. type: tipo de prenda\n" +
-                  "2. color: color predominante\n" +
-                  "3. style: estilo de la prenda\n" +
-                  "4. material: material principal si es identificable\n" +
-                  "5. occasions: array de ocasiones apropiadas para esta prenda\n" +
-                  "6. season: temporada más adecuada para esta prenda\n" +
-                  "7. pattern: patrón o estampado si tiene";
-    
-    // Preparar la imagen para Gemini
-    const imageData = {
-      inlineData: {
-        data: base64Image,
-        mimeType: "image/jpeg"
-      }
-    };
-    
-    const result = await model.generateContent({
-      contents: [
-        { role: "user", parts: [{ text: prompt }, { inline_data: imageData.inlineData }] }
+    const prompt = `Analiza esta imagen de una prenda de vestir y proporciona los siguientes detalles:
+1. Tipo de prenda
+2. Color predominante
+3. Material (si es identificable)
+4. Estilo de la prenda
+5. Patrón o diseño (si tiene)
+6. Temporada adecuada
+7. Ocasiones para las que es apropiada (como lista)
+
+Proporciona tu respuesta como un objeto JSON con las siguientes propiedades:
+type, color, material, style, pattern, season, occasions (array)`;
+
+    const response = await openai.chat.completions.create({
+      model: DEFAULT_MODEL,
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: prompt
+            },
+            {
+              type: "image_url",
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`
+              }
+            }
+          ],
+        },
       ],
-      generationConfig: {
-        temperature: 0.2,
-        maxOutputTokens: 1024,
-        topP: 0.8,
-        topK: 40,
-      }
+      temperature: 0.2,
+      response_format: { type: "json_object" },
     });
+
+    const content = response.choices[0].message.content;
     
-    const response = result.response;
-    const content = response.text();
-    
-    // Procesar la respuesta
     if (!content) {
       throw new Error("No se recibió respuesta del modelo");
     }
     
-    // Extraer la respuesta JSON
-    const jsonContent = content.match(/```json\n([\s\S]*?)\n```/) || 
-                       content.match(/```\n([\s\S]*?)\n```/) || 
-                       content.match(/\{[\s\S]*\}/);
-    
-    let jsonString = '';
-    if (jsonContent) {
-      jsonString = jsonContent[0].replace(/```json\n|```\n|```/g, '');
-    } else {
-      jsonString = content;
-    }
-    
     try {
-      const analysis = JSON.parse(jsonString) as GarmentAnalysis;
+      const analysis = JSON.parse(content) as GarmentAnalysis;
       
-      // Convertir el análisis al formato de Garment
+      // Mapear los resultados al formato de Garment
       const garment: Partial<Garment> = {
         type: analysis.type,
         color: analysis.color,
-        style: analysis.style,
         material: analysis.material,
-        occasions: analysis.occasions || [],
+        style: analysis.style,
+        pattern: analysis.pattern,
         season: analysis.season,
-        pattern: analysis.pattern
+        occasions: Array.isArray(analysis.occasions) 
+          ? analysis.occasions.join(", ") 
+          : null
       };
       
       // Guardar en caché
@@ -323,12 +301,12 @@ export async function analyzeGarmentImage(base64Image: string): Promise<Partial<
       
       return garment;
     } catch (error) {
-      console.error("Error parsing Gemini response:", error);
-      throw new Error("Error procesando el análisis de la imagen");
+      log(`Error al procesar análisis de imagen con OpenAI: ${error}. Utilizando Gemini como respaldo`, "openai-error");
+      return await analyzeGarmentImageWithGemini(base64Image);
     }
   } catch (error) {
-    console.error("Error analyzing garment image:", error);
-    throw error;
+    log(`Error en análisis de imagen con OpenAI: ${error}. Utilizando Gemini como respaldo`, "openai-error");
+    return await analyzeGarmentImageWithGemini(base64Image);
   }
 }
 
@@ -353,7 +331,7 @@ export async function generateOutfitsFromImage(base64Image: string, preferences?
       color: garmentAnalysis.color || "Desconocido",
       style: garmentAnalysis.style || null,
       material: garmentAnalysis.material || null,
-      occasions: Array.isArray(garmentAnalysis.occasions) ? garmentAnalysis.occasions : [],
+      occasions: garmentAnalysis.occasions || null,
       season: garmentAnalysis.season || null,
       pattern: garmentAnalysis.pattern || null,
       imageUrl: null,
@@ -369,7 +347,7 @@ export async function generateOutfitsFromImage(base64Image: string, preferences?
     
     return await generateOutfitSuggestions(outfitRequest);
   } catch (error) {
-    console.error("Error generating outfits from image:", error);
+    log(`Error generando outfits desde imagen: ${error}`, "openai-error");
     throw error;
   }
 }
