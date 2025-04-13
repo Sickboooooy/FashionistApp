@@ -79,6 +79,19 @@ const ErrorState = ({ error }: { error: string }) => (
 
 const OutfitResults = () => {
   const { generatedOutfits, isLoading, error } = useOutfit();
+  const [visibleResults, setVisibleResults] = useState<boolean>(false);
+  
+  // Efecto para animar la entrada de los resultados
+  useEffect(() => {
+    if (generatedOutfits.length > 0 && !isLoading) {
+      const timer = setTimeout(() => {
+        setVisibleResults(true);
+      }, 300);
+      return () => clearTimeout(timer);
+    } else {
+      setVisibleResults(false);
+    }
+  }, [generatedOutfits, isLoading]);
 
   if (isLoading) {
     return <LoadingState />;
@@ -93,9 +106,13 @@ const OutfitResults = () => {
   }
 
   return (
-    <div className="w-full max-w-7xl mx-auto mt-12 px-4">
+    <div 
+      className={`w-full max-w-7xl mx-auto mt-12 px-4 transition-opacity duration-500 ${
+        visibleResults ? 'opacity-100' : 'opacity-0'
+      }`}
+    >
       <h2 className="font-playfair text-2xl text-center gold-text mb-8">
-        Sugerencias
+        Sugerencias para Ti
       </h2>
 
       <div 
@@ -106,8 +123,15 @@ const OutfitResults = () => {
           "grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
         )}
       >
-        {generatedOutfits.map((outfit) => (
-          <OutfitItem key={outfit.id} outfit={outfit} />
+        {generatedOutfits.map((outfit, index) => (
+          <div 
+            key={outfit.id} 
+            className={`transition-all duration-500 delay-${index * 100} transform ${
+              visibleResults ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'
+            }`}
+          >
+            <OutfitItem outfit={outfit} />
+          </div>
         ))}
       </div>
 

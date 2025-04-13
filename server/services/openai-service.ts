@@ -7,18 +7,23 @@ import {
   analyzeGarmentImageWithGemini 
 } from "./gemini-service";
 
-// El modelo más reciente es "gpt-4o" que se lanzó en mayo de 2024. No lo cambies a menos que el usuario lo solicite explícitamente
+// El modelo más reciente es "gpt-4o" que se lanzó en mayo de 2024
 const DEFAULT_MODEL = "gpt-4o";
 
 // Inicializar cliente de OpenAI
 let openai: OpenAI | null = null;
 try {
+  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
+  if (!apiKey) {
+    throw new Error("API key no configurada");
+  }
+  
   openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
+    apiKey: apiKey,
   });
   log("Cliente OpenAI inicializado correctamente", "openai");
 } catch (error) {
-  log(`Error al inicializar cliente OpenAI: ${error}`, "openai-error");
+  log(`Error al inicializar cliente OpenAI: ${error}. Se usará Gemini como alternativa.`, "openai-error");
 }
 
 // Interfaz para solicitud de generación de outfit

@@ -93,38 +93,87 @@ const ProductSearchPage = () => {
   const handleSearch = () => {
     setIsLoading(true);
     
-    // Simulamos una búsqueda
-    setTimeout(() => {
-      let results = [...mockProducts];
-      
-      // Filtrar por categoría si no es 'all'
-      if (category !== 'all') {
-        results = results.filter(product => product.category === category);
-      }
-      
-      // Filtrar por precio
-      results = results.filter(product => 
-        product.price >= priceRange[0] && product.price <= priceRange[1]
-      );
-      
-      // Filtrar por tiendas
-      if (stores.length > 0) {
+    // Guardamos los filtros en el URL para permitir compartir/recargar
+    const queryParams = new URLSearchParams(window.location.search);
+    if (query) queryParams.set('q', query);
+    if (category !== 'all') queryParams.set('category', category);
+    queryParams.set('minPrice', priceRange[0].toString());
+    queryParams.set('maxPrice', priceRange[1].toString());
+    if (stores.length > 0) queryParams.set('stores', stores.join(','));
+    
+    // Actualizamos la URL sin recargar la página
+    window.history.replaceState(
+      {}, 
+      '', 
+      `${window.location.pathname}?${queryParams.toString()}`
+    );
+    
+    // Simulamos una búsqueda con debounce (para producción usaríamos la API real)
+    const searchTimeout = setTimeout(() => {
+      try {
+        let results = [...mockProducts];
+        
+        // Filtrar por categoría si no es 'all'
+        if (category !== 'all') {
+          results = results.filter(product => product.category === category);
+        }
+        
+        // Filtrar por precio
         results = results.filter(product => 
-          stores.some(store => product.store.toLowerCase().includes(store.toLowerCase()))
+          product.price >= priceRange[0] && product.price <= priceRange[1]
         );
+        
+        // Filtrar por tiendas
+        if (stores.length > 0) {
+          results = results.filter(product => 
+            stores.some(store => product.store.toLowerCase().includes(store.toLowerCase()))
+          );
+        }
+        
+        // Filtrar por texto de búsqueda con búsqueda avanzada
+        if (query) {
+          const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
+          
+          results = results.filter(product => {
+            // Búsqueda en múltiples campos con puntuación
+            const nameMatches = searchTerms.filter(term => 
+              product.name.toLowerCase().includes(term)
+            ).length;
+            
+            const colorMatches = searchTerms.filter(term => 
+              product.color.toLowerCase().includes(term)
+            ).length;
+            
+            // Considerar relevante si coincide al menos con un término en cualquier campo
+            return nameMatches > 0 || colorMatches > 0;
+          });
+          
+          // Ordenar por relevancia (cantidad de coincidencias)
+          results.sort((a, b) => {
+            const aRelevance = searchTerms.filter(term => 
+              a.name.toLowerCase().includes(term) || a.color.toLowerCase().includes(term)
+            ).length;
+            
+            const bRelevance = searchTerms.filter(term => 
+              b.name.toLowerCase().includes(term) || b.color.toLowerCase().includes(term)
+            ).length;
+            
+            return bRelevance - aRelevance;
+          });
+        }
+        
+        // Almacenar en sessionStorage para recuperar al volver a la página
+        sessionStorage.setItem('lastSearchResults', JSON.stringify(results));
+        
+        setSearchResults(results);
+      } catch (error) {
+        console.error("Error al procesar la búsqueda:", error);
+      } finally {
+        setIsLoading(false);
       }
-      
-      // Filtrar por texto de búsqueda
-      if (query) {
-        results = results.filter(product => 
-          product.name.toLowerCase().includes(query.toLowerCase()) ||
-          product.color.toLowerCase().includes(query.toLowerCase())
-        );
-      }
-      
-      setSearchResults(results);
-      setIsLoading(false);
-    }, 800);
+    }, 500); // Reducido a 500ms para mayor responsividad
+    
+    return () => clearTimeout(searchTimeout);
   };
 
   const toggleStore = (storeId: string) => {

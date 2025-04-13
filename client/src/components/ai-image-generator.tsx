@@ -29,7 +29,7 @@ const AIImageGenerator = () => {
   ]);
 
   const handleGenerateImage = async () => {
-    if (!prompt) {
+    if (!prompt.trim()) {
       setError("Por favor, ingresa una descripción para la imagen");
       return;
     }
@@ -38,6 +38,16 @@ const AIImageGenerator = () => {
     setError(null);
     
     try {
+      // Validación adicional
+      if (prompt.length < 10) {
+        setError("La descripción es demasiado corta. Añade más detalles para mejores resultados.");
+        setIsLoading(false);
+        return;
+      }
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
+      
       const response = await fetch("/api/generate-fashion-image", {
         method: "POST",
         body: JSON.stringify({
@@ -48,8 +58,15 @@ const AIImageGenerator = () => {
         }),
         headers: {
           "Content-Type": "application/json"
-        }
+        },
+        signal: controller.signal
       });
+      
+      clearTimeout(timeoutId);
+      
+      if (!response.ok) {
+        throw new Error(`Error HTTP: ${response.status}`);
+      }
       
       const data = await response.json();
       
@@ -58,11 +75,20 @@ const AIImageGenerator = () => {
         setGeneratedImage(newImage);
         // Guardar en historial
         setImageHistory(prev => [{image: newImage, prompt}, ...prev.slice(0, 3)]);
+        
+        // Guardar historial en localStorage para persistencia
+        const updatedHistory = [{image: newImage, prompt}, ...imageHistory.slice(0, 3)];
+        localStorage.setItem('image_history', JSON.stringify(updatedHistory));
       } else {
         setError(data.error || "Error al generar la imagen");
       }
     } catch (error: any) {
-      setError(error.message || "Error de conexión");
+      if (error.name === 'AbortError') {
+        setError("La solicitud tomó demasiado tiempo. Intenta de nuevo.");
+      } else {
+        console.error("Error de generación de imagen:", error);
+        setError(error.message || "Error de conexión al servicio de IA");
+      }
     } finally {
       setIsLoading(false);
     }

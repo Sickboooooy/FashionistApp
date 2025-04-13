@@ -23,8 +23,11 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
   const [selectedOutfit, setSelectedOutfit] = useState<number | null>(
     outfits.length > 0 ? outfits[0].id : null
   );
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [products, setProducts] = useState<Product[]>([]);
 
-  // Simulated products - in a real app, this would come from an API
+  // Simulated products con fallback
   const mockProducts: Product[] = [
     {
       id: '1',
@@ -51,6 +54,36 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
       url: '#'
     },
   ];
+  
+  // Efecto para simular carga de productos desde API
+  useEffect(() => {
+    const loadProducts = async () => {
+      if (outfits.length === 0) return;
+      
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        // Simulamos la carga de datos con un retraso
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // En una aplicación real, aquí harías la llamada a la API
+        // const response = await fetch(`/api/products/suggestions?outfitId=${outfits[0].id}`);
+        // const data = await response.json();
+        // setProducts(data);
+        
+        // Por ahora, usamos los datos simulados
+        setProducts(mockProducts);
+      } catch (err) {
+        console.error("Error al cargar productos sugeridos:", err);
+        setError("No pudimos cargar los productos sugeridos");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    loadProducts();
+  }, [outfits]);
 
   if (outfits.length === 0) return null;
 

@@ -113,13 +113,24 @@ const PreferenceManager = () => {
         priority: occasion.priority
       }));
       
-      // In a real app, we would save to the backend
-      // const response = await apiRequest('POST', '/api/users/1/preferences', {
-      //   styles: selectedStyles,
-      //   occasions: formattedOccasions,
-      //   seasons: selectedSeasons,
-      //   colors: selectedColors
-      // });
+      // Intentar guardar en el backend
+      try {
+        await apiRequest('POST', '/api/preferences', {
+          styles: selectedStyles,
+          occasions: formattedOccasions,
+          seasons: selectedSeasons,
+          colors: selectedColors
+        });
+      } catch (apiError) {
+        console.warn("Error al guardar en el servidor, guardando localmente", apiError);
+        // Guardado local fallback si el servidor falla
+        localStorage.setItem('user_preferences', JSON.stringify({
+          styles: selectedStyles,
+          occasions: formattedOccasions,
+          seasons: selectedSeasons,
+          colors: selectedColors
+        }));
+      }
       
       // Update context
       updatePreferences({
@@ -134,6 +145,7 @@ const PreferenceManager = () => {
         description: 'Tus preferencias de estilo han sido actualizadas',
       });
     } catch (error) {
+      console.error("Error al procesar preferencias:", error);
       toast({
         title: 'Error al Guardar',
         description: 'Hubo un problema al guardar tus preferencias',
