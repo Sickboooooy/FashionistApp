@@ -112,7 +112,7 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
   try {
     log("Generando imagen con Gemini...", "gemini");
     
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro-vision" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     // Solicitar a Gemini que describa la imagen que debería generarse
     const descriptionResult = await model.generateContent(`
