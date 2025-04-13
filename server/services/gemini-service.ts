@@ -5,8 +5,8 @@ import { Garment } from "@shared/schema";
 
 // Inicializar cliente de Google Generative AI como modelo principal
 const genAI = new GoogleGenerativeAI(process.env.FASHION_GEMINI_API_KEY || "");
-// Usar "gemini-pro" en lugar de "gemini-1.5-pro" para mayor compatibilidad
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+// Usar "gemini-1.5-flash" que es el modelo recomendado tras la descontinuación de los modelos anteriores
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
 // Interfaz para solicitud de generación de outfit
 interface OutfitGenerationRequest {
@@ -217,8 +217,8 @@ Proporciona la respuesta en formato JSON con el siguiente esquema:
   "occasions": ["ocasión 1", "ocasión 2", ...]
 }`;
 
-    // Configurar el modelo para visión (gemini-pro-vision es más compatible que gemini-1.5-pro-vision)
-    const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
+    // Configurar el modelo para visión (gemini-1.5-flash es el modelo recomendado actualmente)
+    const visionModel = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
     
     // Preparar la imagen
     const imageInBase64 = { inlineData: { data: base64Image, mimeType: "image/jpeg" } };
@@ -232,26 +232,58 @@ Proporciona la respuesta en formato JSON con el siguiente esquema:
     let garmentData: Partial<Garment> = {};
     
     try {
-      // Buscar el JSON en la respuesta
-      const jsonStartIndex = text.indexOf('{');
-      const jsonEndIndex = text.lastIndexOf('}') + 1;
+      console.log("Respuesta de Gemini para análisis de imagen:", text);
       
-      if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
-        const jsonStr = text.substring(jsonStartIndex, jsonEndIndex);
-        const analysisResult = JSON.parse(jsonStr);
+      // Estrategia mejorada para extraer JSON
+      let jsonStr = "";
+      
+      // Intento 1: Buscar el JSON completo
+      const jsonRegex = /{[\s\S]*?}/g;
+      const jsonMatches = text.match(jsonRegex);
+      
+      if (jsonMatches && jsonMatches.length > 0) {
+        // Tomar el match más largo como el más probable JSON completo
+        jsonStr = jsonMatches.reduce((a, b) => (a.length > b.length ? a : b), "");
+      }
+      
+      // Si no se encuentra un JSON válido, extraer manualmente las propiedades
+      if (!jsonStr || jsonStr.length < 10) {
+        const typeMatch = text.match(/[\"']type[\"']\s*:\s*[\"']([^\"']+)[\"']/i);
+        const colorMatch = text.match(/[\"']color[\"']\s*:\s*[\"']([^\"']+)[\"']/i);
+        const materialMatch = text.match(/[\"']material[\"']\s*:\s*[\"']([^\"']+)[\"']/i);
+        const styleMatch = text.match(/[\"']style[\"']\s*:\s*[\"']([^\"']+)[\"']/i);
+        const patternMatch = text.match(/[\"']pattern[\"']\s*:\s*[\"']([^\"']+)[\"']/i);
+        const seasonMatch = text.match(/[\"']season[\"']\s*:\s*[\"']([^\"']+)[\"']/i);
         
-        // Mapear los resultados al formato de Garment
+        // Crear un JSON manualmente con los valores extraídos
         garmentData = {
-          type: analysisResult.type,
-          color: analysisResult.color,
-          material: analysisResult.material,
-          style: analysisResult.style,
-          pattern: analysisResult.pattern,
-          season: analysisResult.season,
-          occasions: Array.isArray(analysisResult.occasions) ? analysisResult.occasions : []
+          type: typeMatch ? typeMatch[1] : "No identificado",
+          color: colorMatch ? colorMatch[1] : "No identificado",
+          material: materialMatch ? materialMatch[1] : null,
+          style: styleMatch ? styleMatch[1] : null,
+          pattern: patternMatch ? patternMatch[1] : null,
+          season: seasonMatch ? seasonMatch[1] : null,
+          occasions: []
         };
       } else {
-        throw new Error("No se encontró formato JSON válido en la respuesta");
+        // Intentar parsear el JSON encontrado
+        try {
+          const analysisResult = JSON.parse(jsonStr);
+          
+          // Mapear los resultados al formato de Garment
+          garmentData = {
+            type: analysisResult.type || "No identificado",
+            color: analysisResult.color || "No identificado",
+            material: analysisResult.material || null,
+            style: analysisResult.style || null,
+            pattern: analysisResult.pattern || null,
+            season: analysisResult.season || null,
+            occasions: Array.isArray(analysisResult.occasions) ? analysisResult.occasions : []
+          };
+        } catch (parseError) {
+          log(`Error al parsear JSON extraído: ${parseError}`, "gemini-error");
+          throw new Error("No se pudo parsear el JSON extraído");
+        }
       }
     } catch (error) {
       log(`Error al parsear respuesta de análisis de imagen con Gemini: ${error}`, "gemini-error");
