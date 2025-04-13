@@ -13,7 +13,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import { CalendarIcon, PlusCircle, Trash2, Pencil, Suitcase } from 'lucide-react';
+import { CalendarIcon, PlusCircle, Trash2, Pencil, Package } from 'lucide-react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
@@ -352,7 +352,7 @@ export default function TripsPage() {
                   className="bg-amber-deep hover:bg-amber-deep/90"
                   onClick={() => navigateToPackingLists(trip.id)}
                 >
-                  <Suitcase className="h-4 w-4 mr-2" /> Equipaje
+                  <Package className="h-4 w-4 mr-2" /> Equipaje
                 </Button>
               </CardFooter>
             </Card>

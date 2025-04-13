@@ -15,6 +15,8 @@ import { TextInputModal } from "@/components/text-input-modal";
 import { OutfitProvider } from "@/contexts/outfit-context";
 import { PreferencesProvider } from "@/contexts/preferences-context";
 import ProductSearchPage from "@/pages/product-search";
+import TripsPage from "@/pages/trips";
+import PackingListsPage from "@/pages/packing-lists";
 import { useState, useEffect } from "react";
 
 // Ruta base para despliegue
@@ -32,7 +34,9 @@ function AppRouter() {
           <Route path="/profile" component={Profile} />
           <Route path="/magazine" component={MagazineView} />
           <Route path="/ai-images" component={AIImageGeneratorPage} />
-          <Route path="/product-search" component={ProductSearchPage} /> {/* Added route */}
+          <Route path="/product-search" component={ProductSearchPage} />
+          <Route path="/trips" component={TripsPage} />
+          <Route path="/trips/:tripId/packing-lists" component={PackingListsPage} />
           <Route component={NotFound} />
         </Switch>
       </main>
