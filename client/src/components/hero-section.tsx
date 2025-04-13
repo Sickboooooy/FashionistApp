@@ -23,13 +23,18 @@ const HeroSection = () => {
   };
 
   return (
-    <SpotlightContainer className="pt-10 pb-16">
-      <div className={`container mx-auto text-center max-w-3xl transition-all duration-1000 ${
+    <SpotlightContainer className="pt-16 pb-20 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-radial from-amber-deep/5 to-transparent opacity-30"></div>
+      
+      <div className={`container mx-auto text-center max-w-3xl transition-all duration-1000 relative z-10 ${
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
-        <h2 className="font-playfair text-3xl md:text-4xl lg:text-5xl mb-6 leading-tight">
-          <GoldText>Selene</GoldText> Style
+        <h2 className="font-playfair text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight tracking-wide">
+          <GoldText>Selene</GoldText>
         </h2>
+        <p className="font-cormorant text-lg md:text-xl text-cream-soft/90 mb-10 italic">
+          Elegancia personalizada
+        </p>
         
         <div className={`transition-all duration-1000 delay-300 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
@@ -37,14 +42,15 @@ const HeroSection = () => {
           <InputMethods />
         </div>
         
-        <div className={`mt-8 transition-all duration-1000 delay-500 ${
+        <div className={`mt-10 transition-all duration-1000 delay-500 ${
           isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
         }`}>
           <GoldButton 
             variant="rounded" 
             onClick={scrollToShowcase}
+            className="px-8 py-3 text-sm tracking-wider"
           >
-            EXPLORAR INSPIRACIONES
+            INSPIRACIONES
           </GoldButton>
         </div>
       </div>

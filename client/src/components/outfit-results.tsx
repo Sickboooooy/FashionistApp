@@ -108,13 +108,17 @@ const OutfitResults = () => {
 
   return (
     <div 
-      className={`w-full max-w-7xl mx-auto mt-12 px-4 transition-opacity duration-500 ${
+      className={`w-full max-w-7xl mx-auto mt-16 px-4 transition-opacity duration-500 ${
         visibleResults ? 'opacity-100' : 'opacity-0'
       }`}
+      id="outfit-results"
     >
-      <h2 className="font-playfair text-2xl text-center gold-text mb-8">
-        Sugerencias para Ti
-      </h2>
+      <div className="relative mb-12">
+        <div className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-deep/30 to-transparent"></div>
+        <h2 className="font-playfair text-2xl md:text-3xl text-center gold-text py-4 relative">
+          <span className="bg-black px-6">Sugerencias para Ti</span>
+        </h2>
+      </div>
 
       <div 
         className={cn(

@@ -70,11 +70,9 @@ const SeleneDesigns = () => {
             
             <div className="text-center mt-10">
               <Link href="/selene-designs">
-                <a>
-                  <GoldButton variant="rounded">
-                    EXPLORE FULL COLLECTION
-                  </GoldButton>
-                </a>
+                <GoldButton variant="rounded">
+                  EXPLORAR COLECCIÓN COMPLETA
+                </GoldButton>
               </Link>
             </div>
           </>

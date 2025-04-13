@@ -14,7 +14,7 @@ export default defineConfig({
     runtimeErrorOverlay(),
     themePlugin(),
     ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
+      process.env.REPL_ID !== undefined
       ? [
           await import("@replit/vite-plugin-cartographer").then((m) =>
             m.cartographer(),
@@ -33,5 +33,16 @@ export default defineConfig({
   build: {
     outDir: path.resolve(__dirname, "dist/public"),
     emptyOutDir: true,
+  },
+  server: {
+    proxy: {
+      '/api': 'http://localhost:5000'
+    },
+    hmr: {
+      overlay: false
+    },
+    watch: {
+      usePolling: true
+    }
   },
 });
