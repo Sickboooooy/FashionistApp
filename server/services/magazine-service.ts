@@ -1,8 +1,31 @@
 import OpenAI from "openai";
 import crypto from "crypto";
 import { cacheService } from "./cacheService";
+import { log } from "../vite";
+import { GoogleGenerativeAI } from "@google/generative-ai";
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Usar el cliente OpenAI compartido
+let openai: OpenAI | null = null;
+try {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  log("Cliente OpenAI inicializado correctamente para revista", "magazine");
+} catch (error) {
+  log(`Error al inicializar cliente OpenAI para revista: ${error}`, "magazine-error");
+}
+
+// Inicializar cliente de Google Gemini como respaldo
+let genAI: GoogleGenerativeAI | null = null;
+try {
+  genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+  log("Cliente Google Generative AI inicializado correctamente para revista", "magazine");
+} catch (error) {
+  log(`Error al inicializar Google Generative AI para revista: ${error}`, "magazine-error");
+}
+
+// El modelo más reciente es "gpt-4o" que se lanzó en mayo de 2024. No lo cambies a menos que el usuario lo solicite explícitamente
+const DEFAULT_MODEL = "gpt-4o";
 
 interface BaseOutfit {
   id: number;
@@ -41,6 +64,7 @@ export interface MagazineContent {
 
 /**
  * Genera contenido de revista basado en outfits y preferencias
+ * Con respaldo a Gemini si OpenAI falla
  */
 export async function generateMagazineContent(request: MagazineGenerationRequest): Promise<MagazineContent> {
   try {
@@ -48,71 +72,132 @@ export async function generateMagazineContent(request: MagazineGenerationRequest
     const outfitsStr = JSON.stringify(request.outfits);
     const outfitsHash = crypto.createHash('md5').update(outfitsStr).digest('hex');
     
-    let preferenceHash;
+    let preferencesHash = '';
     if (request.userPreferences) {
-      const prefStr = JSON.stringify(request.userPreferences);
-      preferenceHash = crypto.createHash('md5').update(prefStr).digest('hex');
+      const preferencesStr = JSON.stringify(request.userPreferences);
+      preferencesHash = crypto.createHash('md5').update(preferencesStr).digest('hex');
     }
     
-    // Revisar caché
+    // Clave de caché completa
     const cacheKey = cacheService.getMagazineKey({
-      outfitsHash: outfitsHash,
+      outfitsHash,
+      preferencesHash,
       template: request.template,
-      preferenceHash,
       userName: request.userName
     });
     
-    // Revisar si ya está en caché
+    // Comprobar caché
     const cachedContent = cacheService.get<MagazineContent>(cacheKey);
     if (cachedContent) {
-      console.log('Usando contenido de revista de la caché');
+      log("Usando contenido de revista desde caché", "magazine");
       return cachedContent;
     }
     
-    // Generar el prompt para OpenAI
+    // Verificar si tenemos cliente de OpenAI
+    if (!openai) {
+      log("Cliente OpenAI no disponible para revista, utilizando Gemini como respaldo", "magazine-fallback");
+      return await generateMagazineWithGemini(request);
+    }
+    
+    // Generar el prompt
     const prompt = generateMagazinePrompt(request);
     
-    // Llamar a la API de OpenAI
-    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
+    log("Solicitando generación de revista a OpenAI...", "magazine");
+    
+    // Llamar a OpenAI
+    const completion = await openai.chat.completions.create({
+      model: DEFAULT_MODEL,
       messages: [
-        {
-          role: "system",
-          content: "Eres un editor de revista de moda especializado en crear contenido editorial y descriptivo para acompañar outfits. Debes generar contenido creativo y detallado en español, usando un tono que coincida con la plantilla solicitada."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
+        { role: "system", content: "Eres un editor profesional de revistas de moda. Tu trabajo es crear contenido de alta calidad que sea interesante, informativo y estilizado." },
+        { role: "user", content: prompt }
       ],
-      temperature: 0.8,
-      response_format: { type: "json_object" }
+      temperature: 0.7,
+      response_format: { type: "json_object" },
     });
     
-    // Extraer y procesar la respuesta
-    const content = response.choices[0].message.content;
+    const content = completion.choices[0].message.content;
+    
     if (!content) {
-      throw new Error("No se pudo generar el contenido de la revista");
+      throw new Error("No se recibió respuesta del modelo");
     }
     
     try {
-      const magazineContent = JSON.parse(content) as MagazineContent;
+      // Procesar la respuesta
+      const result = JSON.parse(content);
       
-      // Añadir la plantilla al resultado
-      magazineContent.template = request.template;
+      // Validar estructura 
+      const magazine: MagazineContent = {
+        title: result.title || "Revista de Moda Selene Style",
+        subtitle: result.subtitle || "Edición Especial",
+        introduction: result.introduction || "Bienvenido a esta edición especial de moda.",
+        outfits: result.outfits || [],
+        conclusion: result.conclusion || "Esperamos que hayas disfrutado de esta selección de moda.",
+        template: request.template
+      };
       
       // Guardar en caché
-      cacheService.set(cacheKey, magazineContent);
+      cacheService.set(cacheKey, magazine);
       
-      return magazineContent;
+      return magazine;
     } catch (error) {
-      console.error("Error parsing OpenAI response:", error);
-      // En caso de error, devolver un contenido por defecto
+      log(`Error al procesar respuesta de revista con OpenAI: ${error}. Utilizando Gemini como respaldo`, "magazine-error");
+      return await generateMagazineWithGemini(request);
+    }
+  } catch (error) {
+    log(`Error en generación de revista con OpenAI: ${error}. Utilizando Gemini como respaldo`, "magazine-error");
+    return await generateMagazineWithGemini(request);
+  }
+}
+
+/**
+ * Genera contenido de revista usando Google Gemini como respaldo
+ */
+async function generateMagazineWithGemini(request: MagazineGenerationRequest): Promise<MagazineContent> {
+  try {
+    if (!genAI) {
+      log("Cliente Gemini no disponible para revista, usando respuesta predeterminada", "magazine-fallback");
+      return getDefaultMagazineContent(request);
+    }
+    
+    const prompt = generateMagazinePrompt(request);
+    
+    log("Solicitando generación de revista a Gemini...", "magazine-gemini");
+    
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+    
+    const result = await model.generateContent(prompt);
+    const response = result.response;
+    const text = response.text();
+    
+    // Procesar la respuesta para extraer JSON
+    try {
+      const jsonStartIndex = text.indexOf('{');
+      const jsonEndIndex = text.lastIndexOf('}') + 1;
+      
+      if (jsonStartIndex >= 0 && jsonEndIndex > jsonStartIndex) {
+        const jsonStr = text.substring(jsonStartIndex, jsonEndIndex);
+        const parsedResult = JSON.parse(jsonStr);
+        
+        // Validar estructura 
+        const magazine: MagazineContent = {
+          title: parsedResult.title || "Revista de Moda Selene Style",
+          subtitle: parsedResult.subtitle || "Edición Especial",
+          introduction: parsedResult.introduction || "Bienvenido a esta edición especial de moda.",
+          outfits: parsedResult.outfits || [],
+          conclusion: parsedResult.conclusion || "Esperamos que hayas disfrutado de esta selección de moda.",
+          template: request.template
+        };
+        
+        return magazine;
+      } else {
+        throw new Error("No se encontró formato JSON válido en la respuesta de Gemini");
+      }
+    } catch (error) {
+      log(`Error al procesar respuesta de revista con Gemini: ${error}. Usando respuesta predeterminada`, "magazine-gemini-error");
       return getDefaultMagazineContent(request);
     }
   } catch (error) {
-    console.error("Error generando contenido de revista:", error);
+    log(`Error en generación de revista con Gemini: ${error}. Usando respuesta predeterminada`, "magazine-gemini-error");
     return getDefaultMagazineContent(request);
   }
 }
@@ -123,79 +208,67 @@ export async function generateMagazineContent(request: MagazineGenerationRequest
 function generateMagazinePrompt(request: MagazineGenerationRequest): string {
   const { outfits, template, userPreferences, userName } = request;
   
-  let stylesText = "";
-  let occasionsText = "";
-  let seasonsText = "";
+  let prompt = `Genera contenido para una revista de moda personalizada con la siguiente estructura:
   
+1. Título creativo para la revista
+2. Subtítulo que capture la esencia de la colección
+3. Introducción atractiva
+4. Contenido editorial para cada outfit
+5. Conclusión que resuma las tendencias y recomendaciones
+  
+La revista usará la plantilla "${template}".`;
+  
+  if (userName) {
+    prompt += `\nLa revista es personalizada para ${userName}.`;
+  }
+  
+  // Añadir información de outfits
+  prompt += "\n\nOutfits a incluir:";
+  outfits.forEach((outfit, index) => {
+    prompt += `\n\nOutfit ${index + 1}: ${outfit.name}
+Descripción: ${outfit.description}
+Ocasión: ${outfit.occasion}${outfit.season ? `\nTemporada: ${outfit.season}` : ''}${outfit.pieces ? `\nPiezas: ${outfit.pieces.join(', ')}` : ''}${outfit.reasoning ? `\nRazonamiento: ${outfit.reasoning}` : ''}`;
+  });
+  
+  // Añadir información de preferencias
   if (userPreferences) {
+    prompt += "\n\nPreferencias del usuario:";
+    
     if (userPreferences.styles && userPreferences.styles.length > 0) {
-      stylesText = `Estilos preferidos: ${userPreferences.styles.join(", ")}.`;
+      prompt += `\nEstilos favoritos: ${userPreferences.styles.join(', ')}`;
     }
     
     if (userPreferences.occasions && userPreferences.occasions.length > 0) {
       const sortedOccasions = [...userPreferences.occasions].sort((a, b) => b.priority - a.priority);
-      occasionsText = `Ocasiones prioritarias: ${sortedOccasions.map(o => o.name).join(", ")}.`;
+      prompt += `\nOcasiones principales: ${sortedOccasions.map(o => o.name).join(', ')}`;
     }
     
     if (userPreferences.seasons && userPreferences.seasons.length > 0) {
-      seasonsText = `Temporadas favoritas: ${userPreferences.seasons.join(", ")}.`;
+      prompt += `\nTemporadas preferidas: ${userPreferences.seasons.join(', ')}`;
     }
   }
   
-  const outfitsText = outfits.map((outfit, index) => {
-    return `
-Outfit ${index + 1}:
-- Nombre: ${outfit.name}
-- Descripción: ${outfit.description}
-- Ocasión: ${outfit.occasion}
-- Temporada: ${outfit.season || "Cualquiera"}
-${outfit.pieces ? `- Piezas: ${outfit.pieces.join(", ")}` : ""}
-${outfit.reasoning ? `- Razonamiento: ${outfit.reasoning}` : ""}
-`;
-  }).join("\n");
-  
-  const templateInfo: Record<string, string> = {
-    "vogue": "tono sofisticado, vanguardista y autoritario. Usa un lenguaje refinado con referencias a tendencias globales.",
-    "elle": "tono accesible, optimista y personal. Usa un lenguaje cercano y con énfasis en el empoderamiento.",
-    "bazaar": "tono lujoso, artístico y exclusivo. Usa un lenguaje elevado con referencias culturales.",
-    "vanity": "tono glamoroso, narrativo y con personalidad. Usa un lenguaje que cuenta historias.",
-    "selene": "tono exclusivo, detallado y aspiracional. Usa un lenguaje que evoque sensaciones de lujo y distinción."
-  };
-  
-  const templateKey = template.toLowerCase();
-  const templateTone = templateKey in templateInfo ? templateInfo[templateKey] : templateInfo.vogue;
-  
-  return `
-Genera contenido para una revista de moda personalizada con los siguientes outfits:
-
-${outfitsText}
-
-${stylesText}
-${occasionsText}
-${seasonsText}
-
-La revista usará la plantilla "${template}" que tiene un ${templateTone}
-${userName ? `La revista está personalizada para ${userName}.` : ""}
-
-Genera un JSON con la siguiente estructura:
+  // Instrucciones específicas para el formato de salida
+  prompt += `\n\nPor favor proporciona la respuesta como un objeto JSON con los siguientes campos:
 {
-  "title": "Título atractivo para la revista",
-  "subtitle": "Subtítulo complementario",
-  "introduction": "Párrafo de introducción que mencione las tendencias actuales y presente el tema central de la revista",
+  "title": "Título de la revista",
+  "subtitle": "Subtítulo descriptivo",
+  "introduction": "Introducción atractiva de la revista",
   "outfits": [
     {
-      "id": número,
-      "name": "nombre del outfit",
-      "description": "descripción original del outfit",
-      "occasion": "ocasión del outfit",
-      "season": "temporada del outfit",
-      "editorial": "texto editorial único de al menos 150 palabras que describa este outfit en particular, su esencia, cómo llevarlo y por qué es especial"
-    }
-    // Repite para cada outfit
+      "id": 1,
+      "name": "Nombre del outfit 1",
+      "description": "Descripción del outfit 1",
+      "occasion": "Ocasión para el outfit 1",
+      "season": "Temporada para el outfit 1",
+      "editorial": "Texto editorial detallado para este outfit"
+    },
+    ... (resto de outfits)
   ],
-  "conclusion": "Párrafo de conclusión que integre todos los outfits y ofrezca consejos finales"
-}
-`;
+  "conclusion": "Texto de conclusión de la revista"
+}`;
+  
+  return prompt;
 }
 
 /**
@@ -204,18 +277,18 @@ Genera un JSON con la siguiente estructura:
 function getDefaultMagazineContent(request: MagazineGenerationRequest): MagazineContent {
   const { outfits, template } = request;
   
-  // Crear outfits con editorial por defecto
+  // Crear outfits con editorial
   const outfitsWithEditorial: OutfitWithEditorial[] = outfits.map(outfit => ({
     ...outfit,
-    editorial: `Este conjunto ${outfit.name} es perfecto para ${outfit.occasion}. Combina piezas versátiles que reflejan un estilo contemporáneo y funcional. La combinación de colores y texturas crea un look equilibrado que te hará destacar sin esfuerzo. Puedes adaptar este outfit agregando accesorios según la ocasión, desde una joyería minimalista para un look casual hasta piezas más elaboradas para eventos especiales.`
+    editorial: `Este outfit "${outfit.name}" es perfecto para ${outfit.occasion}. ${outfit.description} Ideal para lucir con confianza y estilo.`
   }));
   
   return {
-    title: "Tu Estilo Personal",
-    subtitle: "Outfits que Expresan tu Esencia",
-    introduction: "La moda es una forma de expresión personal que va más allá de las tendencias del momento. En esta colección, hemos seleccionado conjuntos que reflejan versatilidad y estilo atemporal, adaptados a diferentes ocasiones y necesidades.",
+    title: "Selene Style: Tu Revista Personal de Moda",
+    subtitle: "Elegancia y Estilo para Cada Ocasión",
+    introduction: "Bienvenido a esta edición especial de Selene Style, donde encontrarás outfits cuidadosamente seleccionados que reflejan tu estilo personal y las últimas tendencias de la moda. Cada conjunto ha sido diseñado pensando en versatilidad, elegancia y comodidad.",
     outfits: outfitsWithEditorial,
-    conclusion: "Estos conjuntos representan una base versátil para tu guardarropa. Recuerda que la confianza es el mejor complemento para cualquier outfit. Experimenta, adapta y haz que estos looks sean tuyos, añadiendo tu toque personal a cada uno.",
-    template
+    conclusion: "Esperamos que hayas disfrutado de esta cuidadosa selección de outfits. Recuerda que la verdadera elegancia está en cómo te sientes con lo que llevas puesto. ¡Experimenta, combina y crea tu propio estilo único!",
+    template: template
   };
 }

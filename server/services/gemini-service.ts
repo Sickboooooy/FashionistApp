@@ -247,7 +247,7 @@ Proporciona la respuesta en formato JSON con el siguiente esquema:
           style: analysisResult.style,
           pattern: analysisResult.pattern,
           season: analysisResult.season,
-          occasions: analysisResult.occasions?.join(", ")
+          occasions: Array.isArray(analysisResult.occasions) ? analysisResult.occasions : []
         };
       } else {
         throw new Error("No se encontró formato JSON válido en la respuesta");
@@ -256,7 +256,8 @@ Proporciona la respuesta en formato JSON con el siguiente esquema:
       log(`Error al parsear respuesta de análisis de imagen con Gemini: ${error}`, "gemini-error");
       garmentData = {
         type: "No identificado",
-        color: "No identificado"
+        color: "No identificado",
+        occasions: []
       };
     }
     
@@ -268,7 +269,8 @@ Proporciona la respuesta en formato JSON con el siguiente esquema:
     log(`Error en análisis de imagen con Gemini: ${error}`, "gemini-error");
     return { 
       type: "No identificado",
-      color: "No identificado"
+      color: "No identificado",
+      occasions: []
     };
   }
 }

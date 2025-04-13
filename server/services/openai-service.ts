@@ -292,8 +292,8 @@ type, color, material, style, pattern, season, occasions (array)`;
         pattern: analysis.pattern,
         season: analysis.season,
         occasions: Array.isArray(analysis.occasions) 
-          ? analysis.occasions.join(", ") 
-          : null
+          ? analysis.occasions 
+          : []
       };
       
       // Guardar en caché
@@ -331,7 +331,7 @@ export async function generateOutfitsFromImage(base64Image: string, preferences?
       color: garmentAnalysis.color || "Desconocido",
       style: garmentAnalysis.style || null,
       material: garmentAnalysis.material || null,
-      occasions: garmentAnalysis.occasions || null,
+      occasions: garmentAnalysis.occasions || [],
       season: garmentAnalysis.season || null,
       pattern: garmentAnalysis.pattern || null,
       imageUrl: null,
