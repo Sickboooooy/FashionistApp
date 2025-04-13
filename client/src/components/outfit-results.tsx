@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { useOutfit } from '../contexts/outfit-context';
 import { cn } from '@/lib/utils';
 import GoldBorder from './ui/gold-border';

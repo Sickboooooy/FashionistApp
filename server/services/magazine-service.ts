@@ -18,7 +18,7 @@ try {
 // Inicializar cliente de Google Gemini como respaldo
 let genAI: GoogleGenerativeAI | null = null;
 try {
-  genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+  genAI = new GoogleGenerativeAI(process.env.FASHION_GEMINI_API_KEY || "");
   log("Cliente Google Generative AI inicializado correctamente para revista", "magazine");
 } catch (error) {
   log(`Error al inicializar Google Generative AI para revista: ${error}`, "magazine-error");

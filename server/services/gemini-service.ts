@@ -4,7 +4,7 @@ import { log } from "../vite";
 import { Garment } from "@shared/schema";
 
 // Inicializar cliente de Google Generative AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+const genAI = new GoogleGenerativeAI(process.env.FASHION_GEMINI_API_KEY || "");
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 
 // Interfaz para solicitud de generación de outfit

@@ -13,7 +13,7 @@ const DEFAULT_MODEL = "gpt-4o";
 // Inicializar cliente de OpenAI
 let openai: OpenAI | null = null;
 try {
-  const apiKey = process.env.OPENAI_API_KEY || process.env.GEMINI_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY || process.env.FASHION_GEMINI_API_KEY;
   if (!apiKey) {
     throw new Error("API key no configurada");
   }
