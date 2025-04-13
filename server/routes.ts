@@ -11,7 +11,9 @@ import {
   insertSeleneDesignSchema,
   UserPreferences
 } from "@shared/schema";
-import { generateOutfitSuggestions, analyzeGarmentImage, generateOutfitsFromImage } from "./services/openai-service";
+import { generateOutfitSuggestions } from "./services/openai-service";
+import { analyzeGarmentImageWithGemini as analyzeGarmentImage } from "./services/gemini-service";
+import { generateOutfitsFromImage } from "./services/openai-service";
 import { generateMagazineContent } from "./services/magazine-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
 import { generateFashionImage } from "./services/image-generation-service";

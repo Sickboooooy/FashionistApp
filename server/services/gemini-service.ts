@@ -3,9 +3,10 @@ import { cacheService } from "./cacheService";
 import { log } from "../vite";
 import { Garment } from "@shared/schema";
 
-// Inicializar cliente de Google Generative AI
+// Inicializar cliente de Google Generative AI como modelo principal
 const genAI = new GoogleGenerativeAI(process.env.FASHION_GEMINI_API_KEY || "");
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
+// Usar "gemini-pro" en lugar de "gemini-1.5-pro" para mayor compatibilidad
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
 // Interfaz para solicitud de generación de outfit
 interface OutfitGenerationRequest {
@@ -31,7 +32,7 @@ interface OutfitSuggestion {
 }
 
 /**
- * Genera sugerencias de outfit utilizando Google Gemini como respaldo
+ * Genera sugerencias de outfit utilizando Google Gemini como modelo principal
  */
 export async function generateOutfitSuggestionsWithGemini(request: OutfitGenerationRequest): Promise<OutfitSuggestion[]> {
   try {
@@ -183,7 +184,7 @@ function getFallbackOutfits(request: OutfitGenerationRequest): OutfitSuggestion[
 }
 
 /**
- * Analiza una imagen de prenda utilizando Google Gemini Vision
+ * Analiza una imagen de prenda utilizando Google Gemini Vision como modelo principal
  */
 export async function analyzeGarmentImageWithGemini(base64Image: string): Promise<Partial<Garment>> {
   try {
@@ -216,8 +217,8 @@ Proporciona la respuesta en formato JSON con el siguiente esquema:
   "occasions": ["ocasión 1", "ocasión 2", ...]
 }`;
 
-    // Configurar el modelo para visión
-    const visionModel = genAI.getGenerativeModel({ model: "gemini-1.5-pro-vision" });
+    // Configurar el modelo para visión (gemini-pro-vision es más compatible que gemini-1.5-pro-vision)
+    const visionModel = genAI.getGenerativeModel({ model: "gemini-pro-vision" });
     
     // Preparar la imagen
     const imageInBase64 = { inlineData: { data: base64Image, mimeType: "image/jpeg" } };

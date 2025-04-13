@@ -344,6 +344,7 @@ type, color, material, style, pattern, season, occasions (array)`;
 
 /**
  * Genera sugerencias de outfit basadas en una imagen de prenda
+ * Usa el análisis de imagen de Gemini (modelo principal) para extraer características
  */
 export async function generateOutfitsFromImage(base64Image: string, preferences?: {
   styles?: string[];
@@ -351,8 +352,8 @@ export async function generateOutfitsFromImage(base64Image: string, preferences?
   seasons?: string[];
 }): Promise<OutfitSuggestion[]> {
   try {
-    // Primero analizamos la prenda en la imagen
-    const garmentAnalysis = await analyzeGarmentImage(base64Image);
+    // Primero analizamos la prenda en la imagen usando Gemini como modelo principal
+    const garmentAnalysis = await analyzeGarmentImageWithGemini(base64Image);
     
     // Crear una prenda con los resultados del análisis
     const garment: Garment = {
