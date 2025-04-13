@@ -45,50 +45,111 @@ const AIImageGenerator = () => {
         return;
       }
       
+      // Mostrar mensaje de proceso
+      const processingMessages = [
+        "Creando tu diseño de moda...",
+        "Procesando tu solicitud...",
+        "Generando imagen con IA...",
+        "Aplicando estilos de diseño...",
+        "Casi listo..."
+      ];
+      
+      let messageIndex = 0;
+      const messageInterval = setInterval(() => {
+        if (messageIndex < processingMessages.length - 1) {
+          setError(processingMessages[messageIndex]);
+          messageIndex++;
+        }
+      }, 5000);
+      
+      // Configurar timeout para la solicitud
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 segundos de timeout
+      const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 segundos de timeout
       
-      const response = await fetch("/api/generate-fashion-image", {
-        method: "POST",
-        body: JSON.stringify({
-          prompt,
-          style,
-          size,
-          quality
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        },
-        signal: controller.signal
-      });
-      
-      clearTimeout(timeoutId);
-      
-      if (!response.ok) {
-        throw new Error(`Error HTTP: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      
-      if (data.success) {
-        const newImage = "/" + data.imagePath;
-        setGeneratedImage(newImage);
-        // Guardar en historial
-        setImageHistory(prev => [{image: newImage, prompt}, ...prev.slice(0, 3)]);
+      try {
+        const response = await fetch("/api/generate-fashion-image", {
+          method: "POST",
+          body: JSON.stringify({
+            prompt,
+            style,
+            size,
+            quality
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          },
+          signal: controller.signal
+        });
         
-        // Guardar historial en localStorage para persistencia
-        const updatedHistory = [{image: newImage, prompt}, ...imageHistory.slice(0, 3)];
-        localStorage.setItem('image_history', JSON.stringify(updatedHistory));
-      } else {
-        setError(data.error || "Error al generar la imagen");
+        clearTimeout(timeoutId);
+        clearInterval(messageInterval);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(`Error HTTP ${response.status}: ${errorText}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success) {
+          const newImage = "/" + data.imagePath;
+          setGeneratedImage(newImage);
+          setError(null);
+          
+          // Guardar en historial
+          setImageHistory(prev => [{image: newImage, prompt}, ...prev.slice(0, 3)]);
+          
+          // Guardar historial en localStorage para persistencia
+          const updatedHistory = [{image: newImage, prompt}, ...imageHistory.slice(0, 3)];
+          localStorage.setItem('image_history', JSON.stringify(updatedHistory));
+          
+          // Actualizar sugerencias de prompts basadas en el historial reciente
+          if (imageHistory.length >= 2) {
+            // Generar nuevas sugerencias basadas en historial reciente
+            const recentPrompts = [prompt, ...imageHistory.slice(0, 2).map(item => item.prompt)];
+            
+            // Extraer palabras clave de los prompts recientes
+            const keywordExtractor = (text: string) => {
+              const words = text.toLowerCase().split(/\s+/);
+              return words.filter(word => word.length > 4 && !['para', 'como', 'este', 'esta', 'estos', 'estas', 'con', 'sin'].includes(word));
+            };
+            
+            const keywordsSet = new Set<string>();
+            recentPrompts.forEach(p => {
+              keywordExtractor(p).forEach(word => keywordsSet.add(word));
+            });
+            
+            // Usar algunas palabras clave para generar nuevas sugerencias
+            if (keywordsSet.size > 0) {
+              const keywords = Array.from(keywordsSet).slice(0, 3);
+              
+              const newSuggestions = [
+                `${keywords[0] || 'Vestido'} elegante para ${['fiesta', 'evento formal', 'ceremonia', 'noche especial'][Math.floor(Math.random() * 4)]}`,
+                `Conjunto ${['casual', 'urbano', 'moderno', 'minimalista'][Math.floor(Math.random() * 4)]} con ${keywords[1] || 'accesorios'} para ${['día', 'tarde', 'fin de semana', 'diario'][Math.floor(Math.random() * 4)]}`,
+                `Look ${['bohemio', 'elegante', 'sofisticado', 'atrevido'][Math.floor(Math.random() * 4)]} en tonos ${['pastel', 'neutros', 'brillantes', 'oscuros'][Math.floor(Math.random() * 4)]} para ${['primavera', 'verano', 'otoño', 'invierno'][Math.floor(Math.random() * 4)]}`,
+                `${['Traje', 'Estilo', 'Conjunto', 'Atuendo'][Math.floor(Math.random() * 4)]} ${keywords[2] || 'formal'} inspirado en ${['París', 'Milán', 'Nueva York', 'Tokio'][Math.floor(Math.random() * 4)]}`,
+                `${['Vestido', 'Falda', 'Blusa', 'Pantalón'][Math.floor(Math.random() * 4)]} con patrón ${['floral', 'geométrico', 'abstracto', 'rayado'][Math.floor(Math.random() * 4)]} para ${['oficina', 'evento casual', 'salida nocturna', 'cena'][Math.floor(Math.random() * 4)]}`
+              ];
+              
+              setSuggestedPrompts(newSuggestions);
+            }
+          }
+        } else {
+          setError(data.error || "No se pudo generar la imagen. Intenta con otra descripción.");
+        }
+      } catch (fetchError: any) {
+        clearTimeout(timeoutId);
+        clearInterval(messageInterval);
+        
+        if (fetchError.name === 'AbortError') {
+          setError("La solicitud tomó demasiado tiempo. Intenta con una descripción más corta o específica.");
+        } else {
+          throw fetchError;
+        }
       }
     } catch (error: any) {
-      if (error.name === 'AbortError') {
-        setError("La solicitud tomó demasiado tiempo. Intenta de nuevo.");
-      } else {
-        console.error("Error de generación de imagen:", error);
-        setError(error.message || "Error de conexión al servicio de IA");
-      }
+      console.error("Error de generación de imagen:", error);
+      setError(error.message || "Error de conexión al servicio de IA. Intenta más tarde.");
     } finally {
       setIsLoading(false);
     }
