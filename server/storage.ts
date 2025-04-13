@@ -3,7 +3,10 @@ import {
   garments, Garment, InsertGarment,
   outfits, Outfit, InsertOutfit,
   userPreferences, UserPreferences, InsertUserPreferences,
-  seleneDesigns, SeleneDesign, InsertSeleneDesign
+  seleneDesigns, SeleneDesign, InsertSeleneDesign,
+  trips, Trip, InsertTrip,
+  packingLists, PackingList, InsertPackingList,
+  packingItems, PackingItem, InsertPackingItem
 } from "@shared/schema";
 
 export interface IStorage {
@@ -37,6 +40,28 @@ export interface IStorage {
   getAllSeleneDesigns(): Promise<SeleneDesign[]>;
   getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]>;
   createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign>;
+  
+  // Trip planning methods
+  getTrip(id: number): Promise<Trip | undefined>;
+  getTripsByUserId(userId: number): Promise<Trip[]>;
+  createTrip(trip: InsertTrip): Promise<Trip>;
+  updateTrip(id: number, trip: Partial<InsertTrip>): Promise<Trip | undefined>;
+  deleteTrip(id: number): Promise<boolean>;
+  
+  // Packing list methods
+  getPackingList(id: number): Promise<PackingList | undefined>;
+  getPackingListsByTripId(tripId: number): Promise<PackingList[]>;
+  createPackingList(packingList: InsertPackingList): Promise<PackingList>;
+  updatePackingList(id: number, packingList: Partial<InsertPackingList>): Promise<PackingList | undefined>;
+  deletePackingList(id: number): Promise<boolean>;
+  
+  // Packing items methods
+  getPackingItem(id: number): Promise<PackingItem | undefined>;
+  getPackingItemsByListId(packingListId: number): Promise<PackingItem[]>;
+  createPackingItem(packingItem: InsertPackingItem): Promise<PackingItem>;
+  updatePackingItem(id: number, packingItem: Partial<InsertPackingItem>): Promise<PackingItem | undefined>;
+  deletePackingItem(id: number): Promise<boolean>;
+  generatePackingListForTrip(tripId: number, userId: number): Promise<PackingList>;
 }
 
 export class MemStorage implements IStorage {
@@ -45,12 +70,18 @@ export class MemStorage implements IStorage {
   private outfits: Map<number, Outfit>;
   private userPreferences: Map<number, UserPreferences>;
   private seleneDesigns: Map<number, SeleneDesign>;
+  private trips: Map<number, Trip>;
+  private packingLists: Map<number, PackingList>;
+  private packingItems: Map<number, PackingItem>;
   
   private currentUserId: number;
   private currentGarmentId: number;
   private currentOutfitId: number;
   private currentPreferencesId: number;
   private currentDesignId: number;
+  private currentTripId: number;
+  private currentPackingListId: number;
+  private currentPackingItemId: number;
 
   constructor() {
     this.users = new Map();
@@ -58,12 +89,18 @@ export class MemStorage implements IStorage {
     this.outfits = new Map();
     this.userPreferences = new Map();
     this.seleneDesigns = new Map();
+    this.trips = new Map();
+    this.packingLists = new Map();
+    this.packingItems = new Map();
     
     this.currentUserId = 1;
     this.currentGarmentId = 1;
     this.currentOutfitId = 1;
     this.currentPreferencesId = 1;
     this.currentDesignId = 1;
+    this.currentTripId = 1;
+    this.currentPackingListId = 1;
+    this.currentPackingItemId = 1;
     
     // Initialize with some demo Selene designs
     this.initializeSeleneDesigns();
@@ -241,6 +278,195 @@ export class MemStorage implements IStorage {
       const timestamp = new Date();
       this.seleneDesigns.set(id, { ...design, id, createdAt: timestamp });
     });
+  }
+  
+  // Trip methods
+  async getTrip(id: number): Promise<Trip | undefined> {
+    return this.trips.get(id);
+  }
+  
+  async getTripsByUserId(userId: number): Promise<Trip[]> {
+    return Array.from(this.trips.values()).filter(
+      (trip) => trip.userId === userId
+    );
+  }
+  
+  async createTrip(trip: InsertTrip): Promise<Trip> {
+    const id = this.currentTripId++;
+    const timestamp = new Date();
+    const newTrip: Trip = { ...trip, id, createdAt: timestamp };
+    this.trips.set(id, newTrip);
+    return newTrip;
+  }
+  
+  async updateTrip(id: number, trip: Partial<InsertTrip>): Promise<Trip | undefined> {
+    const existingTrip = this.trips.get(id);
+    if (!existingTrip) return undefined;
+    
+    const updatedTrip: Trip = { ...existingTrip, ...trip };
+    this.trips.set(id, updatedTrip);
+    return updatedTrip;
+  }
+  
+  async deleteTrip(id: number): Promise<boolean> {
+    // Eliminar también todas las listas de equipaje asociadas
+    const packingLists = await this.getPackingListsByTripId(id);
+    for (const list of packingLists) {
+      await this.deletePackingList(list.id);
+    }
+    return this.trips.delete(id);
+  }
+  
+  // Packing list methods
+  async getPackingList(id: number): Promise<PackingList | undefined> {
+    return this.packingLists.get(id);
+  }
+  
+  async getPackingListsByTripId(tripId: number): Promise<PackingList[]> {
+    return Array.from(this.packingLists.values()).filter(
+      (list) => list.tripId === tripId
+    );
+  }
+  
+  async createPackingList(packingList: InsertPackingList): Promise<PackingList> {
+    const id = this.currentPackingListId++;
+    const timestamp = new Date();
+    const newPackingList: PackingList = { ...packingList, id, createdAt: timestamp };
+    this.packingLists.set(id, newPackingList);
+    return newPackingList;
+  }
+  
+  async updatePackingList(id: number, packingList: Partial<InsertPackingList>): Promise<PackingList | undefined> {
+    const existingList = this.packingLists.get(id);
+    if (!existingList) return undefined;
+    
+    const updatedList: PackingList = { ...existingList, ...packingList };
+    this.packingLists.set(id, updatedList);
+    return updatedList;
+  }
+  
+  async deletePackingList(id: number): Promise<boolean> {
+    // Eliminar también todos los items asociados
+    const packingItems = await this.getPackingItemsByListId(id);
+    for (const item of packingItems) {
+      await this.deletePackingItem(item.id);
+    }
+    return this.packingLists.delete(id);
+  }
+  
+  // Packing item methods
+  async getPackingItem(id: number): Promise<PackingItem | undefined> {
+    return this.packingItems.get(id);
+  }
+  
+  async getPackingItemsByListId(packingListId: number): Promise<PackingItem[]> {
+    return Array.from(this.packingItems.values()).filter(
+      (item) => item.packingListId === packingListId
+    );
+  }
+  
+  async createPackingItem(packingItem: InsertPackingItem): Promise<PackingItem> {
+    const id = this.currentPackingItemId++;
+    const timestamp = new Date();
+    const newPackingItem: PackingItem = { ...packingItem, id, createdAt: timestamp };
+    this.packingItems.set(id, newPackingItem);
+    return newPackingItem;
+  }
+  
+  async updatePackingItem(id: number, packingItem: Partial<InsertPackingItem>): Promise<PackingItem | undefined> {
+    const existingItem = this.packingItems.get(id);
+    if (!existingItem) return undefined;
+    
+    const updatedItem: PackingItem = { ...existingItem, ...packingItem };
+    this.packingItems.set(id, updatedItem);
+    return updatedItem;
+  }
+  
+  async deletePackingItem(id: number): Promise<boolean> {
+    return this.packingItems.delete(id);
+  }
+  
+  // Automatic packing list generation using AI and user's outfits and garments
+  async generatePackingListForTrip(tripId: number, userId: number): Promise<PackingList> {
+    const trip = await this.getTrip(tripId);
+    if (!trip) throw new Error("Viaje no encontrado");
+    
+    // Crear lista de equipaje recomendada
+    const packingList = await this.createPackingList({
+      tripId,
+      name: `Lista para ${trip.destination}`,
+      isRecommended: true
+    });
+    
+    // Obtener preferencias y prendas del usuario
+    const userPrefs = await this.getUserPreferences(userId);
+    const userGarments = await this.getGarmentsByUserId(userId);
+    
+    // Categorías básicas de elementos para empacar
+    const itemCategories = [
+      "Ropa", "Calzado", "Accesorios", "Higiene", "Documentos", "Electrónicos", "Otros"
+    ];
+    
+    // Elementos básicos según temporada y destino
+    const basicItems: {name: string; category: string; isEssential: boolean}[] = [];
+    
+    // Añadir elementos básicos según la temporada
+    if (trip.season === "Verano") {
+      basicItems.push(
+        {name: "Protector solar", category: "Higiene", isEssential: true},
+        {name: "Gafas de sol", category: "Accesorios", isEssential: true},
+        {name: "Traje de baño", category: "Ropa", isEssential: false}
+      );
+    } else if (trip.season === "Invierno") {
+      basicItems.push(
+        {name: "Bufanda", category: "Accesorios", isEssential: true},
+        {name: "Guantes", category: "Accesorios", isEssential: true},
+        {name: "Gorro", category: "Accesorios", isEssential: false}
+      );
+    }
+    
+    // Añadir elementos básicos para cualquier viaje
+    basicItems.push(
+      {name: "Pasaporte/DNI", category: "Documentos", isEssential: true},
+      {name: "Cargador de móvil", category: "Electrónicos", isEssential: true},
+      {name: "Medicamentos personales", category: "Higiene", isEssential: true},
+      {name: "Cepillo de dientes", category: "Higiene", isEssential: true},
+      {name: "Pasta de dientes", category: "Higiene", isEssential: true}
+    );
+    
+    // Añadir prendas apropiadas del guardarropa del usuario
+    // Filtrar las prendas según la temporada del viaje
+    const seasonalGarments = userGarments.filter(garment => 
+      !garment.season || garment.season === trip.season
+    ).slice(0, 5); // Limitar a 5 prendas para el ejemplo
+    
+    // Crear items para la lista de empaque
+    for (const item of basicItems) {
+      await this.createPackingItem({
+        packingListId: packingList.id,
+        name: item.name,
+        category: item.category,
+        isEssential: item.isEssential,
+        quantity: 1,
+        isPacked: false
+      });
+    }
+    
+    // Añadir prendas del usuario a la lista
+    for (const garment of seasonalGarments) {
+      await this.createPackingItem({
+        packingListId: packingList.id,
+        name: garment.name,
+        category: "Ropa",
+        isEssential: true,
+        quantity: 1,
+        isPacked: false,
+        imageUrl: garment.imageUrl || null,
+        garmentId: garment.id
+      });
+    }
+    
+    return packingList;
   }
 }
 

@@ -100,3 +100,64 @@ export type InsertOutfit = z.infer<typeof insertOutfitSchema>;
 
 export type SeleneDesign = typeof seleneDesigns.$inferSelect;
 export type InsertSeleneDesign = z.infer<typeof insertSeleneDesignSchema>;
+
+// Tablas para planificación de viajes
+export const trips = pgTable("trips", {
+  id: serial("id").primaryKey(),
+  userId: integer("user_id").notNull(),
+  name: text("name").notNull(),
+  destination: text("destination").notNull(),
+  startDate: timestamp("start_date").notNull(),
+  endDate: timestamp("end_date").notNull(),
+  season: text("season"),
+  activities: text("activities").array(),
+  description: text("description"),
+  imageUrl: text("image_url"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertTripSchema = createInsertSchema(trips).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const packingLists = pgTable("packing_lists", {
+  id: serial("id").primaryKey(),
+  tripId: integer("trip_id").notNull().references(() => trips.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  isRecommended: boolean("is_recommended").default(false),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPackingListSchema = createInsertSchema(packingLists).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const packingItems = pgTable("packing_items", {
+  id: serial("id").primaryKey(),
+  packingListId: integer("packing_list_id").notNull().references(() => packingLists.id, { onDelete: "cascade" }),
+  name: text("name").notNull(),
+  category: text("category").notNull(),
+  quantity: integer("quantity").default(1),
+  isPacked: boolean("is_packed").default(false),
+  isEssential: boolean("is_essential").default(false),
+  imageUrl: text("image_url"),
+  notes: text("notes"),
+  garmentId: integer("garment_id").references(() => garments.id),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+});
+
+export const insertPackingItemSchema = createInsertSchema(packingItems).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Trip = typeof trips.$inferSelect;
+export type InsertTrip = z.infer<typeof insertTripSchema>;
+
+export type PackingList = typeof packingLists.$inferSelect;
+export type InsertPackingList = z.infer<typeof insertPackingListSchema>;
+
+export type PackingItem = typeof packingItems.$inferSelect;
+export type InsertPackingItem = z.infer<typeof insertPackingItemSchema>;

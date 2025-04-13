@@ -518,6 +518,387 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
+  
+  // Rutas para planificación de viajes
+  
+  // Obtener todos los viajes de un usuario
+  app.get("/api/users/:userId/trips", async (req: Request, res: Response) => {
+    try {
+      const userId = parseInt(req.params.userId);
+      
+      if (isNaN(userId)) {
+        return res.status(400).json({ error: "ID de usuario inválido" });
+      }
+      
+      const trips = await storage.getTripsByUserId(userId);
+      res.json(trips);
+    } catch (error: any) {
+      console.error("Error al obtener viajes:", error);
+      res.status(500).json({ error: "Error al obtener los viajes", message: error.message });
+    }
+  });
+  
+  // Crear un nuevo viaje
+  app.post("/api/trips", async (req: Request, res: Response) => {
+    try {
+      const {
+        userId,
+        name,
+        destination,
+        startDate,
+        endDate,
+        season,
+        activities,
+        description,
+        imageUrl
+      } = req.body;
+      
+      if (!userId || !name || !destination || !startDate || !endDate) {
+        return res.status(400).json({ 
+          error: "Faltan campos obligatorios (userId, name, destination, startDate, endDate)" 
+        });
+      }
+      
+      const trip = await storage.createTrip({
+        userId,
+        name,
+        destination,
+        startDate: new Date(startDate),
+        endDate: new Date(endDate),
+        season,
+        activities,
+        description,
+        imageUrl
+      });
+      
+      res.status(201).json(trip);
+    } catch (error: any) {
+      console.error("Error al crear viaje:", error);
+      res.status(500).json({ error: "Error al crear el viaje", message: error.message });
+    }
+  });
+  
+  // Obtener un viaje específico
+  app.get("/api/trips/:id", async (req: Request, res: Response) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      
+      if (isNaN(tripId)) {
+        return res.status(400).json({ error: "ID de viaje inválido" });
+      }
+      
+      const trip = await storage.getTrip(tripId);
+      
+      if (!trip) {
+        return res.status(404).json({ error: "Viaje no encontrado" });
+      }
+      
+      res.json(trip);
+    } catch (error: any) {
+      console.error("Error al obtener viaje:", error);
+      res.status(500).json({ error: "Error al obtener el viaje", message: error.message });
+    }
+  });
+  
+  // Actualizar un viaje
+  app.put("/api/trips/:id", async (req: Request, res: Response) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      
+      if (isNaN(tripId)) {
+        return res.status(400).json({ error: "ID de viaje inválido" });
+      }
+      
+      const {
+        name,
+        destination,
+        startDate,
+        endDate,
+        season,
+        activities,
+        description,
+        imageUrl
+      } = req.body;
+      
+      const updatedData: any = {};
+      
+      if (name) updatedData.name = name;
+      if (destination) updatedData.destination = destination;
+      if (startDate) updatedData.startDate = new Date(startDate);
+      if (endDate) updatedData.endDate = new Date(endDate);
+      if (season) updatedData.season = season;
+      if (activities) updatedData.activities = activities;
+      if (description !== undefined) updatedData.description = description;
+      if (imageUrl !== undefined) updatedData.imageUrl = imageUrl;
+      
+      const updatedTrip = await storage.updateTrip(tripId, updatedData);
+      
+      if (!updatedTrip) {
+        return res.status(404).json({ error: "Viaje no encontrado" });
+      }
+      
+      res.json(updatedTrip);
+    } catch (error: any) {
+      console.error("Error al actualizar viaje:", error);
+      res.status(500).json({ error: "Error al actualizar el viaje", message: error.message });
+    }
+  });
+  
+  // Eliminar un viaje
+  app.delete("/api/trips/:id", async (req: Request, res: Response) => {
+    try {
+      const tripId = parseInt(req.params.id);
+      
+      if (isNaN(tripId)) {
+        return res.status(400).json({ error: "ID de viaje inválido" });
+      }
+      
+      const deleted = await storage.deleteTrip(tripId);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Viaje no encontrado" });
+      }
+      
+      res.json({ success: true, message: "Viaje eliminado correctamente" });
+    } catch (error: any) {
+      console.error("Error al eliminar viaje:", error);
+      res.status(500).json({ error: "Error al eliminar el viaje", message: error.message });
+    }
+  });
+  
+  // Obtener todas las listas de equipaje de un viaje
+  app.get("/api/trips/:tripId/packing-lists", async (req: Request, res: Response) => {
+    try {
+      const tripId = parseInt(req.params.tripId);
+      
+      if (isNaN(tripId)) {
+        return res.status(400).json({ error: "ID de viaje inválido" });
+      }
+      
+      const packingLists = await storage.getPackingListsByTripId(tripId);
+      res.json(packingLists);
+    } catch (error: any) {
+      console.error("Error al obtener listas de equipaje:", error);
+      res.status(500).json({ error: "Error al obtener las listas de equipaje", message: error.message });
+    }
+  });
+  
+  // Crear una nueva lista de equipaje
+  app.post("/api/packing-lists", async (req: Request, res: Response) => {
+    try {
+      const { tripId, name, isRecommended } = req.body;
+      
+      if (!tripId || !name) {
+        return res.status(400).json({ error: "Faltan campos obligatorios (tripId, name)" });
+      }
+      
+      const packingList = await storage.createPackingList({
+        tripId,
+        name,
+        isRecommended: isRecommended || false
+      });
+      
+      res.status(201).json(packingList);
+    } catch (error: any) {
+      console.error("Error al crear lista de equipaje:", error);
+      res.status(500).json({ error: "Error al crear la lista de equipaje", message: error.message });
+    }
+  });
+  
+  // Actualizar una lista de equipaje
+  app.put("/api/packing-lists/:id", async (req: Request, res: Response) => {
+    try {
+      const packingListId = parseInt(req.params.id);
+      
+      if (isNaN(packingListId)) {
+        return res.status(400).json({ error: "ID de lista de equipaje inválido" });
+      }
+      
+      const { name, isRecommended } = req.body;
+      
+      const updatedData: any = {};
+      
+      if (name) updatedData.name = name;
+      if (isRecommended !== undefined) updatedData.isRecommended = isRecommended;
+      
+      const updatedList = await storage.updatePackingList(packingListId, updatedData);
+      
+      if (!updatedList) {
+        return res.status(404).json({ error: "Lista de equipaje no encontrada" });
+      }
+      
+      res.json(updatedList);
+    } catch (error: any) {
+      console.error("Error al actualizar lista de equipaje:", error);
+      res.status(500).json({ error: "Error al actualizar la lista de equipaje", message: error.message });
+    }
+  });
+  
+  // Eliminar una lista de equipaje
+  app.delete("/api/packing-lists/:id", async (req: Request, res: Response) => {
+    try {
+      const packingListId = parseInt(req.params.id);
+      
+      if (isNaN(packingListId)) {
+        return res.status(400).json({ error: "ID de lista de equipaje inválido" });
+      }
+      
+      const deleted = await storage.deletePackingList(packingListId);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Lista de equipaje no encontrada" });
+      }
+      
+      res.json({ success: true, message: "Lista de equipaje eliminada correctamente" });
+    } catch (error: any) {
+      console.error("Error al eliminar lista de equipaje:", error);
+      res.status(500).json({ error: "Error al eliminar la lista de equipaje", message: error.message });
+    }
+  });
+  
+  // Obtener todos los elementos de una lista de equipaje
+  app.get("/api/packing-lists/:packingListId/items", async (req: Request, res: Response) => {
+    try {
+      const packingListId = parseInt(req.params.packingListId);
+      
+      if (isNaN(packingListId)) {
+        return res.status(400).json({ error: "ID de lista de equipaje inválido" });
+      }
+      
+      const packingItems = await storage.getPackingItemsByListId(packingListId);
+      res.json(packingItems);
+    } catch (error: any) {
+      console.error("Error al obtener elementos de la lista:", error);
+      res.status(500).json({ error: "Error al obtener los elementos de la lista", message: error.message });
+    }
+  });
+  
+  // Crear un nuevo elemento en una lista de equipaje
+  app.post("/api/packing-items", async (req: Request, res: Response) => {
+    try {
+      const { 
+        packingListId, 
+        name, 
+        category, 
+        quantity, 
+        isPacked, 
+        isEssential,
+        imageUrl,
+        notes,
+        garmentId
+      } = req.body;
+      
+      if (!packingListId || !name || !category) {
+        return res.status(400).json({ 
+          error: "Faltan campos obligatorios (packingListId, name, category)" 
+        });
+      }
+      
+      const packingItem = await storage.createPackingItem({
+        packingListId,
+        name,
+        category,
+        quantity: quantity || 1,
+        isPacked: isPacked || false,
+        isEssential: isEssential || false,
+        imageUrl,
+        notes,
+        garmentId
+      });
+      
+      res.status(201).json(packingItem);
+    } catch (error: any) {
+      console.error("Error al crear elemento de equipaje:", error);
+      res.status(500).json({ error: "Error al crear el elemento de equipaje", message: error.message });
+    }
+  });
+  
+  // Actualizar un elemento de lista de equipaje
+  app.put("/api/packing-items/:id", async (req: Request, res: Response) => {
+    try {
+      const packingItemId = parseInt(req.params.id);
+      
+      if (isNaN(packingItemId)) {
+        return res.status(400).json({ error: "ID de elemento inválido" });
+      }
+      
+      const { 
+        name, 
+        category, 
+        quantity, 
+        isPacked, 
+        isEssential,
+        imageUrl,
+        notes
+      } = req.body;
+      
+      const updatedData: any = {};
+      
+      if (name) updatedData.name = name;
+      if (category) updatedData.category = category;
+      if (quantity !== undefined) updatedData.quantity = quantity;
+      if (isPacked !== undefined) updatedData.isPacked = isPacked;
+      if (isEssential !== undefined) updatedData.isEssential = isEssential;
+      if (imageUrl !== undefined) updatedData.imageUrl = imageUrl;
+      if (notes !== undefined) updatedData.notes = notes;
+      
+      const updatedItem = await storage.updatePackingItem(packingItemId, updatedData);
+      
+      if (!updatedItem) {
+        return res.status(404).json({ error: "Elemento no encontrado" });
+      }
+      
+      res.json(updatedItem);
+    } catch (error: any) {
+      console.error("Error al actualizar elemento:", error);
+      res.status(500).json({ error: "Error al actualizar el elemento", message: error.message });
+    }
+  });
+  
+  // Eliminar un elemento de lista de equipaje
+  app.delete("/api/packing-items/:id", async (req: Request, res: Response) => {
+    try {
+      const packingItemId = parseInt(req.params.id);
+      
+      if (isNaN(packingItemId)) {
+        return res.status(400).json({ error: "ID de elemento inválido" });
+      }
+      
+      const deleted = await storage.deletePackingItem(packingItemId);
+      
+      if (!deleted) {
+        return res.status(404).json({ error: "Elemento no encontrado" });
+      }
+      
+      res.json({ success: true, message: "Elemento eliminado correctamente" });
+    } catch (error: any) {
+      console.error("Error al eliminar elemento:", error);
+      res.status(500).json({ error: "Error al eliminar el elemento", message: error.message });
+    }
+  });
+  
+  // Generar lista de equipaje recomendada para un viaje
+  app.post("/api/trips/:tripId/generate-packing-list", async (req: Request, res: Response) => {
+    try {
+      const tripId = parseInt(req.params.tripId);
+      const { userId } = req.body;
+      
+      if (isNaN(tripId)) {
+        return res.status(400).json({ error: "ID de viaje inválido" });
+      }
+      
+      if (!userId) {
+        return res.status(400).json({ error: "El ID de usuario es obligatorio" });
+      }
+      
+      const packingList = await storage.generatePackingListForTrip(tripId, userId);
+      
+      res.status(201).json(packingList);
+    } catch (error: any) {
+      console.error("Error al generar lista de equipaje:", error);
+      res.status(500).json({ error: "Error al generar la lista de equipaje", message: error.message });
+    }
+  });
 
   // Create HTTP server
   const httpServer = createServer(app);
