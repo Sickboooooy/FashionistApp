@@ -14,6 +14,7 @@ import AIImageGeneratorPage from "@/pages/ai-image-generator";
 import { TextInputModal } from "@/components/text-input-modal";
 import { OutfitProvider } from "@/contexts/outfit-context";
 import { PreferencesProvider } from "@/contexts/preferences-context";
+import ProductSearchPage from "@/pages/product-search"; // Added import
 
 function Router() {
   return (
@@ -27,6 +28,7 @@ function Router() {
           <Route path="/profile" component={Profile} />
           <Route path="/magazine" component={MagazineView} />
           <Route path="/ai-images" component={AIImageGeneratorPage} />
+          <Route path="/product-search" component={ProductSearchPage} /> {/* Added route */}
           <Route component={NotFound} />
         </Switch>
       </main>

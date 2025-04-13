@@ -8,6 +8,48 @@ import { Badge } from '@/components/ui/badge';
 
 const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
   const { saveOutfit } = useOutfit();
+  const [showSimilarProducts, setShowSimilarProducts] = useState(false);
+  const [similarProducts, setSimilarProducts] = useState<Array<{name: string, image: string, price: string, store: string, url: string}>>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Función para buscar productos similares
+  const findSimilarProducts = async (piece: string) => {
+    setIsLoading(true);
+    try {
+      // En un caso real, aquí haríamos una llamada a la API
+      // Simulamos productos para demostración
+      setTimeout(() => {
+        const mockProducts = [
+          {
+            name: piece,
+            image: `https://source.unsplash.com/random/300x400/?fashion,${piece.split(' ')[0]}`,
+            price: `${Math.floor(Math.random() * 150) + 50}€`,
+            store: ['Zara', 'H&M', 'Mango', 'Massimo Dutti'][Math.floor(Math.random() * 4)],
+            url: '#'
+          },
+          {
+            name: `${piece} premium`,
+            image: `https://source.unsplash.com/random/300x400/?fashion,${piece.split(' ')[0]},premium`,
+            price: `${Math.floor(Math.random() * 200) + 120}€`,
+            store: ['El Corte Inglés', 'Ralph Lauren', 'Calvin Klein', 'Lacoste'][Math.floor(Math.random() * 4)],
+            url: '#'
+          },
+          {
+            name: `${piece} casual`,
+            image: `https://source.unsplash.com/random/300x400/?fashion,${piece.split(' ')[0]},casual`,
+            price: `${Math.floor(Math.random() * 80) + 30}€`,
+            store: ['Pull & Bear', 'Bershka', 'Stradivarius', 'Springfield'][Math.floor(Math.random() * 4)],
+            url: '#'
+          }
+        ];
+        setSimilarProducts(mockProducts);
+        setIsLoading(false);
+      }, 1500);
+    } catch (error) {
+      console.error("Error buscando productos similares:", error);
+      setIsLoading(false);
+    }
+  };
   
   return (
     <GoldBorder 
@@ -37,13 +79,76 @@ const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
             <Separator className="my-4 bg-amber-deep/30" />
             <div className="mt-4">
               <h4 className="text-sm uppercase tracking-wider text-amber-deep mb-2">Prendas</h4>
-              <ul className="list-disc pl-5 font-cormorant text-cream-soft space-y-1">
+              <ul className="font-cormorant text-cream-soft space-y-3">
                 {outfit.pieces.map((piece, idx) => (
-                  <li key={idx}>{piece}</li>
+                  <li key={idx} className="flex items-center justify-between">
+                    <span className="list-item">{piece}</span>
+                    <Button 
+                      size="sm"
+                      variant="ghost" 
+                      className="text-amber-deep hover:text-amber-deep/80 hover:bg-amber-deep/10"
+                      onClick={() => {
+                        findSimilarProducts(piece);
+                        setShowSimilarProducts(true);
+                      }}
+                    >
+                      <span className="mr-1">Buscar</span>
+                      <i className="fas fa-search text-xs"></i>
+                    </Button>
+                  </li>
                 ))}
               </ul>
             </div>
           </>
+        )}
+        
+        {showSimilarProducts && (
+          <div className="mt-6 border border-amber-deep/30 rounded-md p-4">
+            <div className="flex justify-between items-center mb-4">
+              <h4 className="text-sm uppercase tracking-wider text-amber-deep">Productos Similares</h4>
+              <Button 
+                size="sm"
+                variant="ghost" 
+                className="text-amber-deep hover:bg-amber-deep/10"
+                onClick={() => setShowSimilarProducts(false)}
+              >
+                <i className="fas fa-times"></i>
+              </Button>
+            </div>
+            
+            {isLoading ? (
+              <div className="flex justify-center p-4">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-amber-deep"></div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 gap-3">
+                {similarProducts.map((product, idx) => (
+                  <a 
+                    key={idx} 
+                    href={product.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="block border border-amber-deep/20 rounded-md overflow-hidden hover:border-amber-deep transition-all"
+                  >
+                    <div className="aspect-[3/4] bg-black-elegant overflow-hidden">
+                      <img 
+                        src={product.image} 
+                        alt={product.name} 
+                        className="w-full h-full object-cover hover:scale-105 transition-transform"
+                      />
+                    </div>
+                    <div className="p-2">
+                      <p className="font-cormorant text-sm text-cream-soft truncate">{product.name}</p>
+                      <div className="flex justify-between items-center mt-1">
+                        <span className="text-xs font-montserrat text-gold-light">{product.price}</span>
+                        <span className="text-xs font-montserrat text-cream-soft/70">{product.store}</span>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            )}
+          </div>
         )}
         
         {outfit.reasoning && (
@@ -55,7 +160,14 @@ const OutfitItem = ({ outfit }: { outfit: Outfit }) => {
           </div>
         )}
         
-        <div className="mt-6 flex justify-end">
+        <div className="mt-6 flex justify-between">
+          <Button 
+            onClick={() => setShowSimilarProducts(!showSimilarProducts)}
+            variant="outline"
+            className="border-amber-deep text-amber-deep hover:bg-amber-deep/10"
+          >
+            {showSimilarProducts ? 'Ocultar Productos' : 'Ver Productos Similares'}
+          </Button>
           <Button 
             onClick={() => saveOutfit(outfit)}
             variant="outline"
