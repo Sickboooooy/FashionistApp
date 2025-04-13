@@ -1,10 +1,31 @@
-import OpenAI from "openai";
+
+import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from "@google/generative-ai";
 import crypto from "crypto";
 import { Garment } from "@shared/schema";
 import { cacheService } from "./cacheService";
 
-// Inicializar el cliente de OpenAI con la API key del .env
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// Inicializar el cliente de Gemini con la API key del .env
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
+// Configuración de seguridad de Gemini
+const safetySettings = [
+  {
+    category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+  {
+    category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+    threshold: HarmBlockThreshold.BLOCK_MEDIUM_AND_ABOVE,
+  },
+];
 
 // Interfaz para la solicitud de generación de outfits
 interface OutfitGenerationRequest {
@@ -63,7 +84,7 @@ export async function generateOutfitSuggestions(request: OutfitGenerationRequest
       return cachedOutfits;
     }
     
-    // Construir el prompt para OpenAI
+    // Construir el prompt para Gemini
     let prompt = "Genera 3 sugerencias de outfits de moda basados en la siguiente información:\n\n";
     
     // Añadir información de prendas si existen
@@ -117,33 +138,46 @@ export async function generateOutfitSuggestions(request: OutfitGenerationRequest
     prompt += "5. pieces: array de piezas que componen el outfit\n";
     prompt += "6. reasoning: explicación de por qué este outfit funciona\n";
     
-    // Llamar a OpenAI
-    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: "Eres un estilista de moda experto. Genera outfit completos detallados y creativos en español, adaptados a las preferencias, ocasiones y temporadas solicitadas."
-        },
-        {
-          role: "user",
-          content: prompt
-        }
-      ],
-      temperature: 0.7,
-      response_format: { type: "json_object" }
+    // Inicializar el modelo de Gemini
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-pro",
+      safetySettings
     });
     
+    // Llamar a Gemini
+    const result = await model.generateContent({
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+      generationConfig: {
+        temperature: 0.7,
+        maxOutputTokens: 2048,
+        topP: 0.8,
+        topK: 40,
+      }
+    });
+    
+    const response = result.response;
+    const content = response.text();
+    
     // Procesar la respuesta
-    const content = response.choices[0].message.content;
     if (!content) {
       throw new Error("No se recibió respuesta del modelo");
     }
     
+    // Extraer la respuesta JSON
+    const jsonContent = content.match(/```json\n([\s\S]*?)\n```/) || 
+                       content.match(/```\n([\s\S]*?)\n```/) || 
+                       content.match(/\{[\s\S]*\}/);
+    
+    let jsonString = '';
+    if (jsonContent) {
+      jsonString = jsonContent[0].replace(/```json\n|```\n|```/g, '');
+    } else {
+      jsonString = content;
+    }
+    
     // Parsear la respuesta JSON
     try {
-      const parsedResponse = JSON.parse(content);
+      const parsedResponse = JSON.parse(jsonString);
       let outfits: OutfitSuggestion[];
       
       // Verificar el formato de la respuesta
@@ -177,7 +211,7 @@ export async function generateOutfitSuggestions(request: OutfitGenerationRequest
       
       return outfits;
     } catch (error) {
-      console.error("Error parsing OpenAI response:", error);
+      console.error("Error parsing Gemini response:", error);
       console.error("Raw response:", content);
       throw new Error("Error procesando la respuesta del modelo");
     }
@@ -214,42 +248,64 @@ export async function analyzeGarmentImage(base64Image: string): Promise<Partial<
       return cachedAnalysis;
     }
     
-    // Llamar a OpenAI Vision API
-    // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      messages: [
-        {
-          role: "system",
-          content: "Eres un experto en análisis de moda. Analiza la prenda en la imagen y proporciona detalles técnicos en formato JSON."
-        },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: "Analiza esta prenda de vestir y proporciona los siguientes detalles en formato JSON:\n1. type: tipo de prenda\n2. color: color predominante\n3. style: estilo de la prenda\n4. material: material principal si es identificable\n5. occasions: array de ocasiones apropiadas para esta prenda\n6. season: temporada más adecuada para esta prenda\n7. pattern: patrón o estampado si tiene"
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: `data:image/jpeg;base64,${base64Image}`
-              }
-            }
-          ]
-        }
-      ],
-      temperature: 0.2,
-      response_format: { type: "json_object" }
+    // Inicializar modelo de Gemini
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-1.5-pro",
+      safetySettings
     });
     
-    const content = response.choices[0].message.content;
+    // Llamar a Gemini Vision
+    const prompt = "Analiza esta prenda de vestir y proporciona los siguientes detalles en formato JSON:\n" +
+                  "1. type: tipo de prenda\n" +
+                  "2. color: color predominante\n" +
+                  "3. style: estilo de la prenda\n" +
+                  "4. material: material principal si es identificable\n" +
+                  "5. occasions: array de ocasiones apropiadas para esta prenda\n" +
+                  "6. season: temporada más adecuada para esta prenda\n" +
+                  "7. pattern: patrón o estampado si tiene";
+    
+    // Preparar la imagen para Gemini
+    const imageData = {
+      inlineData: {
+        data: base64Image,
+        mimeType: "image/jpeg"
+      }
+    };
+    
+    const result = await model.generateContent({
+      contents: [
+        { role: "user", parts: [{ text: prompt }, { inline_data: imageData.inlineData }] }
+      ],
+      generationConfig: {
+        temperature: 0.2,
+        maxOutputTokens: 1024,
+        topP: 0.8,
+        topK: 40,
+      }
+    });
+    
+    const response = result.response;
+    const content = response.text();
+    
+    // Procesar la respuesta
     if (!content) {
       throw new Error("No se recibió respuesta del modelo");
     }
     
+    // Extraer la respuesta JSON
+    const jsonContent = content.match(/```json\n([\s\S]*?)\n```/) || 
+                       content.match(/```\n([\s\S]*?)\n```/) || 
+                       content.match(/\{[\s\S]*\}/);
+    
+    let jsonString = '';
+    if (jsonContent) {
+      jsonString = jsonContent[0].replace(/```json\n|```\n|```/g, '');
+    } else {
+      jsonString = content;
+    }
+    
     try {
-      const analysis = JSON.parse(content) as GarmentAnalysis;
+      const analysis = JSON.parse(jsonString) as GarmentAnalysis;
       
       // Convertir el análisis al formato de Garment
       const garment: Partial<Garment> = {
@@ -267,7 +323,7 @@ export async function analyzeGarmentImage(base64Image: string): Promise<Partial<
       
       return garment;
     } catch (error) {
-      console.error("Error parsing OpenAI response:", error);
+      console.error("Error parsing Gemini response:", error);
       throw new Error("Error procesando el análisis de la imagen");
     }
   } catch (error) {

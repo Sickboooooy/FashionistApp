@@ -145,12 +145,9 @@ const PreferenceManager = () => {
   return (
     <SpotlightContainer>
       <div className="container mx-auto max-w-4xl">
-        <h2 className="font-playfair text-2xl md:text-3xl mb-2 text-center">
-          <GoldText>Personaliza</GoldText> Tu Experiencia
+        <h2 className="font-playfair text-2xl md:text-3xl mb-4 text-center">
+          <GoldText>Preferencias</GoldText>
         </h2>
-        <p className="font-cormorant text-center text-lg mb-8 opacity-80 max-w-2xl mx-auto">
-          Configura tus preferencias para recibir recomendaciones adaptadas a tu estilo único
-        </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Style Preferences */}

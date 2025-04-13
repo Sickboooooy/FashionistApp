@@ -8,10 +8,11 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'INICIO', path: '/' },
-    { name: 'MI ARMARIO', path: '/closet' },
-    { name: 'DISEÑOS SELENE', path: '/selene-designs' },
+    { name: 'ARMARIO', path: '/closet' },
+    { name: 'DISEÑOS', path: '/selene-designs' },
     { name: 'REVISTA', path: '/magazine' },
-    { name: 'IMÁGENES IA', path: '/ai-images' },
+    { name: 'IA', path: '/ai-images' },
+    { name: 'PRODUCTOS', path: '/product-search' },
     { name: 'PERFIL', path: '/profile' },
   ];
 

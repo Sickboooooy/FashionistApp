@@ -84,11 +84,8 @@ const AIImageGenerator = () => {
             <Card className="bg-black text-amber-50 shadow-lg border-amber-700">
               <CardHeader>
                 <CardTitle className="text-center text-2xl bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
-                  Creador de Diseños de Moda con IA
-                </CardTitle>
-                <p className="text-center text-amber-300/80 text-sm mt-2 font-cormorant">
-                  Describe el diseño de moda que imaginas y nuestra IA lo creará para ti
-                </p>
+                Diseños IA
+              </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
