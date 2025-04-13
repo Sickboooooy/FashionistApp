@@ -92,9 +92,14 @@ const AIImageGenerator = () => {
         const data = await response.json();
         
         if (data.success) {
-          const newImage = "/" + data.imagePath;
+          // Asegurarnos de que la ruta de la imagen es correcta
+          // Si la ruta ya incluye '/uploads/', no añadir la barra inicial
+          const imagePath = data.imagePath || "";
+          const newImage = imagePath.startsWith('uploads/') ? '/' + imagePath : imagePath;
           setGeneratedImage(newImage);
           setError(null);
+          
+          console.log("Imagen generada con éxito:", newImage);
           
           // Guardar en historial
           setImageHistory(prev => [{image: newImage, prompt}, ...prev.slice(0, 3)]);

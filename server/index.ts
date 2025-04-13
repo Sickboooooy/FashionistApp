@@ -3,6 +3,7 @@ import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupSecurity } from "./middleware/security";
 import compression from "compression";
+import path from "path";
 
 const app = express();
 // Habilitar trust proxy para que express-rate-limit funcione correctamente con X-Forwarded-For
@@ -13,6 +14,9 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Configurar middlewares de seguridad
 setupSecurity(app);
+
+// Servir la carpeta uploads estáticamente
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 app.use((req, res, next) => {
   const start = Date.now();

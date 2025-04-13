@@ -114,14 +114,14 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
       
       // Generar un nombre de archivo descriptivo pero único
       const timestamp = Date.now();
-      const fileName = `fashionai_gemini_${timestamp}.png`;
+      const fileName = `fashionai_gemini_${timestamp}.svg`;
       const filePath = path.join("uploads", fileName);
       
       // Crear una imagen placeholder con un mensaje
       ensureUploadsDir();
       
       // Crear un archivo de texto con la descripción que sería usada para generar la imagen
-      const descriptionFilePath = path.join("uploads", `${path.basename(fileName, '.png')}_description.txt`);
+      const descriptionFilePath = path.join("uploads", `${path.basename(fileName, '.svg')}_description.txt`);
       fs.writeFileSync(descriptionFilePath, enhancedDescription);
       
       // Generar una imagen SVG mejorada con la descripción
@@ -188,12 +188,12 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
       log(`Imagen generada con descripción de Gemini en: ${filePath}`, "gemini");
       
       return filePath;
-    } catch (abortError) {
+    } catch (error: unknown) {
       clearTimeout(timeoutId);
-      if (abortError.name === 'AbortError') {
+      if (error instanceof Error && error.name === 'AbortError') {
         throw new Error("La solicitud a Gemini tomó demasiado tiempo y fue cancelada.");
       }
-      throw abortError;
+      throw error;
     }
   } catch (error: any) {
     log(`Error en generación de imagen con Gemini: ${error}`, "gemini-error");
