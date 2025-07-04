@@ -1,0 +1,109 @@
+# FashionistApp - Selene Style
+
+## Overview
+
+FashionistApp (Selene Style) is a sophisticated fashion styling application that leverages AI technology to create personalized outfit recommendations. The application combines image analysis, user preferences, and AI-powered styling to generate magazine-quality fashion content and outfit suggestions.
+
+## System Architecture
+
+### Frontend Architecture
+- **Framework**: React with TypeScript
+- **Styling**: Tailwind CSS with custom theming (dark mode with gold accents)
+- **UI Components**: Radix UI components with custom shadcn/ui styling
+- **State Management**: React Context API for outfit and preferences management
+- **Routing**: Wouter for client-side routing
+- **Build Tool**: Vite for development and bundling
+
+### Backend Architecture
+- **Framework**: Express.js with TypeScript
+- **Database**: PostgreSQL with Drizzle ORM
+- **Database Provider**: Neon Database (serverless PostgreSQL)
+- **File Upload**: Multer for image handling with memory storage
+- **Image Processing**: Sharp for image optimization
+- **API Design**: RESTful endpoints with proper validation
+
+### AI Integration
+- **Primary AI**: Google Gemini (gemini-1.5-flash) for image analysis
+- **Secondary AI**: OpenAI GPT-4o for content generation and fallback
+- **Hybrid Architecture**: Multiple AI providers with failover support
+- **Services**: Dedicated service layer for AI operations with caching
+
+## Key Components
+
+### Core Services
+1. **AI Service Layer**: Hybrid AI system using Gemini and OpenAI
+2. **Image Service**: Upload, optimization, and storage management
+3. **Magazine Service**: Editorial content generation for fashion layouts
+4. **Cache Service**: Performance optimization with NodeCache
+5. **Security Middleware**: Helmet, rate limiting, and XSS protection
+
+### Frontend Components
+1. **Outfit Context**: Global state management for outfits and generation
+2. **Preferences Context**: User styling preferences and settings
+3. **UI Components**: Custom gold-themed design system
+4. **Image Uploader**: Drag-and-drop file handling with preview
+5. **Magazine View**: Multi-step editorial content creation
+
+### Database Schema
+- **Users**: Authentication and profile management
+- **User Preferences**: Style preferences, occasions, and seasons
+- **Garments**: Individual clothing items with metadata
+- **Outfits**: Generated outfit combinations
+- **Selene Designs**: Curated fashion pieces
+- **Trips & Packing**: Travel planning functionality
+
+## Data Flow
+
+1. **Image Upload**: User uploads garment image → Multer processes → Sharp optimizes → Gemini analyzes
+2. **Outfit Generation**: Analysis results + user preferences → OpenAI generates outfits → Results cached
+3. **Magazine Creation**: Selected outfits → AI generates editorial content → PDF export capability
+4. **Product Search**: Outfit pieces → External API integration for shopping suggestions
+
+## External Dependencies
+
+### AI Services
+- **Google Generative AI**: Primary image analysis and content generation
+- **OpenAI API**: Fallback service and specialized content creation
+- **API Keys Required**: GEMINI2APIKEY, OPENAI_API_KEY
+
+### Database & Storage
+- **Neon Database**: Serverless PostgreSQL hosting
+- **Local File Storage**: Uploads directory for image management
+
+### Third-party Integrations
+- **Stripe**: Payment processing for premium features
+- **React Query**: Server state management and caching
+- **Font Awesome**: Icon library for UI elements
+
+## Deployment Strategy
+
+### Environment Configuration
+- **Development**: Local development with Vite dev server
+- **Production**: Built with ESBuild for server, Vite for client
+- **Database**: Drizzle migrations with `db:push` command
+- **Environment Variables**: DATABASE_URL, AI API keys
+
+### Build Process
+1. Client build: Vite bundles React app to `dist/public`
+2. Server build: ESBuild compiles TypeScript server to `dist`
+3. Static assets: Served from uploads directory
+4. Security: Helmet configuration for production headers
+
+### Performance Optimizations
+- Image optimization with Sharp
+- Response compression middleware
+- Cache service for AI responses
+- Rate limiting for API protection
+
+## Changelog
+
+```
+Changelog:
+- July 04, 2025. Initial setup
+```
+
+## User Preferences
+
+```
+Preferred communication style: Simple, everyday language.
+```
