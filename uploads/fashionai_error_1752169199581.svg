@@ -1,0 +1,18 @@
+
+      <svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+        <rect width="100%" height="100%" fill="#000"/>
+        <rect x="10" y="10" width="1004" height="1004" fill="#1a0000" rx="15" ry="15"/>
+        
+        <text x="512" y="400" font-family="Arial, sans-serif" font-size="30" fill="#ff5555" text-anchor="middle">
+          No se pudo generar la imagen con Gemini
+        </text>
+        
+        <text x="512" y="450" font-family="Arial, sans-serif" font-size="20" fill="#aaa" text-anchor="middle">
+          Por favor, verifica tu API key y vuelve a intentarlo
+        </text>
+        
+        <text x="512" y="500" font-family="Arial, sans-serif" font-size="16" fill="#777" text-anchor="middle">
+          Error: [GoogleGenerativeAI Error]: Error fetching from https://generativelanguage.googl
+        </text>
+      </svg>
+      

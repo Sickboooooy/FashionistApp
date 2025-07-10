@@ -1,0 +1,26 @@
+Instrucciones para el Agente de Replit
+Aquí tienes una lista de tareas específicas para la depuración y mejora de la aplicación.
+1. Problema con la API de Google (Generación de Imágenes con IA)
+ * Observación: La funcionalidad principal de generación de diseños de moda mediante IA está fallando. Al intentar crear un diseño, la aplicación muestra un error que indica un problema con la "API Key de Google".
+ * Acción Requerida:
+   * Verificar la API Key: Revisa el código donde se hace la llamada a la API de Google. Asegúrate de que la API Key esté correctamente implementada y no esté expirada o sea inválida.
+   * Validar la Configuración en Google Cloud: Accede a la consola de Google Cloud Platform y confirma que la API Key tiene los permisos necesarios para el servicio de generación de imágenes que se está utilizando (ej. Vertex AI, etc.).
+   * Depurar la Llamada a la API: Implementa un sistema de logs para registrar la llamada a la API y la respuesta del servidor. Esto ayudará a identificar si el error ocurre en el envío de la solicitud o en la recepción de la respuesta.
+   * Gestionar Errores: Mejora la gestión de errores en la interfaz. En lugar de un mensaje genérico, muestra una notificación clara al usuario como "No se pudo generar el diseño, intenta de nuevo" mientras se reporta el error técnico en segundo plano.
+2. Carga de Imágenes en Plantillas de Revistas
+ * Observación: En la sección "Te visto al estilo", las imágenes de las plantillas (específicamente las de Vogue y Elle) no se cargan. Se ven espacios vacíos en lugar de las vistas previas.
+ * Acción Requerida:
+   * Revisar las Rutas de las Imágenes: Verifica que las URLs o rutas locales de las imágenes de las plantillas sean correctas y que los archivos existan en la ubicación especificada.
+   * Inspeccionar la Red: Utiliza las herramientas de desarrollador del navegador para revisar la pestaña de "Network" y ver si hay errores al intentar cargar estas imágenes (ej. error 404 - Not Found).
+   * Optimizar las Imágenes: Asegúrate de que las imágenes estén optimizadas para la web para evitar tiempos de carga excesivos que puedan resultar en un fallo de renderizado.
+3. Visualización de Productos
+ * Observación: La sección de "Productos" inicialmente no mostraba ningún artículo. Aunque se solucionó momentáneamente, mencionaste la necesidad de integrar bibliotecas de Amazon u otros e-commerce.
+ * Acción Requerida:
+   * Establecer Conexión con E-commerce: Si la intención es mostrar productos de plataformas como Amazon, es necesario implementar la API de Amazon Product Advertising (o similar). Investiga y desarrolla la integración necesaria para buscar y mostrar productos.
+   * Crear un "Fallback" o Estado Vacío: Si la sección de productos no tiene artículos para mostrar (ya sea por un error de API o porque no hay productos), la interfaz debería mostrar un mensaje claro como "Aún no hay productos disponibles" en lugar de quedar en blanco.
+4. Ausencia del Carrito de Compras
+ * Observación: No pudimos localizar el ícono o la funcionalidad del carrito de compras en la interfaz de usuario.
+ * Acción Requerida:
+   * Revisar Componentes de la UI: Inspecciona el código de la interfaz para determinar si el componente del carrito está oculto, no se está renderizando correctamente o si nunca fue implementado.
+   * Implementar o Reparar el Carrito: Si el componente existe, depúralo para que sea visible y funcional. Si no existe, será necesario diseñarlo e implementarlo, asegurándote de que esté visible de forma persistente en la esquina superior derecha, como es convencional.
+Con estas indicaciones, tu Agente de Replit tendrá una guía clara para trabajar en las mejoras y correcciones de la aplicación. ¡Espero que sea de gran ayuda!
