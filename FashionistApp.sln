@@ -1,0 +1,63 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.2.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "aws-toolkit-vscode", "aws-toolkit-vscode", "{DA38AABB-E0CC-BDAF-69BE-0FECF64947C8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "packages", "packages", "{A0E8033B-7E6B-4BDB-898B-793CD81A3968}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "core", "core", "{951CCCC8-4AD6-87C0-B777-54558D1F9597}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{8C8B5627-C794-1C30-1D8F-FEEDC4596998}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "testFixtures", "testFixtures", "{16AD1C9F-D9CF-AD87-2E87-57E239C5CB19}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workspaceFolder", "workspaceFolder", "{E4C72BF8-7B3F-F273-65D0-72515DD8DB0D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "csharp6-zip", "csharp6-zip", "{C9642D0A-C8A4-5638-49E3-36376E2F8A5D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C6141AC6-2435-D726-7B82-819C991D7136}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "aws-toolkit-vscode\packages\core\src\testFixtures\workspaceFolder\csharp6-zip\src\HelloWorld\HelloWorld.csproj", "{DAE57831-2F82-B357-25F4-B77F21774B03}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "csharp6-image", "csharp6-image", "{55BEF07C-76CF-7BE8-5736-E3F792343E37}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{D0750B21-471E-BF90-1E35-293437D86532}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HelloWorld", "aws-toolkit-vscode\packages\core\src\testFixtures\workspaceFolder\csharp6-image\src\HelloWorld\HelloWorld.csproj", "{118A395E-5A12-F482-A6F5-54A9986C10A8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DAE57831-2F82-B357-25F4-B77F21774B03}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAE57831-2F82-B357-25F4-B77F21774B03}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAE57831-2F82-B357-25F4-B77F21774B03}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAE57831-2F82-B357-25F4-B77F21774B03}.Release|Any CPU.Build.0 = Release|Any CPU
+		{118A395E-5A12-F482-A6F5-54A9986C10A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{118A395E-5A12-F482-A6F5-54A9986C10A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{118A395E-5A12-F482-A6F5-54A9986C10A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{118A395E-5A12-F482-A6F5-54A9986C10A8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A0E8033B-7E6B-4BDB-898B-793CD81A3968} = {DA38AABB-E0CC-BDAF-69BE-0FECF64947C8}
+		{951CCCC8-4AD6-87C0-B777-54558D1F9597} = {A0E8033B-7E6B-4BDB-898B-793CD81A3968}
+		{8C8B5627-C794-1C30-1D8F-FEEDC4596998} = {951CCCC8-4AD6-87C0-B777-54558D1F9597}
+		{16AD1C9F-D9CF-AD87-2E87-57E239C5CB19} = {8C8B5627-C794-1C30-1D8F-FEEDC4596998}
+		{E4C72BF8-7B3F-F273-65D0-72515DD8DB0D} = {16AD1C9F-D9CF-AD87-2E87-57E239C5CB19}
+		{C9642D0A-C8A4-5638-49E3-36376E2F8A5D} = {E4C72BF8-7B3F-F273-65D0-72515DD8DB0D}
+		{C6141AC6-2435-D726-7B82-819C991D7136} = {C9642D0A-C8A4-5638-49E3-36376E2F8A5D}
+		{DAE57831-2F82-B357-25F4-B77F21774B03} = {C6141AC6-2435-D726-7B82-819C991D7136}
+		{55BEF07C-76CF-7BE8-5736-E3F792343E37} = {E4C72BF8-7B3F-F273-65D0-72515DD8DB0D}
+		{D0750B21-471E-BF90-1E35-293437D86532} = {55BEF07C-76CF-7BE8-5736-E3F792343E37}
+		{118A395E-5A12-F482-A6F5-54A9986C10A8} = {D0750B21-471E-BF90-1E35-293437D86532}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {16FE409F-F4D2-40E7-AD2A-20A8DB5A0C6F}
+	EndGlobalSection
+EndGlobal
