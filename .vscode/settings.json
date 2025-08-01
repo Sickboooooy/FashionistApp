@@ -1,5 +1,7 @@
 {
     "marquee.widgets.npm-stats.packageNames": [
         "rest-express"
-    ]
+    ],
+    "claudeCodeChat.permissions.yoloMode": true
 }
+
