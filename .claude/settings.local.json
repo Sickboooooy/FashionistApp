@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git checkout -b fashion-genai-features)",
+      "Bash(git push -u origin fashion-genai-features)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
