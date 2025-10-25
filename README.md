@@ -1,5 +1,33 @@
-# FashionistApp- Selene Style
-Overview
+# FashionistApp - Selene Style
+
+## Quick Start
+
+### Automated Setup (Recommended)
+```bash
+./start.sh
+```
+
+### Manual Setup
+```bash
+# 1. Install dependencies
+npm install
+
+# 2. Setup database (see SETUP.md for details)
+# 3. Create .env file with DATABASE_URL
+# 4. Push database schema
+npm run db:push
+
+# 5. Run the application
+npm run dev
+```
+
+The application will be available at **http://localhost:5000**
+
+📖 For detailed setup instructions, see [SETUP.md](./SETUP.md)
+
+---
+
+## Overview
 FashionistApp (Selene Style) is a sophisticated fashion styling application that leverages AI technology to create personalized outfit recommendations. The application combines image analysis, user preferences, and AI-powered styling to generate magazine-quality fashion content and outfit suggestions.
 
 System Architecture
