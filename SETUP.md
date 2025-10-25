@@ -32,12 +32,14 @@ Create the database and user:
 ```bash
 sudo -u postgres psql << 'EOF'
 CREATE DATABASE fashionistapp;
-CREATE USER fashionuser WITH PASSWORD 'fashionpass';
+CREATE USER fashionuser WITH PASSWORD 'your-secure-password-here';
 GRANT ALL PRIVILEGES ON DATABASE fashionistapp TO fashionuser;
 \c fashionistapp
 GRANT ALL ON SCHEMA public TO fashionuser;
 EOF
 ```
+
+**Note:** Replace `your-secure-password-here` with a strong password of your choice.
 
 ### 3. Configure Environment Variables
 
@@ -45,12 +47,14 @@ Create a `.env` file in the root directory:
 
 ```env
 # Database configuration
-DATABASE_URL=postgresql://fashionuser:fashionpass@localhost:5432/fashionistapp
+DATABASE_URL=postgresql://fashionuser:your-secure-password@localhost:5432/fashionistapp
 
 # AI Service API Keys (required for full functionality)
 OPENAI_API_KEY=your-openai-api-key-here
 GEMINI2APIKEY=your-gemini-api-key-here
 ```
+
+**Note:** Replace the placeholder values with your actual credentials.
 
 **Note:** The app will start without valid API keys, but AI features will not work. To use the full functionality:
 - Get an OpenAI API key from: https://platform.openai.com/api-keys
