@@ -4,6 +4,7 @@ import path from "path";
 import { cacheService } from "./cacheService";
 import { log } from "../vite";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { generateFashionImageWithReplicate } from "./replicate-service"; // 🚀 NUEVA JOYA DE LA CORONA
 
 // Inicializar cliente de Google Gemini
 let genAI: GoogleGenerativeAI | null = null;
@@ -27,7 +28,8 @@ interface ImageGenerationOptions {
 }
 
 /**
- * Genera una imagen usando exclusivamente Gemini
+ * Genera una imagen usando REPLICATE + FLUX como primera opción (ECONOMICO Y POTENTE!)
+ * Fallback a Gemini si falla
  */
 export async function generateFashionImage(options: ImageGenerationOptions): Promise<string> {
   const { prompt, style = "vivid", size = "1024x1024", quality = "standard" } = options;
@@ -40,23 +42,48 @@ export async function generateFashionImage(options: ImageGenerationOptions): Pro
   const cachedResult = cacheService.get<string>(cacheKey);
   
   if (cachedResult) {
-    log("Utilizando imagen generada de caché", "image-gen");
+    log("✨ Utilizando imagen generada de caché", "image-gen");
     return cachedResult;
   }
   
+  // 🚀 PRIMERA OPCIÓN: REPLICATE + FLUX (Ultra económico!)
   try {
-    log("Generando imagen con Gemini...", "gemini");
+    log("🚀 Intentando generación con Replicate FLUX (económico)...", "replicate");
     
-    // Generar imagen con Gemini
-    const localImagePath = await generateImageWithGemini(enhancedPrompt);
+    // Mapear tamaño a aspect ratio
+    const aspectRatio = size === "1792x1024" ? "16:9" : 
+                       size === "1024x1792" ? "9:16" : "1:1";
+    
+    const localImagePath = await generateFashionImageWithReplicate({
+      prompt: enhancedPrompt,
+      model: "flux-schnell", // El más rápido y barato
+      aspectRatio,
+      outputFormat: "jpg",
+      outputQuality: quality === "hd" ? 95 : 85
+    });
     
     // Guardar en caché
     cacheService.set(cacheKey, localImagePath);
     
+    log("🎉 Imagen generada exitosamente con Replicate FLUX!", "replicate-success");
     return localImagePath;
-  } catch (error: any) {
-    log(`Error en generación de imagen con Gemini: ${error}`, "gemini-error");
-    throw new Error("No se pudo generar la imagen con Gemini. Verifica tu API key y vuelve a intentarlo.");
+    
+  } catch (replicateError: any) {
+    log(`⚠️  Replicate falló: ${replicateError.message}. Fallback a Gemini...`, "replicate-warning");
+    
+    // 🔄 FALLBACK: Gemini (modo descripción)
+    try {
+      log("🔄 Generando con Gemini como fallback...", "gemini");
+      const localImagePath = await generateImageWithGemini(enhancedPrompt);
+      
+      // Guardar en caché
+      cacheService.set(cacheKey, localImagePath);
+      
+      return localImagePath;
+    } catch (geminiError: any) {
+      log(`❌ Error en generación de imagen con Gemini: ${geminiError}`, "gemini-error");
+      throw new Error("No se pudo generar la imagen con ningún proveedor. Verifica tus API keys y vuelve a intentarlo.");
+    }
   }
 }
 

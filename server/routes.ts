@@ -499,6 +499,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validar el cuerpo de la solicitud
       const request = requestSchema.parse(req.body);
       
+      console.log("🎨 Generando imagen con prompt:", request.prompt);
+      
       // Generar imagen
       const imagePath = await generateFashionImage({
         prompt: request.prompt,
@@ -507,13 +509,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
         quality: request.quality
       });
       
+      console.log("✅ Imagen generada en ruta:", imagePath);
+      
+      // Normalizar la ruta para usar barras normales (compatible con URLs)
+      const normalizedPath = imagePath.replace(/\\/g, '/');
+      console.log("📤 Enviando respuesta al frontend:", { success: true, imagePath: normalizedPath });
+      
       // Devolver la ruta de la imagen
       res.json({ 
         success: true, 
-        imagePath 
+        imagePath: normalizedPath 
       });
     } catch (error: any) {
-      console.error("Error generando imagen de moda:", error);
+      console.error("❌ Error generando imagen de moda:", error);
       res.status(500).json({ 
         success: false, 
         error: error.message || "Error al generar la imagen de moda" 

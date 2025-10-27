@@ -18,9 +18,11 @@ File Upload: Multer for image handling with memory storage
 Image Processing: Sharp for image optimization
 API Design: RESTful endpoints with proper validation
 AI Integration
-Primary AI: Google Gemini (gemini-1.5-flash) for image analysis
-Secondary AI: OpenAI GPT-4o for content generation and fallback
-Hybrid Architecture: Multiple AI providers with failover support
+🚀 Primary AI: Replicate + FLUX (Ultra-fast, ultra-cheap image generation)
+🤖 Secondary AI: Google Gemini (gemini-1.5-flash) for image analysis
+🎯 Fallback AI: OpenAI GPT-4o for content generation and fallback
+💰 Cost Optimization: 92.5% cheaper than OpenAI with Replicate FLUX
+Hybrid Architecture: Multiple AI providers with intelligent failover support
 Services: Dedicated service layer for AI operations with caching
 Key Components
 Core Services

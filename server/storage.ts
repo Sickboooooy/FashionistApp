@@ -267,9 +267,9 @@ export class MemStorage implements IStorage {
       },
       {
         name: "Evening Clutch",
-        description: "Handcrafted evening clutch with pearl embellishments",
+        description: "Urban fashion clutch with modern metallic details",
         category: "Accessories",
-        imageUrl: "https://images.unsplash.com/photo-1560343776-97e7d202ff0e?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+        imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=80"
       }
     ];
     

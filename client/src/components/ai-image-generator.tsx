@@ -91,21 +91,38 @@ const AIImageGenerator = () => {
         
         const data = await response.json();
         
+        console.log("🔍 Respuesta del servidor:", data);
+        
         if (data.success) {
-          // Asegurarnos de que la ruta de la imagen es correcta
-          // Si la ruta ya incluye '/uploads/', no añadir la barra inicial
+          // Asegurarnos de que la ruta de la imagen es correcta para el frontend
           const imagePath = data.imagePath || "";
-          const newImage = imagePath.startsWith('uploads/') ? '/' + imagePath : imagePath;
-          setGeneratedImage(newImage);
+          console.log("📁 Ruta de imagen recibida:", imagePath);
+          
+          // Construir la URL completa de la imagen - simplificado
+          const imageUrl = `http://localhost:5000/${imagePath}`;
+          console.log("🌐 URL final de imagen:", imageUrl);
+          
+          // Verificar que la imagen se puede cargar
+          const img = new Image();
+          img.onload = () => {
+            console.log("✅ Imagen cargada correctamente");
+            setGeneratedImage(imageUrl);
+          };
+          img.onerror = () => {
+            console.error("❌ Error al cargar imagen:", imageUrl);
+            setError("Error al cargar la imagen generada");
+          };
+          img.src = imageUrl;
+          
           setError(null);
           
-          console.log("Imagen generada con éxito:", newImage);
+          console.log("Imagen generada con éxito:", imageUrl);
           
           // Guardar en historial
-          setImageHistory(prev => [{image: newImage, prompt}, ...prev.slice(0, 3)]);
+          setImageHistory(prev => [{image: imageUrl, prompt}, ...prev.slice(0, 3)]);
           
           // Guardar historial en localStorage para persistencia
-          const updatedHistory = [{image: newImage, prompt}, ...imageHistory.slice(0, 3)];
+          const updatedHistory = [{image: imageUrl, prompt}, ...imageHistory.slice(0, 3)];
           localStorage.setItem('image_history', JSON.stringify(updatedHistory));
           
           // Actualizar sugerencias de prompts basadas en el historial reciente
@@ -271,12 +288,12 @@ const AIImageGenerator = () => {
                   {isLoading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creando tu diseño con Gemini...
+                      Creando tu diseño con IA Gen...
                     </>
                   ) : (
                     <>
                       <i className="fas fa-wand-magic-sparkles mr-2"></i>
-                      Crear Diseño con Gemini
+                      Crear Diseño con IA Gen
                     </>
                   )}
                 </Button>
@@ -293,24 +310,36 @@ const AIImageGenerator = () => {
             <div className="mt-8">
               <h3 className="font-playfair text-lg text-amber-400 mb-4">Diseños Recientes</h3>
               <div className="grid grid-cols-3 gap-4">
-                {imageHistory.map((item, index) => (
-                  <div key={index} className="border border-amber-700/30 rounded-md overflow-hidden relative group">
-                    <img src={item.image} alt={`Diseño ${index + 1}`} className="w-full h-32 object-cover" />
-                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        className="border-amber-600 text-amber-300"
-                        onClick={() => {
-                          setGeneratedImage(item.image);
-                          setPrompt(item.prompt);
+                {imageHistory.map((item, index) => {
+                  console.log(`🖼️ Historial ${index + 1}:`, item.image);
+                  return (
+                    <div key={index} className="border border-amber-700/30 rounded-md overflow-hidden relative group">
+                      <img 
+                        src={item.image} 
+                        alt={`Diseño ${index + 1}`} 
+                        className="w-full h-32 object-cover"
+                        onLoad={() => console.log(`✅ Imagen historial ${index + 1} cargada`)}
+                        onError={(e) => {
+                          console.error(`❌ Error cargando imagen historial ${index + 1}:`, item.image);
+                          e.currentTarget.style.display = 'none';
                         }}
-                      >
-                        <i className="fas fa-rotate-left mr-1"></i> Usar
-                      </Button>
+                      />
+                      <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          className="border-amber-600 text-amber-300"
+                          onClick={() => {
+                            setGeneratedImage(item.image);
+                            setPrompt(item.prompt);
+                          }}
+                        >
+                          <i className="fas fa-rotate-left mr-1"></i> Usar
+                        </Button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
@@ -336,10 +365,20 @@ const AIImageGenerator = () => {
                     </div>
                   ) : generatedImage ? (
                     <div className="relative group">
+                      <p className="text-xs text-gray-400 mb-2">
+                        🖼️ URL: <code>{generatedImage}</code>
+                      </p>
                       <img 
                         src={generatedImage} 
                         alt="Diseño generado" 
                         className="max-w-full max-h-96 object-contain rounded-md shadow-gold"
+                        onLoad={() => {
+                          console.log("✅ IMG tag cargó correctamente:", generatedImage);
+                        }}
+                        onError={(e) => {
+                          console.error("❌ IMG tag falló:", generatedImage);
+                          console.error("❌ Error details:", e);
+                        }}
                       />
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="bg-black/50 p-3 rounded-full">
