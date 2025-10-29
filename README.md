@@ -1,6 +1,6 @@
-# FashionistApp- Selene Style
+# FashionistApp- Anna Style
 Overview
-FashionistApp (Selene Style) is a sophisticated fashion styling application that leverages AI technology to create personalized outfit recommendations. The application combines image analysis, user preferences, and AI-powered styling to generate magazine-quality fashion content and outfit suggestions.
+FashionistApp (Anna Style) is a sophisticated fashion styling application that leverages AI technology to create personalized outfit recommendations. The application combines image analysis, user preferences, and AI-powered styling to generate magazine-quality fashion content and outfit suggestions.
 
 System Architecture
 Frontend Architecture
@@ -42,7 +42,7 @@ Users: Authentication and profile management
 User Preferences: Style preferences, occasions, and seasons
 Garments: Individual clothing items with metadata
 Outfits: Generated outfit combinations
-Selene Designs: Curated fashion pieces
+Anna Designs: Curated fashion pieces
 Trips & Packing: Travel planning functionality
 Data Flow
 Image Upload: User uploads garment image → Multer processes → Sharp optimizes → Gemini analyzes

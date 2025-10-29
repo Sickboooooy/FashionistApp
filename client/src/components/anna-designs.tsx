@@ -5,16 +5,16 @@ import GoldText from './ui/gold-text';
 import GoldButton from './ui/gold-button';
 import { Link } from 'wouter';
 
-const SeleneDesigns = () => {
+const AnnaDesigns = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Fetch Selene designs from API
+  // Fetch Anna designs from API
   const { 
     data: designs = [],
     isLoading,
     isError 
   } = useQuery({
-    queryKey: ['/api/selene-designs'],
+    queryKey: ['/api/anna-designs'],
   });
 
   // Filter designs by category
@@ -27,7 +27,7 @@ const SeleneDesigns = () => {
       <div className="container mx-auto">
         <div className="text-center mb-10">
           <h2 className="font-playfair text-2xl md:text-3xl mb-2">
-            <GoldText>Selene Designs</GoldText> Collection
+            <GoldText>Anna Designs</GoldText> Collection
           </h2>
           <p className="font-cormorant text-lg mb-8 opacity-80 max-w-2xl mx-auto">
             Exclusive handcrafted pieces that transform ordinary into extraordinary
@@ -69,7 +69,7 @@ const SeleneDesigns = () => {
             </div>
             
             <div className="text-center mt-10">
-              <Link href="/selene-designs">
+              <Link href="/anna-designs">
                 <GoldButton variant="rounded">
                   EXPLORAR COLECCIÓN COMPLETA
                 </GoldButton>
@@ -82,4 +82,4 @@ const SeleneDesigns = () => {
   );
 };
 
-export default SeleneDesigns;
+export default AnnaDesigns;

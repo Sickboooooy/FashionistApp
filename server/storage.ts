@@ -3,6 +3,8 @@ import {
   garments, Garment, InsertGarment,
   outfits, Outfit, InsertOutfit,
   userPreferences, UserPreferences, InsertUserPreferences,
+  annaDesigns, AnnaDesign, InsertAnnaDesign,
+  // Backward compatibility
   seleneDesigns, SeleneDesign, InsertSeleneDesign,
   trips, Trip, InsertTrip,
   packingLists, PackingList, InsertPackingList,
@@ -35,7 +37,13 @@ export interface IStorage {
   deleteOutfit(id: number): Promise<boolean>;
   saveOutfit(id: number): Promise<Outfit | undefined>;
   
-  // Selene designs methods
+  // Anna designs methods
+  getAnnaDesign(id: number): Promise<AnnaDesign | undefined>;
+  getAllAnnaDesigns(): Promise<AnnaDesign[]>;
+  getAnnaDesignsByCategory(category: string): Promise<AnnaDesign[]>;
+  createAnnaDesign(design: InsertAnnaDesign): Promise<AnnaDesign>;
+  
+  // Backward compatibility - Selene designs methods (alias for Anna)
   getSeleneDesign(id: number): Promise<SeleneDesign | undefined>;
   getAllSeleneDesigns(): Promise<SeleneDesign[]>;
   getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]>;
@@ -69,7 +77,7 @@ export class MemStorage implements IStorage {
   private garments: Map<number, Garment>;
   private outfits: Map<number, Outfit>;
   private userPreferences: Map<number, UserPreferences>;
-  private seleneDesigns: Map<number, SeleneDesign>;
+  private annaDesigns: Map<number, AnnaDesign>;
   private trips: Map<number, Trip>;
   private packingLists: Map<number, PackingList>;
   private packingItems: Map<number, PackingItem>;
@@ -88,7 +96,7 @@ export class MemStorage implements IStorage {
     this.garments = new Map();
     this.outfits = new Map();
     this.userPreferences = new Map();
-    this.seleneDesigns = new Map();
+    this.annaDesigns = new Map();
     this.trips = new Map();
     this.packingLists = new Map();
     this.packingItems = new Map();
@@ -102,8 +110,8 @@ export class MemStorage implements IStorage {
     this.currentPackingListId = 1;
     this.currentPackingItemId = 1;
     
-    // Initialize with some demo Selene designs
-    this.initializeSeleneDesigns();
+    // Initialize with some demo Anna designs
+    this.initializeAnnaDesigns();
   }
 
   // User methods
@@ -221,32 +229,55 @@ export class MemStorage implements IStorage {
     return savedOutfit;
   }
   
-  // Selene designs methods
-  async getSeleneDesign(id: number): Promise<SeleneDesign | undefined> {
-    return this.seleneDesigns.get(id);
+  // Anna designs methods
+  async getAnnaDesign(id: number): Promise<AnnaDesign | undefined> {
+    return this.annaDesigns.get(id);
   }
   
-  async getAllSeleneDesigns(): Promise<SeleneDesign[]> {
-    return Array.from(this.seleneDesigns.values());
+  async getAllAnnaDesigns(): Promise<AnnaDesign[]> {
+    return Array.from(this.annaDesigns.values());
   }
   
-  async getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]> {
-    return Array.from(this.seleneDesigns.values()).filter(
+  async getAnnaDesignsByCategory(category: string): Promise<AnnaDesign[]> {
+    return Array.from(this.annaDesigns.values()).filter(
       (design) => design.category.toLowerCase() === category.toLowerCase()
     );
   }
   
-  async createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign> {
+  async createAnnaDesign(design: InsertAnnaDesign): Promise<AnnaDesign> {
     const id = this.currentDesignId++;
     const timestamp = new Date();
-    const newDesign: SeleneDesign = { ...design, id, createdAt: timestamp };
-    this.seleneDesigns.set(id, newDesign);
+    const newDesign: AnnaDesign = { ...design, id, createdAt: timestamp };
+    this.annaDesigns.set(id, newDesign);
     return newDesign;
   }
   
-  // Initialize with some demo Selene designs
-  private initializeSeleneDesigns() {
-    const designs: InsertSeleneDesign[] = [
+  // Backward compatibility - Selene designs methods (alias for Anna)
+  async getSeleneDesign(id: number): Promise<SeleneDesign | undefined> {
+    return this.getAnnaDesign(id);
+  }
+  
+  async getAllSeleneDesigns(): Promise<SeleneDesign[]> {
+    return this.getAllAnnaDesigns();
+  }
+  
+  async getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]> {
+    return this.getAnnaDesignsByCategory(category);
+  }
+  
+  async createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign> {
+    return this.createAnnaDesign(design);
+  }
+  
+  // Initialize with some demo Anna designs
+  private initializeAnnaDesigns() {
+    const designs: InsertAnnaDesign[] = [
+      {
+        name: "Anna's Signature Dress",
+        description: "Elegant black evening dress with gold details",
+        category: "Dresses",
+        imageUrl: "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+      },
       {
         name: "Pearl Stilettos",
         description: "Handcrafted stiletto heels with pearl embellishments",
@@ -254,29 +285,47 @@ export class MemStorage implements IStorage {
         imageUrl: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
       },
       {
-        name: "Embroidered Blouse",
+        name: "Embroidered Silk Blouse",
         description: "Silk blouse with intricate hand embroidery",
         category: "Blouses",
         imageUrl: "https://images.unsplash.com/photo-1551232864-3f0890e580d9?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
       },
       {
-        name: "Pearl Statement",
+        name: "Gold Pearl Statement",
         description: "Luxury pearl necklace with gold accents",
         category: "Accessories",
         imageUrl: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
       },
       {
-        name: "Evening Clutch",
-        description: "Urban fashion clutch with modern metallic details",
+        name: "Evening Luxury Clutch",
+        description: "Handcrafted clutch with metallic details",
         category: "Accessories",
         imageUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&h=500&q=80"
+      },
+      {
+        name: "Tailored Blazer",
+        description: "Professional blazer with modern cut",
+        category: "Blazers",
+        imageUrl: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
+      },
+      {
+        name: "Designer Skirt",
+        description: "A-line skirt with unique pattern",
+        category: "Skirts",
+        imageUrl: "https://images.unsplash.com/photo-1523381210434-271e8be1f52b?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80"
+      },
+      {
+        name: "Luxury Handbag",
+        description: "Premium leather handbag with gold hardware",
+        category: "Accessories",
+        imageUrl: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&h=500&q=80"
       }
     ];
     
     designs.forEach(design => {
       const id = this.currentDesignId++;
       const timestamp = new Date();
-      this.seleneDesigns.set(id, { ...design, id, createdAt: timestamp });
+      this.annaDesigns.set(id, { ...design, id, createdAt: timestamp });
     });
   }
   

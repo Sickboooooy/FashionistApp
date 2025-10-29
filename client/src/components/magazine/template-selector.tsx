@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 // Define las plantillas disponibles
-export type MagazineTemplate = 'vogue' | 'elle' | 'bazaar' | 'vanity' | 'selene';
+export type MagazineTemplate = 'vogue' | 'elle' | 'bazaar' | 'vanity' | 'anna';
 
 interface Template {
   id: MagazineTemplate;
@@ -45,11 +45,11 @@ const templates: Template[] = [
     imagePath: '/images/magazines/vanity-template.svg',
   },
   {
-    id: 'selene',
-    name: 'Selene Signature',
+    id: 'anna',
+    name: 'Anna Signature',
     description: 'Exclusivo diseño premium con detalles dorados y presentación de lujo.',
     isPremium: true,
-    imagePath: '/images/magazines/selene-template.svg',
+    imagePath: '/images/magazines/anna-template.svg',
   },
 ];
 

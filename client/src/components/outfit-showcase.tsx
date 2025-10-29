@@ -25,7 +25,7 @@ const SAMPLE_OUTFITS = [
   {
     id: 3,
     name: 'Gala Glamour',
-    description: 'A statement ensemble for evening events, featuring a structured silhouette with custom handcrafted Selene details.',
+    description: 'A statement ensemble for evening events, featuring a structured silhouette with custom handcrafted Anna details.',
     occasion: 'EVENING',
     imageUrl: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80',
   },

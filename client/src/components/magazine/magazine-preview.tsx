@@ -242,7 +242,7 @@ const MagazinePreview: FC<MagazinePreviewProps> = ({
               </div>
             )}
 
-            {selectedTemplate === 'selene' && (
+            {selectedTemplate === 'anna' && (
               <div className="h-full border-4 border-amber-deep/20 p-4 flex flex-col">
                 <div className="flex-1 overflow-hidden">
                   {magazineContent.outfits[0] && (
@@ -255,7 +255,7 @@ const MagazinePreview: FC<MagazinePreviewProps> = ({
                 </div>
                 <div className="mt-4 text-center">
                   <p className="text-amber-deep font-semibold">
-                    Selene Signature Collection
+                    Anna Signature Collection
                   </p>
                 </div>
               </div>

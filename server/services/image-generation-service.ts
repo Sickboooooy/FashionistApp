@@ -5,6 +5,12 @@ import { cacheService } from "./cacheService";
 import { log } from "../vite";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { generateFashionImageWithReplicate } from "./replicate-service"; // 🚀 NUEVA JOYA DE LA CORONA
+import { 
+  generateMagazineStylePrompt, 
+  generateSmartPrompt, 
+  optimizeForLatinMarket,
+  FashionContext 
+} from "./fashion-prompt-generator"; // 🎨 SISTEMA DE PROMPTS PROFESIONAL
 
 // Inicializar cliente de Google Gemini
 let genAI: GoogleGenerativeAI | null = null;
@@ -25,20 +31,61 @@ interface ImageGenerationOptions {
   style?: "vivid" | "natural"; // Estilo de la imagen: vívido o natural
   size?: "1024x1024" | "1792x1024" | "1024x1792"; // Tamaños disponibles
   quality?: "standard" | "hd"; // Calidad: estándar o alta definición
+  
+  // 🎨 NUEVAS OPCIONES PARA MODA PROFESIONAL
+  fashionContext?: FashionContext; // Contexto de moda para prompts especializados
+  targetMarket?: "mexico" | "latinamerica" | "global"; // Mercado objetivo
+  useSmartPrompts?: boolean; // Usar sistema inteligente de prompts
 }
 
 /**
  * Genera una imagen usando REPLICATE + FLUX como primera opción (ECONOMICO Y POTENTE!)
  * Fallback a Gemini si falla
+ * 🎨 AHORA CON PROMPTS PROFESIONALES ESTILO REVISTA!
  */
 export async function generateFashionImage(options: ImageGenerationOptions): Promise<string> {
-  const { prompt, style = "vivid", size = "1024x1024", quality = "standard" } = options;
+  const { 
+    prompt, 
+    style = "vivid", 
+    size = "1024x1024", 
+    quality = "standard",
+    fashionContext = {},
+    targetMarket = "mexico",
+    useSmartPrompts = true
+  } = options;
   
-  // Crear prompt especializado en moda
-  const enhancedPrompt = enhanceFashionPrompt(prompt);
+  // 🎯 GENERAR PROMPT PROFESIONAL ESTILO REVISTA
+  let enhancedPrompt: string;
+  
+  if (useSmartPrompts) {
+    log("🎨 Generando prompt profesional estilo revista...", "fashion-prompt");
+    
+    // Configurar contexto por defecto para mercado mexicano
+    const defaultContext: FashionContext = {
+      magazineStyle: "vogue",
+      shootType: "editorial", 
+      targetMarket: targetMarket,
+      model: "female", // Se puede inferir del prompt
+      ...fashionContext
+    };
+    
+    // Generar prompt inteligente
+    const keywords = prompt.toLowerCase().split(' ');
+    enhancedPrompt = generateSmartPrompt(keywords, defaultContext);
+    
+    // Optimizar para mercado latino si es necesario
+    if (targetMarket === "mexico" || targetMarket === "latinamerica") {
+      enhancedPrompt = optimizeForLatinMarket(enhancedPrompt);
+    }
+    
+    log(`🎯 Prompt optimizado: ${enhancedPrompt.substring(0, 150)}...`, "fashion-prompt");
+  } else {
+    // Usar el método simple anterior
+    enhancedPrompt = enhanceFashionPrompt(prompt);
+  }
   
   // Verificar si existe en caché
-  const cacheKey = `image_gen_${enhancedPrompt}_${style}_${size}_${quality}`;
+  const cacheKey = `fashion_image_${enhancedPrompt}_${style}_${size}_${quality}`;
   const cachedResult = cacheService.get<string>(cacheKey);
   
   if (cachedResult) {
@@ -98,9 +145,9 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
   try {
     log("Generando imagen con Gemini...", "gemini");
     
-    // Usar el modelo gemini-1.5-flash que es más rápido y adecuado para descripciones
+    // Usar el modelo gemini-2.5-flash que es más rápido y adecuado para descripciones
     const model = genAI.getGenerativeModel({ 
-      model: "gemini-1.5-flash",
+      model: "models/gemini-2.5-flash",
       generationConfig: {
         temperature: 0.7,
         topP: 0.9,

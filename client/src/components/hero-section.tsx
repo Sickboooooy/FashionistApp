@@ -30,7 +30,7 @@ const HeroSection = () => {
         isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
       }`}>
         <h2 className="font-playfair text-4xl md:text-5xl lg:text-6xl mb-6 leading-tight tracking-wide">
-          <GoldText>Selene</GoldText>
+          <GoldText>Anna</GoldText>
         </h2>
         <p className="font-cormorant text-lg md:text-xl text-cream-soft/90 mb-10 italic">
           Elegancia personalizada

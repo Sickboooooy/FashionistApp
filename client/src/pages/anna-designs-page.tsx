@@ -5,16 +5,16 @@ import GoldBorder from '@/components/ui/gold-border';
 import SpotlightContainer from '@/components/ui/spotlight-container';
 import DesignCard from '@/components/design-card';
 
-const SeleneDesignsPage = () => {
+const AnnaDesignsPage = () => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   
-  // Fetch Selene designs from API
+  // Fetch Anna designs from API
   const { 
     data: designs = [],
     isLoading,
     isError 
   } = useQuery({
-    queryKey: ['/api/selene-designs'],
+    queryKey: ['/api/anna-designs'],
   });
 
   // Filter designs by category
@@ -27,7 +27,7 @@ const SeleneDesignsPage = () => {
       <SpotlightContainer>
         <div className="container mx-auto max-w-5xl">
           <h1 className="font-playfair text-3xl md:text-4xl mb-2 text-center">
-            <GoldText>Selene Designs</GoldText> Collection
+            <GoldText>Anna Designs</GoldText> Collection
           </h1>
           <p className="font-cormorant text-center text-lg mb-6 opacity-80 max-w-2xl mx-auto">
             Exclusive handcrafted pieces that transform ordinary into extraordinary
@@ -37,14 +37,14 @@ const SeleneDesignsPage = () => {
             <div className="flex flex-col md:flex-row items-center">
               <div className="md:w-1/3 mb-6 md:mb-0">
                 <div className="w-32 h-32 mx-auto rounded-full overflow-hidden gold-border">
-                  {/* Placeholder for Selene's profile image */}
+                  {/* Placeholder for Anna's profile image */}
                   <div className="w-full h-full bg-gradient-to-br from-amber-deep to-black"></div>
                 </div>
               </div>
               <div className="md:w-2/3">
-                <h2 className="font-playfair text-2xl mb-3 gold-text text-center md:text-left">About Selene</h2>
+                <h2 className="font-playfair text-2xl mb-3 gold-text text-center md:text-left">About Anna</h2>
                 <p className="font-cormorant text-lg">
-                  Selene is an attorney with a remarkable creative talent for handcrafting unique fashion pieces. 
+                  Anna is an attorney with a remarkable creative talent for handcrafting unique fashion pieces. 
                   Her exclusive designs feature personalized footwear, blouses, and accessories adorned with pearls 
                   and elegant appliqués, combining professional expertise with artistic fashion design.
                 </p>
@@ -92,7 +92,7 @@ const SeleneDesignsPage = () => {
               <GoldBorder className="p-8 mt-12 text-center">
                 <h3 className="font-playfair text-2xl mb-3 gold-text">Custom Orders</h3>
                 <p className="font-cormorant text-lg mb-6">
-                  Interested in a personalized creation? Contact Selene to discuss your vision.
+                  Interested in a personalized creation? Contact Anna to discuss your vision.
                 </p>
                 <button className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full">
                   REQUEST CUSTOM DESIGN
@@ -106,4 +106,4 @@ const SeleneDesignsPage = () => {
   );
 };
 
-export default SeleneDesignsPage;
+export default AnnaDesignsPage;

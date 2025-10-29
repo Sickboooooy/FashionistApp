@@ -7,10 +7,11 @@ import Navbar from "@/components/navbar";
 import Footer from "@/components/footer";
 import Home from "@/pages/home";
 import MyCloset from "@/pages/my-closet";
-import SeleneDesignsPage from "@/pages/selene-designs-page";
+import AnnaDesignsPage from "@/pages/anna-designs-page";
 import Profile from "@/pages/profile";
 import MagazineView from "@/pages/magazine-view";
 import AIImageGeneratorPage from "@/pages/ai-image-generator";
+import APIDebugPage from "@/pages/api-debug-page";
 import { TextInputModal } from "@/components/text-input-modal";
 import { OutfitProvider } from "@/contexts/outfit-context";
 import { PreferencesProvider } from "@/contexts/preferences-context";
@@ -30,10 +31,11 @@ function AppRouter() {
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/closet" component={MyCloset} />
-          <Route path="/selene-designs" component={SeleneDesignsPage} />
+          <Route path="/anna-designs" component={AnnaDesignsPage} />
           <Route path="/profile" component={Profile} />
           <Route path="/magazine" component={MagazineView} />
           <Route path="/ai-images" component={AIImageGeneratorPage} />
+          <Route path="/api-debug" component={APIDebugPage} />
           <Route path="/product-search" component={ProductSearchPage} />
           <Route path="/trips" component={TripsPage} />
           <Route path="/trips/:tripId/packing-lists" component={PackingListsPage} />

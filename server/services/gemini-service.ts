@@ -14,9 +14,9 @@ try {
     throw new Error("API Key de Gemini no configurada");
   }
   genAI = new GoogleGenerativeAI(apiKey);
-  // Usar "gemini-1.5-flash" que es el modelo recomendado tras la descontinuación de los modelos anteriores
+  // Usar "models/gemini-2.5-flash" que es el modelo más nuevo y potente disponible
   model = genAI.getGenerativeModel({ 
-    model: "gemini-1.5-flash",
+    model: "models/gemini-2.5-flash",
     generationConfig: {
       temperature: 0.4,
       topP: 0.8,
@@ -24,7 +24,7 @@ try {
       maxOutputTokens: 2048,
     },
   });
-  log("Cliente Gemini inicializado correctamente con modelo gemini-1.5-flash", "gemini");
+  log("Cliente Gemini inicializado correctamente con modelo gemini-2.5-flash", "gemini");
 } catch (error) {
   log(`Error al inicializar cliente Gemini: ${error}`, "gemini-error");
 }

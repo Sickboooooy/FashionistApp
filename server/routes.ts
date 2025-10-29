@@ -8,6 +8,8 @@ import {
   insertUserPreferencesSchema,
   insertGarmentSchema, 
   insertOutfitSchema,
+  insertAnnaDesignSchema,
+  // Backward compatibility
   insertSeleneDesignSchema,
   UserPreferences
 } from "@shared/schema";
@@ -19,6 +21,9 @@ import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image
 import { generateFashionImage } from "./services/image-generation-service";
 import { validateImageAnalysis, validateOutfitGeneration, validateMagazineGeneration } from "./middleware/validator";
 import optimizeImage from "./middleware/imageOptimizer";
+// 🔍 NUEVOS SERVICIOS DE DEBUGGING Y TESTING
+import { runCompleteAPITest, quickHealthCheck, getDebugInfo } from "./services/api-testing";
+import { getAPIConfig, checkAPIHealth } from "./services/api-config";
 
 // Función de ayuda para convertir null a undefined en las preferencias
 function formatPreferences(prefs: UserPreferences | undefined) {
@@ -261,7 +266,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Selene Designs routes
+  // Anna Designs routes
+  app.get("/api/anna-designs", async (req: Request, res: Response) => {
+    const category = req.query.category as string | undefined;
+    
+    if (category) {
+      const designs = await storage.getAnnaDesignsByCategory(category);
+      res.json(designs);
+    } else {
+      const designs = await storage.getAllAnnaDesigns();
+      res.json(designs);
+    }
+  });
+
+  app.get("/api/anna-designs/:id", async (req: Request, res: Response) => {
+    const id = parseInt(req.params.id);
+    const design = await storage.getAnnaDesign(id);
+    
+    if (design) {
+      res.json(design);
+    } else {
+      res.status(404).json({ message: "Design not found" });
+    }
+  });
+
+  app.post("/api/anna-designs", upload.single("image"), async (req: Request, res: Response) => {
+    try {
+      const designData = req.body.data ? JSON.parse(req.body.data) : req.body;
+      const designInput = insertAnnaDesignSchema.parse(designData);
+      
+      // Save image if provided
+      if (req.file) {
+        const base64Image = req.file.buffer.toString("base64");
+        const imageUrl = saveBase64Image(base64Image);
+        designInput.imageUrl = imageUrl;
+      }
+      
+      const design = await storage.createAnnaDesign(designInput);
+      res.status(201).json(design);
+    } catch (error) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Selene Designs routes (backward compatibility - redirects to Anna routes)
   app.get("/api/selene-designs", async (req: Request, res: Response) => {
     const category = req.query.category as string | undefined;
     
@@ -907,6 +955,86 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error al generar lista de equipaje:", error);
       res.status(500).json({ error: "Error al generar la lista de equipaje", message: error.message });
+    }
+  });
+
+  // 🔍 RUTAS DE DEBUGGING Y TESTING PARA APIS DE IA
+  
+  // Health check rápido de APIs
+  app.get("/api/debug/health", async (req: Request, res: Response) => {
+    try {
+      const health = await quickHealthCheck();
+      res.json(health);
+    } catch (error: any) {
+      console.error("Error en health check:", error);
+      res.status(500).json({ error: "Error en health check", message: error.message });
+    }
+  });
+  
+  // Información completa de debug
+  app.get("/api/debug/info", async (req: Request, res: Response) => {
+    try {
+      const debugInfo = await getDebugInfo();
+      res.json(debugInfo);
+    } catch (error: any) {
+      console.error("Error obteniendo debug info:", error);
+      res.status(500).json({ error: "Error obteniendo información de debug", message: error.message });
+    }
+  });
+  
+  // Test completo de todas las APIs (solo para desarrollo)
+  app.post("/api/debug/test-apis", async (req: Request, res: Response) => {
+    try {
+      // Solo permitir en desarrollo
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(403).json({ error: "Tests de API no disponibles en producción" });
+      }
+      
+      const testResults = await runCompleteAPITest();
+      res.json(testResults);
+    } catch (error: any) {
+      console.error("Error en test de APIs:", error);
+      res.status(500).json({ error: "Error ejecutando tests de APIs", message: error.message });
+    }
+  });
+  
+  // Configuración actual de APIs
+  app.get("/api/debug/config", async (req: Request, res: Response) => {
+    try {
+      const config = getAPIConfig();
+      const health = checkAPIHealth();
+      
+      // No exponer API keys en la respuesta
+      const safeConfig = {
+        replicate: {
+          enabled: config.replicate?.enabled || false,
+          hasToken: Boolean(config.replicate?.token)
+        },
+        gemini: {
+          enabled: config.gemini?.enabled || false,
+          hasKey: Boolean(config.gemini?.apiKey)
+        },
+        openai: {
+          enabled: config.openai?.enabled || false,
+          hasKey: Boolean(config.openai?.apiKey)
+        },
+        fallbackOrder: config.fallbackOrder
+      };
+      
+      res.json({
+        config: safeConfig,
+        health,
+        costs: {
+          replicate_flux_schnell: "$0.003 por imagen",
+          replicate_flux_dev: "$0.055 por imagen", 
+          replicate_flux_pro: "$0.15 por imagen",
+          gemini: "Incluido en plan",
+          openai_dalle3: "$0.040-$0.120 por imagen"
+        }
+      });
+    } catch (error: any) {
+      console.error("Error obteniendo configuración:", error);
+      res.status(500).json({ error: "Error obteniendo configuración", message: error.message });
     }
   });
 

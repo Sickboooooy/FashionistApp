@@ -90,7 +90,7 @@ const PdfExporter: FC<PdfExporterProps> = ({
         
         {!isPremiumUser && (
           <p className="mt-2 text-xs text-amber-deep/70 text-center max-w-md">
-            Los usuarios gratuitos recibirán su PDF con marca de agua de Selene Style.
+            Los usuarios gratuitos recibirán su PDF con marca de agua de Anna Style.
             Actualiza a premium para exportar sin marcas de agua.
           </p>
         )}

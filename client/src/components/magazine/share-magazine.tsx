@@ -15,7 +15,7 @@ const ShareMagazine: React.FC<ShareMagazineProps> = ({ magazineContent, disabled
   const [email, setEmail] = useState('');
   const { toast } = useToast();
 
-  const shareUrl = "https://selene-style.com/magazine/share/123"; // Simulación de URL para compartir
+  const shareUrl = "https://anna-style.com/magazine/share/123"; // Simulación de URL para compartir
 
   const handleShare = (platform: string) => {
     if (!magazineContent) return;

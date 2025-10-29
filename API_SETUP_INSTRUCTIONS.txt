@@ -1,0 +1,38 @@
+🔑 INSTRUCCIONES PARA CONFIGURAR LA API KEY DE GEMINI
+===========================================================
+
+❌ PROBLEMA DETECTADO:
+La API key en tu archivo .env no es real. Actualmente tienes un placeholder.
+
+✅ SOLUCIÓN:
+1. Ve a Google AI Studio: https://aistudio.google.com/app/apikey
+2. Inicia sesión con tu cuenta de Google
+3. Crea una nueva API key (si no tienes una)
+4. Copia la API key completa (debe empezar con "AIza" y tener ~39 caracteres)
+
+🔧 CONFIGURACIÓN:
+Abre el archivo .env y reemplaza esta línea:
+   GEMINI2APIKEY=YOUR_GEMINI_API_KEY_HERE
+
+Por esto (con tu API key real):
+   GEMINI2APIKEY=AIzaSyAbCdEfGhIjKlMnOpQrStUvWxYz123456789
+
+📋 VERIFICACIÓN:
+Una API key válida debe:
+✅ Empezar con "AIza"
+✅ Tener entre 35-40 caracteres
+✅ No tener espacios
+✅ Solo contener letras, números y algunos símbolos
+
+🧪 PRUEBA:
+Después de configurar tu API key real, ejecuta:
+   npm run test-api
+
+💡 NOTA IMPORTANTE:
+- NO compartas tu API key en repositorios públicos
+- Cada API key es personal y única
+- Google AI Studio ofrece una cuota gratuita generosa
+
+🚀 UNA VEZ CONFIGURADO:
+Tu sistema de generación de imágenes estará listo para crear imágenes de moda 
+estilo VOGUE, Cosmopolitan y Men's Health para tu negocio en México! 🇲🇽✨

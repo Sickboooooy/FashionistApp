@@ -71,7 +71,7 @@ export const insertOutfitSchema = createInsertSchema(outfits).omit({
   createdAt: true,
 });
 
-export const seleneDesigns = pgTable("selene_designs", {
+export const annaDesigns = pgTable("anna_designs", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
@@ -80,7 +80,7 @@ export const seleneDesigns = pgTable("selene_designs", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const insertSeleneDesignSchema = createInsertSchema(seleneDesigns).omit({
+export const insertAnnaDesignSchema = createInsertSchema(annaDesigns).omit({
   id: true,
   createdAt: true,
 });
@@ -98,8 +98,14 @@ export type InsertGarment = z.infer<typeof insertGarmentSchema>;
 export type Outfit = typeof outfits.$inferSelect;
 export type InsertOutfit = z.infer<typeof insertOutfitSchema>;
 
-export type SeleneDesign = typeof seleneDesigns.$inferSelect;
-export type InsertSeleneDesign = z.infer<typeof insertSeleneDesignSchema>;
+export type AnnaDesign = typeof annaDesigns.$inferSelect;
+export type InsertAnnaDesign = z.infer<typeof insertAnnaDesignSchema>;
+
+// Backward compatibility aliases
+export const seleneDesigns = annaDesigns;
+export const insertSeleneDesignSchema = insertAnnaDesignSchema;
+export type SeleneDesign = AnnaDesign;
+export type InsertSeleneDesign = InsertAnnaDesign;
 
 // Tablas para planificación de viajes
 export const trips = pgTable("trips", {

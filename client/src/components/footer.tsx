@@ -21,7 +21,7 @@ const Footer = () => {
               <ul className="space-y-2 font-montserrat text-xs">
                 <li><Link href="/" className="hover:gold-text transition-colors">Inicio</Link></li>
                 <li><Link href="/closet" className="hover:gold-text transition-colors">Mi Armario</Link></li>
-                <li><Link href="/selene-designs" className="hover:gold-text transition-colors">Diseños Selene</Link></li>
+                <li><Link href="/anna-designs" className="hover:gold-text transition-colors">Diseños Anna</Link></li>
                 <li><Link href="/profile" className="hover:gold-text transition-colors">Perfil de Estilo</Link></li>
               </ul>
             </div>
@@ -76,7 +76,7 @@ const Footer = () => {
         
         <div className="mt-8 pt-6 border-t border-amber-deep/30 text-center">
           <p className="font-montserrat text-xs opacity-60">
-            &copy; {new Date().getFullYear()} FashionistApp - Selene Style. Todos los derechos reservados.
+            &copy; {new Date().getFullYear()} FashionistApp - Anna Style. Todos los derechos reservados.
           </p>
         </div>
       </div>

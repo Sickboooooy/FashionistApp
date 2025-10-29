@@ -16,7 +16,7 @@ const Logo: FC<LogoProps> = ({ size = 'md', showText = true }) => {
     <div className="flex items-center">
       <div className={`mr-3 relative ${sizeClasses[size]}`}>
         <div className={`${sizeClasses[size]} rounded-full bg-[#000000] border border-amber-deep flex items-center justify-center`}>
-          <span className="gold-text font-playfair font-bold">S</span>
+          <span className="gold-text font-playfair font-bold">A</span>
         </div>
       </div>
       {showText && (
@@ -25,7 +25,7 @@ const Logo: FC<LogoProps> = ({ size = 'md', showText = true }) => {
             FashionistApp
           </h1>
           <span className="ml-2 font-cormorant text-sm italic text-cream-soft opacity-80">
-            Selene Style
+            Anna Style
           </span>
         </>
       )}

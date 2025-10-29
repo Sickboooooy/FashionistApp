@@ -9,13 +9,19 @@ const Navbar = () => {
   const navItems = [
     { name: 'INICIO', path: '/', icon: 'fa-home' },
     { name: 'ARMARIO', path: '/closet', icon: 'fa-tshirt' },
-    { name: 'DISEÑOS', path: '/selene-designs', icon: 'fa-paint-brush' },
+    { name: 'DISEÑOS', path: '/anna-designs', icon: 'fa-paint-brush' },
     { name: 'REVISTA', path: '/magazine', icon: 'fa-book-open' },
     { name: 'IA', path: '/ai-images', icon: 'fa-magic' },
     { name: 'PRODUCTOS', path: '/product-search', icon: 'fa-shopping-bag' },
     { name: 'VIAJES', path: '/trips', icon: 'fa-plane' },
     { name: 'PERFIL', path: '/profile', icon: 'fa-user' },
   ];
+
+  // Agregar debug en desarrollo
+  const isDevelopment = import.meta.env.DEV;
+  if (isDevelopment) {
+    navItems.push({ name: 'DEBUG', path: '/api-debug', icon: 'fa-cog' });
+  }
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
