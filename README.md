@@ -1,84 +1,102 @@
-# FashionistApp- Anna Style
-Overview
-FashionistApp (Anna Style) is a sophisticated fashion styling application that leverages AI technology to create personalized outfit recommendations. The application combines image analysis, user preferences, and AI-powered styling to generate magazine-quality fashion content and outfit suggestions.
+# FashionistApp - Anna Style
 
-System Architecture
-Frontend Architecture
-Framework: React with TypeScript
-Styling: Tailwind CSS with custom theming (dark mode with gold accents)
-UI Components: Radix UI components with custom shadcn/ui styling
-State Management: React Context API for outfit and preferences management
-Routing: Wouter for client-side routing
-Build Tool: Vite for development and bundling
-Backend Architecture
-Framework: Express.js with TypeScript
-Database: PostgreSQL with Drizzle ORM
-Database Provider: Neon Database (serverless PostgreSQL)
-File Upload: Multer for image handling with memory storage
-Image Processing: Sharp for image optimization
-API Design: RESTful endpoints with proper validation
-AI Integration
-🚀 Primary AI: Replicate + FLUX (Ultra-fast, ultra-cheap image generation)
-🤖 Secondary AI: Google Gemini (gemini-1.5-flash) for image analysis
-🎯 Fallback AI: OpenAI GPT-4o for content generation and fallback
-💰 Cost Optimization: 92.5% cheaper than OpenAI with Replicate FLUX
-Hybrid Architecture: Multiple AI providers with intelligent failover support
-Services: Dedicated service layer for AI operations with caching
-Key Components
-Core Services
-AI Service Layer: Hybrid AI system using Gemini and OpenAI
-Image Service: Upload, optimization, and storage management
-Magazine Service: Editorial content generation for fashion layouts
-Cache Service: Performance optimization with NodeCache
-Security Middleware: Helmet, rate limiting, and XSS protection
-Frontend Components
-Outfit Context: Global state management for outfits and generation
-Preferences Context: User styling preferences and settings
-UI Components: Custom gold-themed design system
-Image Uploader: Drag-and-drop file handling with preview
-Magazine View: Multi-step editorial content creation
-Database Schema
-Users: Authentication and profile management
-User Preferences: Style preferences, occasions, and seasons
-Garments: Individual clothing items with metadata
-Outfits: Generated outfit combinations
-Anna Designs: Curated fashion pieces
-Trips & Packing: Travel planning functionality
-Data Flow
-Image Upload: User uploads garment image → Multer processes → Sharp optimizes → Gemini analyzes
-Outfit Generation: Analysis results + user preferences → OpenAI generates outfits → Results cached
-Magazine Creation: Selected outfits → AI generates editorial content → PDF export capability
-Product Search: Outfit pieces → External API integration for shopping suggestions
-External Dependencies
-AI Services
-Google Generative AI: Primary image analysis and content generation
-OpenAI API: Fallback service and specialized content creation
-API Keys Required: GEMINI2APIKEY, OPENAI_API_KEY
-Database & Storage
-Neon Database: Serverless PostgreSQL hosting
-Local File Storage: Uploads directory for image management
-Third-party Integrations
-Stripe: Payment processing for premium features
-React Query: Server state management and caching
-Font Awesome: Icon library for UI elements
-Deployment Strategy
-Environment Configuration
-Development: Local development with Vite dev server
-Production: Built with ESBuild for server, Vite for client
-Database: Drizzle migrations with db:push command
-Environment Variables: DATABASE_URL, AI API keys
-Build Process
-Client build: Vite bundles React app to dist/public
-Server build: ESBuild compiles TypeScript server to dist
-Static assets: Served from uploads directory
-Security: Helmet configuration for production headers
-Performance Optimizations
-Image optimization with Sharp
-Response compression middleware
-Cache service for AI responses
-Rate limiting for API protection
-Changelog
-Changelog:
-- July 04, 2025. Initial setup
-User Preferences
-Preferred communication style: Simple, everyday language.
+## Panorama general
+FashionistApp (Anna Style) es una aplicación de estilismo de moda que usa inteligencia artificial para crear recomendaciones personalizadas de atuendos. Combina análisis de imágenes, preferencias del usuario y estilismo asistido por IA para generar contenido visual con calidad de revista y sugerencias de outfits a medida.
+
+## Arquitectura del sistema
+
+### Frontend
+- Framework: React con TypeScript
+- Estilos: Tailwind CSS con paleta personalizada (modo oscuro y acentos dorados)
+- Componentes UI: Radix UI y shadcn/ui con branding propio
+- Gestión de estado: React Context API para outfits y preferencias
+- Ruteo: Wouter para navegación en cliente
+- Herramienta de build: Vite para desarrollo y empaquetado
+
+### Backend
+- Framework: Express.js con TypeScript
+- Base de datos: PostgreSQL mediante Drizzle ORM
+- Proveedor: Neon Database (PostgreSQL serverless)
+- Carga de archivos: Multer en memoria
+- Procesamiento de imágenes: Sharp para optimización
+- Diseño de API: Endpoints REST con validaciones
+
+## Integración de IA
+- 🚀 IA primaria: Replicate + FLUX (generación de imágenes muy rápida y económica)
+- 🤖 IA secundaria: Google Gemini (gemini-1.5-flash) para análisis de imágenes
+- 🎯 Respaldo: OpenAI GPT-4o para contenido y contingencia
+- 💰 Optimización de costos: Hasta 92.5% menos que OpenAI usando Replicate FLUX
+- Arquitectura híbrida: Múltiples proveedores con failover inteligente
+- Servicios: Capa dedicada con caché para operaciones de IA
+
+## Componentes clave
+
+### Servicios centrales
+- Capa de IA: Orquestación híbrida entre Gemini y OpenAI
+- Servicio de imágenes: Carga, optimización y almacenamiento
+- Servicio de revista: Generación editorial para layouts de moda
+- Servicio de caché: Optimización de rendimiento con NodeCache
+- Middleware de seguridad: Helmet, rate limiting y protección XSS
+
+### Frontend
+- Contexto de outfits: Estado global para generación y visualización
+- Contexto de preferencias: Configuraciones de estilo del usuario
+- Sistema UI: Componentes personalizados con temática dorada
+- Cargador de imágenes: Drag & drop con vista previa
+- Vista de revista: Flujo multi-paso para contenido editorial
+
+### Esquema de datos
+- Usuarios: Autenticación y perfil
+- Preferencias: Estilos, ocasiones y temporadas
+- Prendas: Piezas individuales con metadatos
+- Outfits: Combinaciones generadas
+- Diseños Anna: Curaduría de piezas destacadas
+- Viajes y maletas: Planificación de viajes y listas de empaque
+
+## Flujo de datos
+- Carga de imagen: El usuario sube una prenda → Multer procesa → Sharp optimiza → Gemini analiza
+- Generación de outfit: Resultados del análisis + preferencias → OpenAI genera combinaciones → Se cachea
+- Creación de revista: Se seleccionan outfits → La IA produce contenido editorial → Exportable a PDF
+- Búsqueda de productos: Piezas sugeridas → Integración con APIs externas para compra
+
+## Dependencias externas
+
+### Servicios de IA
+- Google Generative AI: Análisis de imagen y contenido principal
+- OpenAI API: Servicio de respaldo especializado
+- Claves requeridas: `GEMINI2APIKEY`, `OPENAI_API_KEY`
+
+### Base de datos y almacenamiento
+- Neon Database: Hosting PostgreSQL serverless
+- Almacenamiento local: Directorio `uploads` para gestión de imágenes
+
+### Integraciones de terceros
+- Stripe: Cobro para funciones premium
+- React Query: Manejo de estado del servidor y caché
+- Font Awesome: Librería de iconos para la UI
+
+## Estrategia de despliegue
+
+### Configuración de entornos
+- Desarrollo: Vite dev server en local
+- Producción: ESBuild para el servidor, Vite para el cliente
+- Base de datos: Migraciones con `db:push`
+- Variables de entorno: `DATABASE_URL` y llaves de IA
+
+### Proceso de build
+- Cliente: Vite genera archivos en `dist/public`
+- Servidor: ESBuild compila TypeScript a `dist`
+- Assets estáticos: Servidos desde `uploads`
+- Seguridad: Helmet con cabeceras endurecidas para producción
+
+### Optimización de rendimiento
+- Optimización de imágenes con Sharp
+- Middleware de compresión de respuestas
+- Servicio de caché para resultados de IA
+- Rate limiting para proteger la API
+
+## Registro de cambios
+- 04 de julio de 2025: Configuración inicial
+
+## Preferencias del equipo
+- Estilo de comunicación preferido: Lenguaje simple y cotidiano.
