@@ -10,23 +10,23 @@ import { Link } from 'wouter';
 const SAMPLE_OUTFITS = [
   {
     id: 1,
-    name: 'Executive Elegance',
-    description: 'A sophisticated ensemble for corporate meetings, featuring a structured blazer with tailored trousers and complementary accessories.',
+    name: 'Elegancia Ejecutiva',
+    description: 'Un conjunto sofisticado para reuniones corporativas, con blazer estructurado, pantalones a medida y accesorios que completan el look.',
     occasion: 'FORMAL',
     imageUrl: 'https://images.unsplash.com/photo-1581044777550-4cfa60707c03?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80',
   },
   {
     id: 2,
-    name: 'Weekend Sophistication',
-    description: 'A refined yet relaxed look featuring premium denim, a silk blouse, and artisanal accessories perfect for weekend gatherings.',
+    name: 'Sofisticación de Fin de Semana',
+    description: 'Un estilo relajado y refinado con denim premium, blusa de seda y accesorios artesanales ideal para encuentros de fin de semana.',
     occasion: 'CASUAL CHIC',
     imageUrl: 'https://images.unsplash.com/photo-1509631179647-0177331693ae?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80',
   },
   {
     id: 3,
-    name: 'Gala Glamour',
-    description: 'A statement ensemble for evening events, featuring a structured silhouette with custom handcrafted Anna details.',
-    occasion: 'EVENING',
+    name: 'Glamour de Gala',
+    description: 'Un outfit impactante para eventos nocturnos, con silueta estructurada y detalles artesanales exclusivos de Anna.',
+    occasion: 'NOCTURNO',
     imageUrl: 'https://images.unsplash.com/photo-1485968579580-b6d095142e6e?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&h=600&q=80',
   },
 ];
@@ -43,10 +43,10 @@ const OutfitShowcase = () => {
         {/* Main Outfit Generation Section */}
         <div className="mb-16">
           <h2 className="font-playfair text-2xl md:text-3xl mb-2 text-center">
-            <GoldText>Create Your</GoldText> Perfect Outfit
+            <GoldText>Crea Tu</GoldText> Outfit Perfecto
           </h2>
           <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
-            Upload a garment image and our AI stylist will craft personalized outfit combinations
+            Sube una imagen de tu prenda y nuestra estilista con IA generará combinaciones personalizadas
           </p>
           
           {/* Image Uploader */}
@@ -62,10 +62,10 @@ const OutfitShowcase = () => {
         {showSampleOutfits && (
           <div>
             <h3 className="font-playfair text-xl md:text-2xl mb-2 text-center">
-              <GoldText>Curated</GoldText> Style Inspirations
+              <GoldText>Inspiraciones</GoldText> Curadas
             </h3>
             <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
-              Explore these sample looks or create your own personalized outfits above
+              Explora estas propuestas o crea tus propios outfits personalizados arriba
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -80,10 +80,10 @@ const OutfitShowcase = () => {
         {savedOutfits.length > 0 && (
           <div className="mt-20">
             <h3 className="font-playfair text-xl md:text-2xl mb-2 text-center">
-              <GoldText>Your Saved</GoldText> Collection
+              <GoldText>Tu Colección</GoldText> Guardada
             </h3>
             <p className="font-cormorant text-center text-lg mb-6 opacity-80 max-w-2xl mx-auto">
-              Outfits you've saved for future reference
+              Conjuntos que has guardado para consultarlos más adelante
             </p>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -99,7 +99,7 @@ const OutfitShowcase = () => {
                     variant="outline" 
                     className="border-gold-light text-gold-light hover:bg-amber-deep/10"
                   >
-                    View All Saved Outfits
+                    Ver Todos los Outfits Guardados
                   </Button>
                 </Link>
               </div>

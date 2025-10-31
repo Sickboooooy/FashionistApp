@@ -38,8 +38,8 @@ const ImageUploader = () => {
     // Check if file is an image
     if (!file.type.startsWith('image/')) {
       toast({
-        title: 'Invalid File Type',
-        description: 'Please upload an image file (JPG, PNG, WEBP)',
+        title: 'Tipo de archivo inválido',
+        description: 'Por favor, sube un archivo de imagen (JPG, PNG, WEBP)',
         variant: 'destructive',
       });
       return;
@@ -56,8 +56,8 @@ const ImageUploader = () => {
   const handleSubmit = async () => {
     if (!previewUrl) {
       toast({
-        title: 'No Image Selected',
-        description: 'Please upload an image first',
+        title: 'No se seleccionó imagen',
+        description: 'Sube una imagen primero',
         variant: 'destructive',
       });
       return;
@@ -118,7 +118,7 @@ const ImageUploader = () => {
               disabled={isLoading}
               className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full"
             >
-              {isLoading ? 'GENERATING OUTFITS...' : 'GENERATE OUTFITS'}
+              {isLoading ? 'GENERANDO OUTFITS...' : 'GENERAR OUTFITS'}
             </button>
           </div>
         ) : (
@@ -126,9 +126,9 @@ const ImageUploader = () => {
             <div className="mb-4">
               <i className="fas fa-cloud-upload-alt text-4xl text-amber-deep"></i>
             </div>
-            <h3 className="font-playfair text-xl mb-2 gold-text">Upload a Garment</h3>
+            <h3 className="font-playfair text-xl mb-2 gold-text">Sube una Prenda</h3>
             <p className="font-cormorant mb-6">
-              Drag & drop an image of your garment, or click to browse
+              Arrastra y suelta una imagen de tu prenda o haz clic para buscar
             </p>
             
             <button
@@ -136,7 +136,7 @@ const ImageUploader = () => {
               onClick={() => fileInputRef.current?.click()}
               className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full"
             >
-              SELECT IMAGE
+              SELECCIONAR IMAGEN
             </button>
             
             <input
@@ -148,7 +148,7 @@ const ImageUploader = () => {
             />
             
             <p className="mt-4 font-cormorant text-sm opacity-70">
-              Supported formats: JPG, PNG, WEBP
+              Formatos permitidos: JPG, PNG, WEBP
             </p>
           </div>
         )}

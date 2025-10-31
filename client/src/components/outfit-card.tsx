@@ -21,10 +21,10 @@ const OutfitCard = ({ outfit }: OutfitCardProps) => {
     setIsSaved(!isSaved);
     
     toast({
-      title: isSaved ? 'Outfit Removed' : 'Outfit Saved',
+      title: isSaved ? 'Conjunto eliminado' : 'Conjunto guardado',
       description: isSaved 
-        ? 'Removed from your saved outfits' 
-        : `"${outfit.name}" added to your saved outfits`,
+        ? 'Se eliminó de tus conjuntos guardados' 
+        : `"${outfit.name}" fue añadido a tus conjuntos guardados`,
     });
   };
 
@@ -34,8 +34,8 @@ const OutfitCard = ({ outfit }: OutfitCardProps) => {
     // In a real app, this would open sharing options
     // For now, we'll just show a toast
     toast({
-      title: 'Share Options',
-      description: 'Sharing functionality would open here',
+      title: 'Opciones para compartir',
+      description: 'Aquí se mostraría la funcionalidad para compartir',
     });
   };
 
@@ -43,8 +43,8 @@ const OutfitCard = ({ outfit }: OutfitCardProps) => {
     // In a real app, this would navigate to detail view
     // For now, we'll just show a toast
     toast({
-      title: 'View Details',
-      description: `Detailed view for "${outfit.name}" would open here`,
+      title: 'Ver detalles',
+      description: `Aquí se abriría la vista detallada de "${outfit.name}"`,
     });
   };
 
@@ -71,20 +71,20 @@ const OutfitCard = ({ outfit }: OutfitCardProps) => {
               className="text-cream-soft hover:gold-text text-sm flex items-center" 
               onClick={handleSaveOutfit}
             >
-              <i className={`${isSaved ? 'fas' : 'far'} fa-bookmark mr-1`}></i> Save
+              <i className={`${isSaved ? 'fas' : 'far'} fa-bookmark mr-1`}></i> Guardar
             </button>
             <button 
               className="text-cream-soft hover:gold-text text-sm flex items-center" 
               onClick={handleShareOutfit}
             >
-              <i className="far fa-share-square mr-1"></i> Share
+              <i className="far fa-share-square mr-1"></i> Compartir
             </button>
           </div>
           <button 
             className="text-xs font-montserrat gold-text hover:underline" 
             onClick={handleViewDetails}
           >
-            VIEW DETAILS
+            VER DETALLES
           </button>
         </div>
       </div>

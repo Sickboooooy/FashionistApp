@@ -7,12 +7,18 @@ import SpotlightContainer from '@/components/ui/spotlight-container';
 import FileUpload from '@/components/ui/file-upload';
 import { useToast } from '@/hooks/use-toast';
 
+interface Garment {
+  id: number;
+  name: string;
+  imageUrl?: string;
+}
+
 const MyCloset = () => {
   const [activeTab, setActiveTab] = useState('all');
   const { toast } = useToast();
   
   // In a real app, we would fetch user's garments from the API
-  const { data: garments = [], isLoading } = useQuery({
+  const { data: garments = [], isLoading } = useQuery<Garment[]>({
     queryKey: ['/api/users/1/garments'],
     // This will execute when the endpoint is implemented
     enabled: false, 
@@ -20,19 +26,19 @@ const MyCloset = () => {
   
   const handleAddGarment = (file: File) => {
     toast({
-      title: 'Upload Successful',
-      description: 'Your garment has been added to your closet',
+      title: 'Carga exitosa',
+      description: 'Tu prenda se añadió a tu closet',
     });
   };
   
   const garmentTypes = [
-    { id: 'all', label: 'All Items' },
-    { id: 'tops', label: 'Tops' },
-    { id: 'bottoms', label: 'Bottoms' },
-    { id: 'dresses', label: 'Dresses' },
-    { id: 'outerwear', label: 'Outerwear' },
-    { id: 'shoes', label: 'Shoes' },
-    { id: 'accessories', label: 'Accessories' },
+    { id: 'all', label: 'Todas las prendas' },
+    { id: 'tops', label: 'Prendas superiores' },
+    { id: 'bottoms', label: 'Prendas inferiores' },
+    { id: 'dresses', label: 'Vestidos' },
+    { id: 'outerwear', label: 'Abrigos' },
+    { id: 'shoes', label: 'Calzado' },
+    { id: 'accessories', label: 'Accesorios' },
   ];
 
   return (
@@ -40,10 +46,10 @@ const MyCloset = () => {
       <SpotlightContainer>
         <div className="container mx-auto max-w-4xl">
           <h1 className="font-playfair text-3xl md:text-4xl mb-2 text-center">
-            My <GoldText>Personal</GoldText> Closet
+            Mi <GoldText>Armario</GoldText> Personal
           </h1>
           <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
-            Manage your garments and create stunning outfit combinations
+            Administra tus prendas y crea combinaciones increíbles
           </p>
           
           {/* Garment Type Filters */}
@@ -67,15 +73,15 @@ const MyCloset = () => {
           {/* Upload Area */}
           <div className="mb-12">
             <GoldBorder className="p-8 text-center">
-              <h3 className="font-playfair text-xl mb-4 gold-text">Add New Item to Your Closet</h3>
+              <h3 className="font-playfair text-xl mb-4 gold-text">Agrega una nueva prenda a tu closet</h3>
               <p className="font-cormorant mb-6">
-                Upload photos of your garments to create personalized outfit combinations
+                Sube fotos de tus prendas para crear combinaciones personalizadas
               </p>
               <div className="max-w-xs mx-auto">
                 <FileUpload
                   onFileSelected={handleAddGarment}
-                  label="Upload Garment"
-                  description="Add to your virtual closet"
+                  label="Subir prenda"
+                  description="Agrégala a tu closet virtual"
                   icon={<i className="fas fa-tshirt"></i>}
                 />
               </div>
@@ -85,18 +91,18 @@ const MyCloset = () => {
           {/* Garment Grid */}
           <div className="mb-8">
             <h3 className="font-playfair text-xl mb-6">
-              Your Garments <span className="text-sm font-montserrat text-cream-soft opacity-60">(0 items)</span>
+              Tus Prendas <span className="text-sm font-montserrat text-cream-soft opacity-60">(0 prendas)</span>
             </h3>
             {isLoading ? (
-              <p className="text-center font-cormorant py-12">Loading your closet...</p>
+              <p className="text-center font-cormorant py-12">Cargando tu closet...</p>
             ) : garments.length > 0 ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
                 {/* Garment items would go here */}
               </div>
             ) : (
               <GoldBorder className="p-8 text-center">
-                <p className="font-cormorant mb-6">Your closet is empty. Add garments to get started!</p>
-                <GoldButton>EXPLORE EXAMPLE OUTFITS</GoldButton>
+                <p className="font-cormorant mb-6">Tu closet está vacío. Agrega prendas para comenzar.</p>
+                <GoldButton>EXPLORAR OUTFITS DE EJEMPLO</GoldButton>
               </GoldBorder>
             )}
           </div>

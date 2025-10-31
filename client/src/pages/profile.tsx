@@ -22,10 +22,10 @@ const Profile = () => {
     <SpotlightContainer>
       <div className="container mx-auto max-w-4xl">
         <h1 className="font-playfair text-3xl md:text-4xl mb-2 text-center">
-          Your Style <GoldText>Profile</GoldText>
+          Tu <GoldText>Perfil</GoldText> de Estilo
         </h1>
         <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
-          Manage your preferences and saved outfits
+          Administra tus preferencias y tus outfits guardados
         </p>
         
         {/* Profile navigation tabs */}
@@ -35,19 +35,19 @@ const Profile = () => {
               className={`px-6 py-2 rounded-full text-sm font-montserrat ${activeTab === 'preferences' ? 'gold-button text-black' : 'text-cream-soft hover:text-amber-deep'}`}
               onClick={() => setActiveTab('preferences')}
             >
-              Style Preferences
+              Preferencias de Estilo
             </button>
             <button
               className={`px-6 py-2 rounded-full text-sm font-montserrat ${activeTab === 'saved' ? 'gold-button text-black' : 'text-cream-soft hover:text-amber-deep'}`}
               onClick={() => setActiveTab('saved')}
             >
-              Saved Outfits
+              Outfits Guardados
             </button>
             <button
               className={`px-6 py-2 rounded-full text-sm font-montserrat ${activeTab === 'account' ? 'gold-button text-black' : 'text-cream-soft hover:text-amber-deep'}`}
               onClick={() => setActiveTab('account')}
             >
-              Account
+              Cuenta
             </button>
           </div>
         </div>
@@ -62,7 +62,7 @@ const Profile = () => {
           
           {activeTab === 'saved' && (
             <div className="py-4">
-              <h3 className="font-playfair text-xl mb-6 gold-text">Your Saved Outfits</h3>
+              <h3 className="font-playfair text-xl mb-6 gold-text">Tus Outfits Guardados</h3>
               
               {savedOutfits.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -72,9 +72,9 @@ const Profile = () => {
                 </div>
               ) : (
                 <GoldBorder className="p-8 text-center">
-                  <p className="font-cormorant mb-6">You haven't saved any outfits yet</p>
+                  <p className="font-cormorant mb-6">Aún no has guardado outfits</p>
                   <button className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full">
-                    EXPLORE OUTFITS
+                    EXPLORAR OUTFITS
                   </button>
                 </GoldBorder>
               )}
@@ -84,11 +84,11 @@ const Profile = () => {
           {activeTab === 'account' && (
             <div className="py-4">
               <GoldBorder className="p-8">
-                <h3 className="font-playfair text-xl mb-6 gold-text">Account Information</h3>
+                <h3 className="font-playfair text-xl mb-6 gold-text">Información de la Cuenta</h3>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="block font-cormorant text-sm mb-2">Name</label>
+                    <label className="block font-cormorant text-sm mb-2">Nombre</label>
                     <input 
                       type="text" 
                       className="w-full bg-black gold-border rounded p-3 text-cream-soft font-cormorant focus:border-amber-deep focus:outline-none"
@@ -98,7 +98,7 @@ const Profile = () => {
                   </div>
                   
                   <div>
-                    <label className="block font-cormorant text-sm mb-2">Email</label>
+                    <label className="block font-cormorant text-sm mb-2">Correo electrónico</label>
                     <input 
                       type="email" 
                       className="w-full bg-black gold-border rounded p-3 text-cream-soft font-cormorant focus:border-amber-deep focus:outline-none"
@@ -109,7 +109,7 @@ const Profile = () => {
                   
                   <div className="pt-4">
                     <button className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full">
-                      UPDATE ACCOUNT
+                      ACTUALIZAR CUENTA
                     </button>
                   </div>
                 </div>

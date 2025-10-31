@@ -9,6 +9,7 @@ interface UserPreferences {
   styles: string[];
   occasions: Occasion[];
   seasons?: string[];
+  colors?: string[];
 }
 
 interface PreferencesContextType {

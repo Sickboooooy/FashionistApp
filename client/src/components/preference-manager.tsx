@@ -259,11 +259,23 @@ const PreferenceManager = () => {
                   >
                     {selectedColors.includes(color) && (
                       <div className="absolute inset-0 flex items-center justify-center">
-                        <i className={`fas fa-check text-xs ${
-                          color === '#FFFFFF' || color === '#FFD700' || color === '#C0C0C0' || color === '#FF69B4'
-                            ? 'text-black'
-                            : 'text-white'
-                        }`}></i>
+                        <svg
+                          className="w-4 h-4"
+                          viewBox="0 0 20 20"
+                          fill={
+                            color.toUpperCase() === '#FFFFFF' ||
+                            color.toUpperCase() === '#FFD700' ||
+                            color.toUpperCase() === '#C0C0C0'
+                              ? '#000000'
+                              : '#FFFFFF'
+                          }
+                        >
+                          <path
+                            fillRule="evenodd"
+                            clipRule="evenodd"
+                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                          />
+                        </svg>
                       </div>
                     )}
                   </div>
