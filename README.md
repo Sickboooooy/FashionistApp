@@ -95,8 +95,33 @@ FashionistApp (Anna Style) es una aplicación de estilismo de moda que usa intel
 - Servicio de caché para resultados de IA
 - Rate limiting para proteger la API
 
+## Tareas Pendientes
+
+### ✅ Completadas
+
+- ✅ Configuración de APIs de generación de imágenes (Replicate, Gemini, OpenAI)
+- ✅ Sistema de logging mejorado para debugging
+- ✅ Build y compilación del proyecto
+
+### 🔄 En Progreso
+
+- 🔄 Debug del endpoint `/api/debug/health` - Investigando fallas intermitentes en health checks
+
+### 📋 Por Hacer
+
+- [ ] Verificar funcionalidad completa del endpoint `/api/generate-fashion-image`
+- [ ] Asegurar que la generación de imágenes con IA funcione correctamente
+- [ ] Pruebas end-to-end de generación de outfits
+- [ ] Optimización de costos con Replicate FLUX
+- [ ] Documentación de endpoints de API
+- [ ] Tests unitarios para servicios de IA
+
 ## Registro de cambios
+
+- 01 de noviembre de 2025: Configuración de APIs de IA y debug de servicios
 - 04 de julio de 2025: Configuración inicial
 
 ## Preferencias del equipo
+
 - Estilo de comunicación preferido: Lenguaje simple y cotidiano.
+

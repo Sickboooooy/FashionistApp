@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import multer from "multer";
 import { z } from "zod";
+import { log } from "./vite"; // Para logging en endpoints de debug
 import { 
   insertUserSchema, 
   insertUserPreferencesSchema,
@@ -539,29 +540,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const requestSchema = z.object({
         prompt: z.string(),
-        style: z.enum(["vivid", "natural"]).optional(),
-        size: z.enum(["1024x1024", "1792x1024", "1024x1792"]).optional(),
-        quality: z.enum(["standard", "hd"]).optional()
+        fluxModel: z.enum(["flux-schnell", "flux-dev", "flux-pro"]).optional(),
+        fashionStyle: z.enum(["editorial", "street", "haute-couture", "casual", "commercial"]).optional(),
       });
       
       // Validar el cuerpo de la solicitud
       const request = requestSchema.parse(req.body);
       
-      console.log("🎨 Generando imagen con prompt:", request.prompt);
+      log(`🎨 Generando imagen con prompt: ${request.prompt}`, "image-gen");
       
       // Generar imagen
       const imagePath = await generateFashionImage({
         prompt: request.prompt,
-        style: request.style,
-        size: request.size,
-        quality: request.quality
+        fluxModel: request.fluxModel,
+        fashionStyle: request.fashionStyle,
       });
       
-      console.log("✅ Imagen generada en ruta:", imagePath);
+      log(`✅ Imagen generada en ruta: ${imagePath}`, "image-gen-success");
       
       // Normalizar la ruta para usar barras normales (compatible con URLs)
       const normalizedPath = imagePath.replace(/\\/g, '/');
-      console.log("📤 Enviando respuesta al frontend:", { success: true, imagePath: normalizedPath });
+      log(`📤 Enviando respuesta al frontend: { success: true, imagePath: "${normalizedPath}" }`, "image-gen-response");
       
       // Devolver la ruta de la imagen
       res.json({ 
@@ -569,7 +568,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         imagePath: normalizedPath 
       });
     } catch (error: any) {
-      console.error("❌ Error generando imagen de moda:", error);
+      log(`❌ Error generando imagen de moda: ${error.message}`, "image-gen-error");
       res.status(500).json({ 
         success: false, 
         error: error.message || "Error al generar la imagen de moda" 
@@ -1035,6 +1034,96 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error: any) {
       console.error("Error obteniendo configuración:", error);
       res.status(500).json({ error: "Error obteniendo configuración", message: error.message });
+    }
+  });
+
+  // 🧪 NUEVO: Endpoint para probar Gemini Flash 2.5 con prompts demo
+  app.post("/api/debug/test-gemini-demo", async (req: Request, res: Response) => {
+    try {
+      const { testGeminiImageGeneration } = await import("./services/gemini-image-service");
+      
+      // Prompts demo de la sección IA
+      const demoPrompts = [
+        "Vestido elegante negro para evento formal",
+        "Conjunto casual de verano para playa",
+        "Traje de negocios moderno con detalles dorados",
+        "Look bohemio con accesorios étnicos",
+        "Outfit minimalista en tonos neutros"
+      ];
+      
+      const { promptIndex } = req.body;
+      const selectedPrompt = demoPrompts[promptIndex] || demoPrompts[0];
+      
+      log(`🧪 Probando Gemini Flash 2.5 con prompt demo: "${selectedPrompt}"`, "gemini-test");
+      
+      const testResult = await testGeminiImageGeneration();
+      
+      if (testResult.success) {
+        res.json({
+          success: true,
+          message: "✅ Gemini Flash 2.5 funcionando correctamente",
+          prompt: selectedPrompt,
+          result: testResult.result,
+          allDemoPrompts: demoPrompts,
+          timestamp: new Date().toISOString()
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: testResult.message,
+          prompt: selectedPrompt,
+          allDemoPrompts: demoPrompts
+        });
+      }
+    } catch (error: any) {
+      log(`❌ Error en test de Gemini: ${error.message}`, "gemini-test-error");
+      res.status(500).json({
+        success: false,
+        message: `Error en test de Gemini: ${error.message}`,
+        error: error.message
+      });
+    }
+  });
+
+  // 🧪 NUEVO: Endpoint para generar con prompt específico usando Gemini como principal
+  app.post("/api/debug/gemini-generate", async (req: Request, res: Response) => {
+    try {
+      const { generateFashionImageWithGemini } = await import("./services/gemini-image-service");
+      
+      const { prompt, style = "editorial", targetMarket = "mexico" } = req.body;
+      
+      if (!prompt) {
+        return res.status(400).json({
+          success: false,
+          message: "❌ Prompt requerido"
+        });
+      }
+      
+      log(`🎨 Generando imagen con Gemini Flash 2.5: "${prompt}"`, "gemini-generate");
+      
+      const result = await generateFashionImageWithGemini({
+        prompt,
+        style,
+        targetMarket,
+        enhanceForFashion: true
+      });
+      
+      res.json({
+        success: true,
+        message: "✅ Imagen generada con Gemini Flash 2.5",
+        imageUrl: `/${result}`,
+        prompt,
+        style,
+        timestamp: new Date().toISOString()
+      });
+      
+    } catch (error: any) {
+      log(`❌ Error generando con Gemini: ${error.message}`, "gemini-generate-error");
+      res.status(500).json({
+        success: false,
+        message: `Error generando con Gemini: ${error.message}`,
+        error: error.message
+      });
     }
   });
 

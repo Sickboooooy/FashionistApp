@@ -312,29 +312,34 @@ export async function quickHealthCheck(): Promise<{
   activeAPIs: string[];
 }> {
   const config = getAPIConfig();
-  
+
   const activeAPIs: string[] = [];
-  
+
   if (config.replicate?.enabled) activeAPIs.push("Replicate");
   if (config.gemini?.enabled) activeAPIs.push("Gemini");
   if (config.openai?.enabled) activeAPIs.push("OpenAI");
-  
+
+  console.log("[DEBUG] Active APIs: - api-testing.ts:322", activeAPIs);
+
   if (activeAPIs.length === 0) {
+    console.error("[ERROR] No APIs configured. Only demo mode available. - api-testing.ts:325");
     return {
       status: 'critical',
       message: 'Ninguna API configurada - Solo modo demo',
       activeAPIs
     };
   }
-  
+
   if (!config.replicate?.enabled) {
+    console.warn("[WARNING] Replicate not configured. Missing cost savings. - api-testing.ts:334");
     return {
       status: 'warning',
       message: 'Replicate no configurado - Perdiendo ahorro económico',
       activeAPIs
     };
   }
-  
+
+  console.log("[INFO] System functioning optimally. - api-testing.ts:342");
   return {
     status: 'healthy',
     message: 'Sistema funcionando óptimamente',

@@ -1,10 +1,23 @@
 import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
-import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { setupSecurity } from "./middleware/security";
 import compression from "compression";
 import path from "path";
+import { registerRoutes } from "./routes";
+
+// 🚨 Global Error Handlers
+process.on('uncaughtException', (error) => {
+  log(`🚨 UNCAUGHT EXCEPTION: ${error.stack || error}`, 'fatal-error');
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  log(`🚨 UNHANDLED REJECTION: ${reason}`, 'fatal-error');
+  // Optionally, you can log the promise that was rejected
+  // console.error('Unhandled Rejection at:', promise);
+  process.exit(1);
+});
 
 const app = express();
 // Habilitar trust proxy para que express-rate-limit funcione correctamente con X-Forwarded-For
@@ -15,6 +28,13 @@ app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // Configurar middlewares de seguridad
 setupSecurity(app);
+
+// Middleware específico para SVGs
+app.use('/uploads/*.svg', (req, res, next) => {
+  res.setHeader('Content-Type', 'image/svg+xml');
+  res.setHeader('Cache-Control', 'public, max-age=31536000');
+  next();
+});
 
 // Servir la carpeta uploads estáticamente
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
@@ -73,6 +93,6 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   const port = parseInt(process.env.PORT || '5000', 10);
   server.listen(port, '0.0.0.0', () => {
-    log(`serving on port ${port}`);
+    log(`serving on port ${port}`, 'express');
   });
 })();

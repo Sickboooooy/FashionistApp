@@ -1,6 +1,7 @@
 /**
  * 🎨 FASHION PROMPT GENERATOR - LA JOYA DE LA CORONA
  * Generador especializado de prompts para revistas de moda estilo VOGUE, Cosmopolitan, Men's Health
+ * 🚀 OPTIMIZADO PARA FLUX.1-dev - Estado del arte en generación de moda
  */
 
 import { log } from "../vite";
@@ -20,10 +21,15 @@ export interface FashionContext {
   // Contexto de mercado
   targetMarket?: "mexico" | "latinamerica" | "global";
   priceRange?: "accesible" | "medio" | "premium" | "lujo";
+  
+  // 🚀 FLUX.1-dev específico
+  fluxModel?: "flux-schnell" | "flux-dev" | "flux-pro";
+  enhanceForFlux?: boolean;
 }
 
 /**
  * 🎯 Genera prompts ultra-específicos para moda estilo revista
+ * 🚀 OPTIMIZADO PARA FLUX.1-dev con terminología especializada
  */
 export function generateMagazineStylePrompt(
   basePrompt: string, 
@@ -37,7 +43,9 @@ export function generateMagazineStylePrompt(
     occasions = ["versatil"],
     styles = ["elegante"],
     colors = ["armonioso"],
-    targetMarket = "mexico"
+    targetMarket = "mexico",
+    fluxModel = "flux-dev",
+    enhanceForFlux = true
   } = context;
 
   // 🏷️ PLANTILLAS ESPECIALIZADAS POR REVISTA
@@ -138,7 +146,13 @@ export function generateMagazineStylePrompt(
   
   enhancedPrompt += `. Avoid: ${negativePrompts.join(", ")}`;
 
-  log(`🎨 Prompt generado para estilo ${magazineStyle}: ${enhancedPrompt.substring(0, 100)}...`, "fashion-prompt");
+  // 🚀 OPTIMIZACIONES ESPECÍFICAS PARA FLUX.1-dev
+  if (enhanceForFlux) {
+    const fluxOptimizations = getFluxOptimizations(fluxModel, magazineStyle);
+    enhancedPrompt += `, ${fluxOptimizations}`;
+  }
+
+  log(`🎨 Prompt generado para estilo ${magazineStyle} con FLUX-${fluxModel}: ${enhancedPrompt.substring(0, 100)}...`, "fashion-prompt");
   
   return enhancedPrompt;
 }
@@ -245,7 +259,8 @@ export function generatePromptVariations(basePrompt: string, count: number = 3):
     const context: FashionContext = {
       magazineStyle: styles[i % styles.length],
       shootType: shoots[i % shoots.length],
-      targetMarket: 'mexico'
+      targetMarket: 'mexico',
+      enhanceForFlux: true
     };
     
     variations.push(generateMagazineStylePrompt(basePrompt, context));
@@ -253,3 +268,136 @@ export function generatePromptVariations(basePrompt: string, count: number = 3):
   
   return variations;
 }
+
+/**
+ * 🚀 OPTIMIZACIONES ESPECÍFICAS PARA FLUX.1-dev
+ * Terminología y configuraciones que funcionan mejor con cada modelo FLUX
+ */
+function getFluxOptimizations(fluxModel: string, magazineStyle: string): string {
+  // Términos que FLUX.1-dev entiende excepcionalmente bien
+  const fluxCore = [
+    "ultra-detailed",
+    "photorealistic",
+    "high-end commercial photography",
+    "professional fashion model",
+    "perfect fabric rendering",
+    "detailed textile textures",
+    "accurate color reproduction",
+    "fashion magazine quality",
+    "studio-grade lighting",
+    "impeccable styling"
+  ];
+
+  // Optimizaciones por modelo
+  const modelOptimizations = {
+    "flux-schnell": [
+      "clean composition",
+      "sharp focus",
+      "vibrant colors",
+      "clear details"
+    ],
+    "flux-dev": [
+      "sophisticated composition",
+      "nuanced lighting",
+      "detailed fabric textures",
+      "editorial quality",
+      "professional photography standards",
+      "magazine cover worthy"
+    ],
+    "flux-pro": [
+      "ultra-high resolution",
+      "museum-quality photography",
+      "luxury fashion editorial",
+      "artistic composition",
+      "masterpiece quality",
+      "award-winning photography",
+      "gallery-worthy fashion portrait"
+    ]
+  };
+
+  // Optimizaciones por estilo de revista
+  const magazineOptimizations = {
+    "vogue": [
+      "haute couture",
+      "avant-garde fashion",
+      "artistic vision",
+      "luxury aesthetic"
+    ],
+    "cosmopolitan": [
+      "contemporary fashion",
+      "accessible luxury",
+      "modern woman",
+      "empowering style"
+    ],
+    "elle": [
+      "chic elegance",
+      "French sophistication",
+      "timeless style",
+      "refined aesthetic"
+    ],
+    "gq": [
+      "masculine sophistication",
+      "gentleman style",
+      "contemporary menswear",
+      "refined masculinity"
+    ]
+  };
+
+  // Combinar optimizaciones
+  const modelTerms = modelOptimizations[fluxModel as keyof typeof modelOptimizations] || modelOptimizations["flux-dev"];
+  const magazineTerms = magazineOptimizations[magazineStyle as keyof typeof magazineOptimizations] || [];
+  
+  // FLUX-specific technical terms que mejoran la calidad
+  const fluxTechnical = [
+    "FLUX.1 optimized",
+    "diffusion model excellence",
+    "state-of-the-art AI generation",
+    "neural network precision",
+    "advanced prompt understanding",
+    "high-fidelity rendering"
+  ];
+
+  const allOptimizations = [
+    ...fluxCore,
+    ...modelTerms,
+    ...magazineTerms,
+    ...fluxTechnical
+  ];
+
+  return allOptimizations.join(", ");
+}
+
+/**
+ * 🎯 Genera prompt específicamente optimizado para FLUX.1-dev
+ */
+export function generateFluxOptimizedPrompt(
+  basePrompt: string,
+  fluxModel: "flux-schnell" | "flux-dev" | "flux-pro" = "flux-dev",
+  fashionStyle: string = "editorial"
+): string {
+  const context: FashionContext = {
+    magazineStyle: "vogue",
+    shootType: "editorial",
+    targetMarket: "mexico",
+    fluxModel,
+    enhanceForFlux: true
+  };
+
+  return generateMagazineStylePrompt(basePrompt, context);
+}
+
+/**
+ * 🔥 PROMPTS DE ALTA CALIDAD ESPECÍFICOS PARA FLUX.1-dev
+ */
+export const FLUX_FASHION_PROMPTS = {
+  // Optimizados para FLUX-dev
+  elegantDress: "Elegant evening gown on sophisticated fashion model, flowing silk fabric with perfect drape, studio lighting, editorial photography, ultra-detailed, FLUX.1-dev optimized",
+  
+  casualChic: "Contemporary casual ensemble, relaxed sophistication, natural textures, lifestyle photography, detailed fabric rendering, modern fashion aesthetic, FLUX.1 excellence",
+  
+  businessAttire: "Professional business suit, empowering style, sharp tailoring, confident pose, commercial photography standards, detailed textile textures, FLUX.1-dev precision",
+  
+  bohemianStyle: "Bohemian-inspired outfit, free-spirited fashion, artistic composition, natural lighting, detailed fabric textures, contemporary boho aesthetic, FLUX.1 optimized",
+  
+  luxuryFashion: "High-end luxury fashion, haute couture quality, museum-grade photography, impeccable styling, ultra-high resolution, masterpiece quality, FLUX.1-pro excellence"
+};

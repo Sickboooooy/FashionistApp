@@ -102,17 +102,57 @@ const AIImageGenerator = () => {
           const imageUrl = `http://localhost:5000/${imagePath}`;
           console.log("🌐 URL final de imagen:", imageUrl);
           
-          // Verificar que la imagen se puede cargar
-          const img = new Image();
-          img.onload = () => {
-            console.log("✅ Imagen cargada correctamente");
+          // Para SVGs, no necesitamos validación previa
+          if (imagePath.endsWith('.svg')) {
+            console.log("📄 Archivo SVG detectado, cargando directamente");
             setGeneratedImage(imageUrl);
-          };
-          img.onerror = () => {
-            console.error("❌ Error al cargar imagen:", imageUrl);
-            setError("Error al cargar la imagen generada");
-          };
-          img.src = imageUrl;
+            
+            // Actualizar historial y prompts sugeridos
+            const newHistoryItem = { image: imageUrl, prompt: prompt };
+            setImageHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
+            
+            // Generar sugerencias relacionadas
+            const keywords = prompt.toLowerCase().split(' ');
+            if (keywords.length >= 3) {
+              const newSuggestions = [
+                `${['Vestido', 'Conjunto', 'Traje', 'Look'][Math.floor(Math.random() * 4)]} ${keywords[0]} ${keywords[1]} con toques modernos`,
+                `${['Outfit', 'Atuendo', 'Estilo'][Math.floor(Math.random() * 3)]} inspirado en ${keywords[2] || 'elegancia'}`,
+                `${['Traje', 'Estilo', 'Conjunto', 'Atuendo'][Math.floor(Math.random() * 4)]} ${keywords[2] || 'formal'} inspirado en ${['París', 'Milán', 'Nueva York', 'Tokio'][Math.floor(Math.random() * 4)]}`,
+                `${['Vestido', 'Falda', 'Blusa', 'Pantalón'][Math.floor(Math.random() * 4)]} con patrón ${['floral', 'geométrico', 'abstracto', 'rayado'][Math.floor(Math.random() * 4)]} para ${['oficina', 'evento casual', 'salida nocturna', 'cena'][Math.floor(Math.random() * 4)]}`
+              ];
+              
+              setSuggestedPrompts(newSuggestions);
+            }
+          } else {
+            // Para otros tipos de imagen, verificar que se puede cargar
+            const img = new Image();
+            img.onload = () => {
+              console.log("✅ Imagen cargada correctamente");
+              setGeneratedImage(imageUrl);
+              
+              // Actualizar historial y prompts sugeridos
+              const newHistoryItem = { image: imageUrl, prompt: prompt };
+              setImageHistory(prev => [newHistoryItem, ...prev.slice(0, 9)]);
+              
+              // Generar sugerencias relacionadas
+              const keywords = prompt.toLowerCase().split(' ');
+              if (keywords.length >= 3) {
+                const newSuggestions = [
+                  `${['Vestido', 'Conjunto', 'Traje', 'Look'][Math.floor(Math.random() * 4)]} ${keywords[0]} ${keywords[1]} con toques modernos`,
+                  `${['Outfit', 'Atuendo', 'Estilo'][Math.floor(Math.random() * 3)]} inspirado en ${keywords[2] || 'elegancia'}`,
+                  `${['Traje', 'Estilo', 'Conjunto', 'Atuendo'][Math.floor(Math.random() * 4)]} ${keywords[2] || 'formal'} inspirado en ${['París', 'Milán', 'Nueva York', 'Tokio'][Math.floor(Math.random() * 4)]}`,
+                  `${['Vestido', 'Falda', 'Blusa', 'Pantalón'][Math.floor(Math.random() * 4)]} con patrón ${['floral', 'geométrico', 'abstracto', 'rayado'][Math.floor(Math.random() * 4)]} para ${['oficina', 'evento casual', 'salida nocturna', 'cena'][Math.floor(Math.random() * 4)]}`
+                ];
+                
+                setSuggestedPrompts(newSuggestions);
+              }
+            };
+            img.onerror = () => {
+              console.error("❌ Error al cargar imagen:", imageUrl);
+              setError("Error al cargar la imagen generada");
+            };
+            img.src = imageUrl;
+          }
           
           setError(null);
           
@@ -368,18 +408,44 @@ const AIImageGenerator = () => {
                       <p className="text-xs text-gray-400 mb-2">
                         🖼️ URL: <code>{generatedImage}</code>
                       </p>
-                      <img 
-                        src={generatedImage} 
-                        alt="Diseño generado" 
-                        className="max-w-full max-h-96 object-contain rounded-md shadow-gold"
-                        onLoad={() => {
-                          console.log("✅ IMG tag cargó correctamente:", generatedImage);
-                        }}
-                        onError={(e) => {
-                          console.error("❌ IMG tag falló:", generatedImage);
-                          console.error("❌ Error details:", e);
-                        }}
-                      />
+                      {generatedImage.endsWith('.svg') ? (
+                        <div className="max-w-full max-h-96 rounded-md shadow-gold overflow-hidden bg-white">
+                          <object 
+                            data={generatedImage} 
+                            type="image/svg+xml"
+                            className="w-full h-96 object-contain"
+                            onLoad={() => {
+                              console.log("✅ SVG object cargó correctamente:", generatedImage);
+                            }}
+                          >
+                            <img 
+                              src={generatedImage} 
+                              alt="Diseño generado" 
+                              className="w-full h-96 object-contain"
+                              onLoad={() => {
+                                console.log("✅ SVG como IMG cargó correctamente:", generatedImage);
+                              }}
+                              onError={(e) => {
+                                console.error("❌ SVG como IMG falló:", generatedImage);
+                                console.error("❌ Error details:", e);
+                              }}
+                            />
+                          </object>
+                        </div>
+                      ) : (
+                        <img 
+                          src={generatedImage} 
+                          alt="Diseño generado" 
+                          className="max-w-full max-h-96 object-contain rounded-md shadow-gold"
+                          onLoad={() => {
+                            console.log("✅ IMG tag cargó correctamente:", generatedImage);
+                          }}
+                          onError={(e) => {
+                            console.error("❌ IMG tag falló:", generatedImage);
+                            console.error("❌ Error details:", e);
+                          }}
+                        />
+                      )}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="bg-black/50 p-3 rounded-full">
                           <Button 
