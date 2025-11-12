@@ -85,3 +85,39 @@ p, span, div {
 button, a, input, select, textarea {
   font-family: 'Montserrat', sans-serif;
 }
+
+@keyframes twinkle {
+  from {
+    opacity: 0.3;
+  }
+
+  to {
+    opacity: 0.9;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+
+  33% {
+    transform: translateY(-15px) rotate(120deg);
+  }
+
+  66% {
+    transform: translateY(-5px) rotate(240deg);
+  }
+}
+
+@keyframes gradient-shift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+}
