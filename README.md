@@ -63,8 +63,6 @@ FashionistApp (Anna Style) es una aplicación de estilismo de moda que usa intel
 
 ### Servicios de IA
 - Google Generative AI: Análisis de imagen y contenido principal
-- OpenAI API: Servicio de respaldo especializado
-- Claves requeridas: `GEMINI2APIKEY`, `OPENAI_API_KEY`
 
 ### Base de datos y almacenamiento
 - Neon Database: Hosting PostgreSQL serverless
