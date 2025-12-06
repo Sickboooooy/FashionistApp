@@ -22,7 +22,7 @@ try {
   } else {
     genAI = new GoogleGenerativeAI(apiKey);
     
-    // Usar Gemini 1.5 Flash para generación de contenido
+    // Usar Gemini 1.5 Flash para generación de contenido (modelo estable actual)
     imageGenerationModel = genAI.getGenerativeModel({ 
       model: "gemini-1.5-flash-latest",
       generationConfig: {

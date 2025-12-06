@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, json, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, json, timestamp, decimal } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -85,6 +85,25 @@ export const insertAnnaDesignSchema = createInsertSchema(annaDesigns).omit({
   createdAt: true,
 });
 
+// 🛒 SMART INVENTORY SYSTEM - Products table
+export const products = pgTable("products", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  description: text("description"),
+  category: text("category").notNull(), // 'top', 'bottom', 'shoes', 'accessory'
+  tags: json("tags").$type<string[]>().default([]),
+  price: integer("price").notNull(), // Price in MXN cents (29900 = $299.00)
+  stock: integer("stock").notNull().default(0),
+  imageUrl: text("image_url"),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertProductSchema = createInsertSchema(products).omit({
+  id: true,
+  createdAt: true,
+});
+
 // Type Definitions
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -100,6 +119,9 @@ export type InsertOutfit = z.infer<typeof insertOutfitSchema>;
 
 export type AnnaDesign = typeof annaDesigns.$inferSelect;
 export type InsertAnnaDesign = z.infer<typeof insertAnnaDesignSchema>;
+
+export type Product = typeof products.$inferSelect;
+export type InsertProduct = z.infer<typeof insertProductSchema>;
 
 // Backward compatibility aliases
 export const seleneDesigns = annaDesigns;

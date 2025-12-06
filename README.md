@@ -3,6 +3,33 @@
 ## Panorama general
 FashionistApp (Anna Style) es una aplicación de estilismo de moda que usa inteligencia artificial para crear recomendaciones personalizadas de atuendos. Combina análisis de imágenes, preferencias del usuario y estilismo asistido por IA para generar contenido visual con calidad de revista y sugerencias de outfits a medida.
 
+## 🆕 Novedades (Diciembre 2024)
+
+### ✅ Generación de Imágenes con IA GRATIS
+- **Pollinations.ai** como proveedor primario (sin API key, 100% gratis)
+- Replicate FLUX como fallback para usuarios con token
+- Prompts optimizados para moda latinoamericana
+
+### ✅ Integración de Preferencias del Usuario
+- Toggle "Usar Mis Preferencias" en el generador de imágenes
+- Los colores, estilos y temporadas se inyectan automáticamente en los prompts
+- Visualización de preferencias activas con colores
+
+### 🚧 Smart Inventory System (En Desarrollo)
+Sistema para recomendar outfits basados en inventario real en lugar de imágenes imaginarias.
+
+**Componentes listos:**
+- [x] Tabla `products` en el esquema de base de datos
+- [x] Script de seeding con 6 productos reales
+- [x] Estructura de carpetas para imágenes de productos
+
+**Pendiente:**
+- [ ] Configurar DATABASE_URL en `.env`
+- [ ] Copiar imágenes de productos a `client/public/products/`
+- [ ] Ejecutar migración y seed
+- [ ] Servicio RAG para recomendaciones
+- [ ] Componentes de UI (ProductCard, OutfitRecommendation)
+
 ## Arquitectura del sistema
 
 ### Frontend
@@ -22,104 +49,114 @@ FashionistApp (Anna Style) es una aplicación de estilismo de moda que usa intel
 - Diseño de API: Endpoints REST con validaciones
 
 ## Integración de IA
-- 🚀 IA primaria: Replicate + FLUX (generación de imágenes muy rápida y económica)
-- 🤖 IA secundaria: Google Gemini (gemini-1.5-flash) para análisis de imágenes
-- 🎯 Respaldo: OpenAI GPT-4o para contenido y contingencia
-- 💰 Optimización de costos: Hasta 92.5% menos que OpenAI usando Replicate FLUX
-- Arquitectura híbrida: Múltiples proveedores con failover inteligente
-- Servicios: Capa dedicada con caché para operaciones de IA
+
+| Proveedor | Función | Costo |
+|-----------|---------|-------|
+| **Pollinations.ai** | Generación de imágenes (primario) | GRATIS |
+| **Replicate FLUX** | Generación de imágenes (fallback) | Bajo |
+| **Google Gemini** | Análisis de imágenes y descripciones | Gratis (tier) |
+| **OpenAI GPT-4o** | Respaldo para contenido | Pagado |
 
 ## Componentes clave
 
 ### Servicios centrales
-- Capa de IA: Orquestación híbrida entre Gemini y OpenAI
-- Servicio de imágenes: Carga, optimización y almacenamiento
-- Servicio de revista: Generación editorial para layouts de moda
-- Servicio de caché: Optimización de rendimiento con NodeCache
-- Middleware de seguridad: Helmet, rate limiting y protección XSS
+- `pollinations-service.ts`: Generación de imágenes gratuita
+- `image-generation-service.ts`: Orquestación de proveedores de IA
+- `gemini-service.ts`: Análisis de prendas con visión
+- `inventory-service.ts`: (Próximamente) Consultas de inventario
+- `outfit-recommendation-service.ts`: (Próximamente) RAG para outfits
 
 ### Frontend
-- Contexto de outfits: Estado global para generación y visualización
-- Contexto de preferencias: Configuraciones de estilo del usuario
-- Sistema UI: Componentes personalizados con temática dorada
-- Cargador de imágenes: Drag & drop con vista previa
-- Vista de revista: Flujo multi-paso para contenido editorial
+- `ai-image-generator.tsx`: Generador con integración de preferencias
+- `preference-manager.tsx`: Configuración de estilos y colores
+- `ProductCard.tsx`: (Próximamente) Tarjeta de producto
+- `OutfitRecommendation.tsx`: (Próximamente) Visualización de recomendaciones
 
 ### Esquema de datos
-- Usuarios: Autenticación y perfil
-- Preferencias: Estilos, ocasiones y temporadas
-- Prendas: Piezas individuales con metadatos
-- Outfits: Combinaciones generadas
-- Diseños Anna: Curaduría de piezas destacadas
-- Viajes y maletas: Planificación de viajes y listas de empaque
+- **users**: Autenticación y perfil
+- **user_preferences**: Estilos, ocasiones y temporadas
+- **garments**: Piezas individuales con metadatos
+- **outfits**: Combinaciones generadas
+- **products**: 🆕 Inventario real para venta
+- **trips/packing_lists**: Planificación de viajes
 
-## Flujo de datos
-- Carga de imagen: El usuario sube una prenda → Multer procesa → Sharp optimiza → Gemini analiza
-- Generación de outfit: Resultados del análisis + preferencias → OpenAI genera combinaciones → Se cachea
-- Creación de revista: Se seleccionan outfits → La IA produce contenido editorial → Exportable a PDF
-- Búsqueda de productos: Piezas sugeridas → Integración con APIs externas para compra
+## Flujo de datos (Híbrido)
 
-## Dependencias externas
+```
+Usuario ingresa prompt
+       ↓
+┌──────────────────────────────────────┐
+│  Preferencias del usuario (opcional)  │
+│  + Colores + Estilos + Temporadas     │
+└──────────────────────────────────────┘
+       ↓
+┌──────────────────────────────────────┐
+│     Pollinations.ai → Imagen IA      │ (Inspiración Visual)
+└──────────────────────────────────────┘
+       ↓
+┌──────────────────────────────────────┐
+│  RAG: Inventario Real + Gemini AI    │ (Productos Reales)
+│  → Recomendación de productos        │
+└──────────────────────────────────────┘
+       ↓
+    UI muestra:
+    - Imagen IA (mood/inspiración)
+    - ProductCards (productos comprables)
+```
 
-### Servicios de IA
-- Google Generative AI: Análisis de imagen y contenido principal
+## Instalación y desarrollo
 
-### Base de datos y almacenamiento
-- Neon Database: Hosting PostgreSQL serverless
-- Almacenamiento local: Directorio `uploads` para gestión de imágenes
+```bash
+# Instalar dependencias
+npm install
 
-### Integraciones de terceros
-- Stripe: Cobro para funciones premium
-- React Query: Manejo de estado del servidor y caché
-- Font Awesome: Librería de iconos para la UI
+# Iniciar desarrollo
+npm run dev
+
+# Build de producción
+npm run build
+
+# Migrar base de datos
+npm run db:push
+
+# Seed de productos (después de configurar DATABASE_URL)
+npx tsx server/seedProducts.ts
+```
+
+## Variables de entorno
+
+```env
+# Base de datos (requerido)
+DATABASE_URL=postgresql://...
+
+# IA (opcional - Pollinations no requiere key)
+GEMINI2APIKEY=AIza...
+REPLICATE_API_TOKEN=r8_...
+OPENAI_API_KEY=sk-...
+
+# Seguridad
+SESSION_SECRET=...
+```
 
 ## Estrategia de despliegue
 
-### Configuración de entornos
-- Desarrollo: Vite dev server en local
-- Producción: ESBuild para el servidor, Vite para el cliente
-- Base de datos: Migraciones con `db:push`
-- Variables de entorno: `DATABASE_URL` y llaves de IA
+Recomendado para México/LATAM:
+1. **Railway** - MVP rápido, $5/mes
+2. **Render** - Balance costo/features
+3. **DigitalOcean** - Producción escalable
 
-### Proceso de build
-- Cliente: Vite genera archivos en `dist/public`
-- Servidor: ESBuild compila TypeScript a `dist`
-- Assets estáticos: Servidos desde `uploads`
-- Seguridad: Helmet con cabeceras endurecidas para producción
-
-### Optimización de rendimiento
-- Optimización de imágenes con Sharp
-- Middleware de compresión de respuestas
-- Servicio de caché para resultados de IA
-- Rate limiting para proteger la API
-
-## Tareas Pendientes
-
-### ✅ Completadas
-
-- ✅ Configuración de APIs de generación de imágenes (Replicate, Gemini, OpenAI)
-- ✅ Sistema de logging mejorado para debugging
-- ✅ Build y compilación del proyecto
-
-### 🔄 En Progreso
-
-- 🔄 Debug del endpoint `/api/debug/health` - Investigando fallas intermitentes en health checks
-
-### 📋 Por Hacer
-
-- [ ] Verificar funcionalidad completa del endpoint `/api/generate-fashion-image`
-- [ ] Asegurar que la generación de imágenes con IA funcione correctamente
-- [ ] Pruebas end-to-end de generación de outfits
-- [ ] Optimización de costos con Replicate FLUX
-- [ ] Documentación de endpoints de API
-- [ ] Tests unitarios para servicios de IA
+Ver `deployment_guide.md` para detalles completos.
 
 ## Registro de cambios
 
-- 01 de noviembre de 2025: Configuración de APIs de IA y debug de servicios
+- **06 de diciembre de 2024**: 
+  - Implementación de Pollinations.ai para generación gratuita
+  - Integración de preferencias en generador de IA
+  - Inicio de Smart Inventory System (schema + seed)
+- 01 de noviembre de 2025: Configuración de APIs de IA
 - 04 de julio de 2025: Configuración inicial
 
-## Preferencias del equipo
+## Contribuidores
 
-- Estilo de comunicación preferido: Lenguaje simple y cotidiano.
-
+- **Desarrollo IA y Backend**: Antigravity AI Assistant
+- **Diseño y Producto**: Anna Style Team

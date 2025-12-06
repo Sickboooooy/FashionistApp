@@ -4,8 +4,8 @@ import path from "path";
 import { cacheService } from "./cacheService";
 import { log } from "../vite";
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { generateFashionImageWithReplicate } from "./replicate-service"; // � PLAN B ANTIFALL
-import { generateFashionImageWithGemini } from "./gemini-image-service"; // 🏆 OPCIÓN PRINCIPAL!
+import { generateFashionImageWithReplicate } from "./replicate-service"; // 💰 PLAN B (Requiere API key)
+import { generateFashionImageWithPollinations } from "./pollinations-service"; // 🆓 PRINCIPAL (GRATIS!)
 import { 
   generateMagazineStylePrompt, 
   generateSmartPrompt, 
@@ -13,7 +13,7 @@ import {
   FashionContext 
 } from "./fashion-prompt-generator"; // 🎨 SISTEMA DE PROMPTS PROFESIONAL
 
-// Inicializar cliente de Google Gemini
+// Inicializar cliente de Google Gemini (solo para descripciones, NO genera imágenes)
 let genAI: GoogleGenerativeAI | null = null;
 try {
   const apiKey = process.env.GEMINI2APIKEY || "";
@@ -21,7 +21,7 @@ try {
     log("API Key de Google Generative AI no configurada o no disponible", "gemini-error");
   } else {
     genAI = new GoogleGenerativeAI(apiKey);
-    log("Cliente Google Generative AI inicializado correctamente", "gemini");
+    log("Cliente Google Generative AI inicializado (solo para descripciones)", "gemini");
   }
 } catch (error) {
   log(`Error al inicializar cliente Google Generative AI: ${error}`, "gemini-error");
@@ -44,9 +44,13 @@ interface ImageGenerationOptions {
 }
 
 /**
- * Genera una imagen usando GEMINI FLASH 2.5 como primera opción (PRINCIPAL!)
- * Fallback a REPLICATE + FLUX.1-dev si falla (Plan B antifall)
- * 🎨 AHORA CON PROMPTS PROFESIONALES ESTILO REVISTA Y GEMINI COMO PRIORIDAD!
+ * 🎨 GENERA IMÁGENES DE MODA CON AI
+ * 
+ * ORDEN DE PRIORIDAD:
+ * 1. 🆓 POLLINATIONS.AI (GRATIS! - Sin API key requerida)
+ * 2. 💰 REPLICATE FLUX (Requiere REPLICATE_API_TOKEN)
+ * 
+ * Nota: Gemini 1.5 Flash NO puede generar imágenes, solo texto.
  */
 export async function generateFashionImage(options: ImageGenerationOptions): Promise<string> {
   const { 
@@ -99,56 +103,68 @@ export async function generateFashionImage(options: ImageGenerationOptions): Pro
     log("✨ Utilizando imagen generada de caché", "image-gen");
     return cachedResult;
   }
+
+  // Parsear dimensiones
+  const [width, height] = size.split("x").map(Number);
   
-  // 🏆 PRIMERA OPCIÓN: GEMINI FLASH 2.5 (Opción principal con facturación habilitada!)
+  // 🆓 PRIMERA OPCIÓN: POLLINATIONS.AI (GRATIS! Sin API key)
   try {
-    log(`🏆 Intentando generación con GEMINI FLASH 2.5 (opción principal)...`, "gemini-primary");
+    log(`🆓 Intentando generación con Pollinations.ai (GRATIS!)...`, "pollinations-primary");
     
-    const localImagePath = await generateFashionImageWithGemini({
+    const localImagePath = await generateFashionImageWithPollinations({
       prompt: enhancedPrompt,
-      style: fashionStyle,
-      aspectRatio: size === "1792x1024" ? "16:9" : 
-                   size === "1024x1792" ? "9:16" : "1:1",
-      targetMarket,
-      enhanceForFashion: true
+      width: width || 1024,
+      height: height || 1024,
+      model: "flux", // Modelo FLUX en Pollinations
+      fashionStyle,
+      enhance: true,
+      nologo: true
     });
     
     // Guardar en caché
     cacheService.set(cacheKey, localImagePath);
     
-    log(`🎉 Imagen generada exitosamente con GEMINI FLASH 2.5!`, "gemini-success");
+    log(`🎉 Imagen generada exitosamente con Pollinations.ai (GRATIS!)`, "pollinations-success");
     return localImagePath;
     
-  } catch (geminiError: any) {
-    log(`⚠️  Gemini Flash 2.5 falló: ${geminiError.message}. Fallback a Replicate FLUX...`, "gemini-warning");
+  } catch (pollinationsError: any) {
+    log(`⚠️ Pollinations.ai falló: ${pollinationsError.message}. Intentando Replicate FLUX...`, "pollinations-warning");
     
-    // 🔄 FALLBACK: REPLICATE + FLUX.1-dev (Plan B antifall)
-    try {
-      log("🔄 Generando con Replicate FLUX como fallback (Plan B)...", "replicate-fallback");
-      
-      // Mapear tamaño a aspect ratio
-      const aspectRatio = size === "1792x1024" ? "16:9" : 
-                         size === "1024x1792" ? "9:16" : "1:1";
-      
-      const localImagePath = await generateFashionImageWithReplicate({
-        prompt: enhancedPrompt,
-        model: fluxModel, // Usar el modelo FLUX especificado
-        aspectRatio,
-        outputFormat: "jpg",
-        outputQuality: quality === "hd" ? 95 : 85,
-        fashionStyle, // Pasar el estilo fashion
-        enhanceForFashion: true // Siempre mejorar para fashion
-      });
-      
-      // Guardar en caché
-      cacheService.set(cacheKey, localImagePath);
-      
-      log(`🎉 Imagen generada exitosamente con Replicate ${fluxModel.toUpperCase()} (fallback)!`, "replicate-success");
-      return localImagePath;
-      
-    } catch (replicateError: any) {
-      log(`❌ Error en ambos servicios - Gemini: ${geminiError.message}, Replicate: ${replicateError.message}`, "image-gen-error");
-      throw new Error("No se pudo generar la imagen con ningún proveedor. Verifica tus API keys y vuelve a intentarlo.");
+    // 💰 FALLBACK: REPLICATE + FLUX.1-dev (Requiere API key)
+    const hasReplicateToken = !!process.env.REPLICATE_API_TOKEN && 
+                               process.env.REPLICATE_API_TOKEN !== "your_replicate_token_here";
+    
+    if (hasReplicateToken) {
+      try {
+        log("💰 Generando con Replicate FLUX como fallback...", "replicate-fallback");
+        
+        // Mapear tamaño a aspect ratio
+        const aspectRatio = size === "1792x1024" ? "16:9" : 
+                           size === "1024x1792" ? "9:16" : "1:1";
+        
+        const localImagePath = await generateFashionImageWithReplicate({
+          prompt: enhancedPrompt,
+          model: fluxModel,
+          aspectRatio,
+          outputFormat: "jpg",
+          outputQuality: quality === "hd" ? 95 : 85,
+          fashionStyle,
+          enhanceForFashion: true
+        });
+        
+        // Guardar en caché
+        cacheService.set(cacheKey, localImagePath);
+        
+        log(`🎉 Imagen generada exitosamente con Replicate ${fluxModel.toUpperCase()}!`, "replicate-success");
+        return localImagePath;
+        
+      } catch (replicateError: any) {
+        log(`❌ Error en Replicate: ${replicateError.message}`, "replicate-error");
+        throw new Error(`No se pudo generar la imagen. Pollinations: ${pollinationsError.message}, Replicate: ${replicateError.message}`);
+      }
+    } else {
+      log("💡 REPLICATE_API_TOKEN no configurado - Reintentando con Pollinations...", "replicate-skip");
+      throw pollinationsError; // Re-lanzar error de Pollinations
     }
   }
 }
@@ -164,9 +180,9 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
   try {
     log("Generando imagen con Gemini...", "gemini");
     
-    // Usar el modelo gemini-2.5-flash que es más rápido y adecuado para descripciones
+    // Usar gemini-1.5-flash-latest que es el modelo estable más rápido
     const model = genAI.getGenerativeModel({ 
-      model: "models/gemini-2.5-flash",
+      model: "gemini-1.5-flash-latest",
       generationConfig: {
         temperature: 0.7,
         topP: 0.9,

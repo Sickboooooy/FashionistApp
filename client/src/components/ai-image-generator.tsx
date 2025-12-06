@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -7,10 +7,31 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import GoldBorder from "@/components/ui/gold-border";
+import { usePreferences } from "@/contexts/preferences-context";
 
-import { Loader2 } from "lucide-react";
+import { Loader2, Sparkles, Palette, Shirt, Calendar } from "lucide-react";
+
+// Helper: Convert hex color to name
+const colorNames: Record<string, string> = {
+  '#000000': 'negro',
+  '#FFFFFF': 'blanco',
+  '#0047AB': 'azul cobalto',
+  '#8B0000': 'rojo oscuro',
+  '#006400': 'verde oscuro',
+  '#800080': 'púrpura',
+  '#FFD700': 'dorado',
+  '#C0C0C0': 'plateado',
+  '#8B4513': 'marrón',
+  '#FF69B4': 'rosa'
+};
+
+const getColorName = (hex: string): string => colorNames[hex.toUpperCase()] || hex;
 
 const AIImageGenerator = () => {
+  // Get user preferences
+  const { preferences } = usePreferences();
+  const [useMyPreferences, setUseMyPreferences] = useState(true);
+  
   const [prompt, setPrompt] = useState("");
   const [style, setStyle] = useState<"vivid" | "natural">("vivid");
   const [size, setSize] = useState<"1024x1024" | "1792x1024" | "1024x1792">("1024x1024");
@@ -27,6 +48,39 @@ const AIImageGenerator = () => {
     "Look bohemio con accesorios étnicos",
     "Outfit minimalista en tonos neutros"
   ]);
+
+  // Build enhanced prompt with preferences
+  const buildPreferencesPrompt = (basePrompt: string): string => {
+    if (!useMyPreferences) return basePrompt;
+    
+    const parts: string[] = [basePrompt];
+    
+    // Add colors
+    if (preferences.colors && preferences.colors.length > 0) {
+      const colorList = preferences.colors.slice(0, 3).map(getColorName).join(', ');
+      parts.push(`colores preferidos: ${colorList}`);
+    }
+    
+    // Add styles
+    if (preferences.styles && preferences.styles.length > 0) {
+      parts.push(`estilo: ${preferences.styles.join(', ')}`);
+    }
+    
+    // Add seasons
+    if (preferences.seasons && preferences.seasons.length > 0) {
+      parts.push(`temporada: ${preferences.seasons.join(', ')}`);
+    }
+    
+    // Add top occasion
+    if (preferences.occasions && preferences.occasions.length > 0) {
+      const topOccasion = preferences.occasions.reduce((prev, curr) => 
+        curr.priority > prev.priority ? curr : prev
+      );
+      parts.push(`ocasión: ${topOccasion.name}`);
+    }
+    
+    return parts.join(', ');
+  };
 
   const handleGenerateImage = async () => {
     if (!prompt.trim()) {
@@ -67,13 +121,18 @@ const AIImageGenerator = () => {
       const timeoutId = setTimeout(() => controller.abort(), 60000); // 60 segundos de timeout
       
       try {
+        // Build prompt with preferences if enabled
+        const enhancedPrompt = buildPreferencesPrompt(prompt);
+        
         const response = await fetch("/api/generate-fashion-image", {
           method: "POST",
           body: JSON.stringify({
-            prompt,
+            prompt: enhancedPrompt,
             style,
             size,
-            quality
+            quality,
+            // Pass preferences for backend processing
+            preferences: useMyPreferences ? preferences : undefined
           }),
           headers: {
             "Content-Type": "application/json"
@@ -91,20 +150,15 @@ const AIImageGenerator = () => {
         
         const data = await response.json();
         
-        console.log("🔍 Respuesta del servidor:", data);
-        
         if (data.success) {
           // Asegurarnos de que la ruta de la imagen es correcta para el frontend
           const imagePath = data.imagePath || "";
-          console.log("📁 Ruta de imagen recibida:", imagePath);
           
-          // Construir la URL completa de la imagen - simplificado
+          // Construir la URL completa de la imagen
           const imageUrl = `http://localhost:5000/${imagePath}`;
-          console.log("🌐 URL final de imagen:", imageUrl);
           
           // Para SVGs, no necesitamos validación previa
           if (imagePath.endsWith('.svg')) {
-            console.log("📄 Archivo SVG detectado, cargando directamente");
             setGeneratedImage(imageUrl);
             
             // Actualizar historial y prompts sugeridos
@@ -127,7 +181,6 @@ const AIImageGenerator = () => {
             // Para otros tipos de imagen, verificar que se puede cargar
             const img = new Image();
             img.onload = () => {
-              console.log("✅ Imagen cargada correctamente");
               setGeneratedImage(imageUrl);
               
               // Actualizar historial y prompts sugeridos
@@ -148,15 +201,12 @@ const AIImageGenerator = () => {
               }
             };
             img.onerror = () => {
-              console.error("❌ Error al cargar imagen:", imageUrl);
               setError("Error al cargar la imagen generada");
             };
             img.src = imageUrl;
           }
           
           setError(null);
-          
-          console.log("Imagen generada con éxito:", imageUrl);
           
           // Guardar en historial
           setImageHistory(prev => [{image: imageUrl, prompt}, ...prev.slice(0, 3)]);
@@ -318,6 +368,79 @@ const AIImageGenerator = () => {
                     </Select>
                   </div>
                 </div>
+                
+                {/* Preferences Panel */}
+                <div className="border border-amber-700/30 rounded-lg p-4 bg-black-elegant/50">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-amber-300 flex items-center gap-2">
+                      <Sparkles className="h-4 w-4 text-amber-500" />
+                      Usar Mis Preferencias
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={() => setUseMyPreferences(!useMyPreferences)}
+                      className={`relative w-12 h-6 rounded-full transition-colors ${
+                        useMyPreferences ? 'bg-amber-600' : 'bg-gray-700'
+                      }`}
+                    >
+                      <span
+                        className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${
+                          useMyPreferences ? 'translate-x-6' : ''
+                        }`}
+                      />
+                    </button>
+                  </div>
+                  
+                  {useMyPreferences && (
+                    <div className="space-y-3 text-sm">
+                      {/* Colors */}
+                      {preferences.colors && preferences.colors.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <Palette className="h-4 w-4 text-amber-500/70" />
+                          <span className="text-amber-300/70">Colores:</span>
+                          <div className="flex gap-1">
+                            {preferences.colors.slice(0, 5).map((color, i) => (
+                              <div
+                                key={i}
+                                className="w-5 h-5 rounded-full border border-amber-600/50"
+                                style={{ backgroundColor: color }}
+                                title={getColorName(color)}
+                              />
+                            ))}
+                            {preferences.colors.length > 5 && (
+                              <span className="text-amber-300/50 text-xs ml-1">+{preferences.colors.length - 5}</span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Styles */}
+                      {preferences.styles && preferences.styles.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <Shirt className="h-4 w-4 text-amber-500/70" />
+                          <span className="text-amber-300/70">Estilos:</span>
+                          <span className="text-amber-50">{preferences.styles.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      {/* Seasons */}
+                      {preferences.seasons && preferences.seasons.length > 0 && (
+                        <div className="flex items-center gap-2">
+                          <Calendar className="h-4 w-4 text-amber-500/70" />
+                          <span className="text-amber-300/70">Temporadas:</span>
+                          <span className="text-amber-50">{preferences.seasons.join(', ')}</span>
+                        </div>
+                      )}
+                      
+                      <a 
+                        href="/" 
+                        className="text-xs text-amber-400 hover:text-amber-300 underline mt-2 inline-block"
+                      >
+                        Editar preferencias →
+                      </a>
+                    </div>
+                  )}
+                </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4">
                 <Button 
@@ -350,17 +473,13 @@ const AIImageGenerator = () => {
             <div className="mt-8">
               <h3 className="font-playfair text-lg text-amber-400 mb-4">Diseños Recientes</h3>
               <div className="grid grid-cols-3 gap-4">
-                {imageHistory.map((item, index) => {
-                  console.log(`🖼️ Historial ${index + 1}:`, item.image);
-                  return (
+                {imageHistory.map((item, index) => (
                     <div key={index} className="border border-amber-700/30 rounded-md overflow-hidden relative group">
                       <img 
                         src={item.image} 
                         alt={`Diseño ${index + 1}`} 
                         className="w-full h-32 object-cover"
-                        onLoad={() => console.log(`✅ Imagen historial ${index + 1} cargada`)}
                         onError={(e) => {
-                          console.error(`❌ Error cargando imagen historial ${index + 1}:`, item.image);
                           e.currentTarget.style.display = 'none';
                         }}
                       />
@@ -378,8 +497,7 @@ const AIImageGenerator = () => {
                         </Button>
                       </div>
                     </div>
-                  );
-                })}
+                  ))}
               </div>
             </div>
           )}
@@ -404,31 +522,18 @@ const AIImageGenerator = () => {
                       </div>
                     </div>
                   ) : generatedImage ? (
-                    <div className="relative group">
-                      <p className="text-xs text-gray-400 mb-2">
-                        🖼️ URL: <code>{generatedImage}</code>
-                      </p>
+                    <div className="relative group w-full">
                       {generatedImage.endsWith('.svg') ? (
                         <div className="max-w-full max-h-96 rounded-md shadow-gold overflow-hidden bg-white">
                           <object 
                             data={generatedImage} 
                             type="image/svg+xml"
                             className="w-full h-96 object-contain"
-                            onLoad={() => {
-                              console.log("✅ SVG object cargó correctamente:", generatedImage);
-                            }}
                           >
                             <img 
                               src={generatedImage} 
                               alt="Diseño generado" 
                               className="w-full h-96 object-contain"
-                              onLoad={() => {
-                                console.log("✅ SVG como IMG cargó correctamente:", generatedImage);
-                              }}
-                              onError={(e) => {
-                                console.error("❌ SVG como IMG falló:", generatedImage);
-                                console.error("❌ Error details:", e);
-                              }}
                             />
                           </object>
                         </div>
@@ -436,14 +541,7 @@ const AIImageGenerator = () => {
                         <img 
                           src={generatedImage} 
                           alt="Diseño generado" 
-                          className="max-w-full max-h-96 object-contain rounded-md shadow-gold"
-                          onLoad={() => {
-                            console.log("✅ IMG tag cargó correctamente:", generatedImage);
-                          }}
-                          onError={(e) => {
-                            console.error("❌ IMG tag falló:", generatedImage);
-                            console.error("❌ Error details:", e);
-                          }}
+                          className="w-full max-h-96 object-contain rounded-md shadow-gold"
                         />
                       )}
                       <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">

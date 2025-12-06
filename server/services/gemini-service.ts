@@ -14,9 +14,9 @@ try {
     throw new Error("API Key de Gemini no configurada");
   }
   genAI = new GoogleGenerativeAI(apiKey);
-  // Usar "models/gemini-2.5-flash" que es el modelo más nuevo y potente disponible
+  // Usar "gemini-1.5-flash-latest" que es el modelo estable más nuevo disponible
   model = genAI.getGenerativeModel({ 
-    model: "models/gemini-2.5-flash",
+    model: "gemini-1.5-flash-latest",
     generationConfig: {
       temperature: 0.4,
       topP: 0.8,
@@ -24,7 +24,7 @@ try {
       maxOutputTokens: 2048,
     },
   });
-  log("Cliente Gemini inicializado correctamente con modelo gemini-2.5-flash", "gemini");
+  log("Cliente Gemini inicializado correctamente con modelo gemini-1.5-flash-latest", "gemini");
 } catch (error) {
   log(`Error al inicializar cliente Gemini: ${error}`, "gemini-error");
 }
@@ -254,7 +254,7 @@ No incluyas ningún texto fuera del JSON. Solamente devuelve el objeto JSON.`;
       generationConfig: {
         temperature: 0.2, // Temperatura baja para respuestas más precisas
         maxOutputTokens: 1024,
-        responseType: "json", // Intentar forzar respuesta JSON
+        // responseMimeType: "application/json" // Si se necesita forzar JSON, usar este
       }
     });
     
@@ -341,8 +341,8 @@ No incluyas ningún texto fuera del JSON. Solamente devuelve el objeto JSON.`;
             occasions: []
           };
           
-          // Intentar extraer ocasiones
-          const occasionsRegex = /[\"']occasions[\"']\s*:\s*\[(.*?)\]/is;
+          // Intentar extraer ocasiones (compatible con ES2015+)
+          const occasionsRegex = /[\"']occasions[\"']\s*:\s*\[([\s\S]*?)\]/i;
           const occasionsMatch = text.match(occasionsRegex);
           if (occasionsMatch && occasionsMatch[1]) {
             const occasions = occasionsMatch[1]
@@ -353,7 +353,7 @@ No incluyas ningún texto fuera del JSON. Solamente devuelve el objeto JSON.`;
               })
               .filter(Boolean);
             
-            garmentData.occasions = occasions.length > 0 ? occasions : [];
+            garmentData.occasions = (occasions.length > 0 ? occasions : []) as string[];
           }
         }
       } catch (error) {
@@ -365,9 +365,9 @@ No incluyas ningún texto fuera del JSON. Solamente devuelve el objeto JSON.`;
       cacheService.set(cacheKey, garmentData);
       
       return garmentData;
-    } catch (abortError) {
+    } catch (abortError: unknown) {
       clearTimeout(timeoutId);
-      if (abortError.name === 'AbortError') {
+      if (abortError instanceof Error && abortError.name === 'AbortError') {
         throw new Error("La solicitud a Gemini tomó demasiado tiempo y fue cancelada");
       }
       throw abortError;
@@ -375,7 +375,7 @@ No incluyas ningún texto fuera del JSON. Solamente devuelve el objeto JSON.`;
   } catch (error) {
     log(`Error en análisis de imagen con Gemini: ${error}`, "gemini-error");
     
-    // Respuesta de fallback más descriptiva
+    // Respuesta de fallback más descriptiva (sin errorMessage para cumplir con el tipo Partial<Garment>)
     return { 
       type: "No identificado",
       color: "No identificado",
@@ -383,8 +383,7 @@ No incluyas ningún texto fuera del JSON. Solamente devuelve el objeto JSON.`;
       style: null,
       pattern: null,
       season: null,
-      occasions: [],
-      errorMessage: error instanceof Error ? error.message : "Error desconocido en el análisis"
+      occasions: []
     };
   }
 }

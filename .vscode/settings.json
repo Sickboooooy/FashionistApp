@@ -2,6 +2,8 @@
     "marquee.widgets.npm-stats.packageNames": [
         "rest-express"
     ],
-    "claudeCodeChat.permissions.yoloMode": true
+    "claudeCodeChat.permissions.yoloMode": true,
+    "livePreview.autoRefreshPreview": "Never",
+    "livePreview.openPreviewTarget": "External Browser"
 }
 
