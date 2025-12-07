@@ -18,6 +18,7 @@ import { PreferencesProvider } from "@/contexts/preferences-context";
 import ProductSearchPage from "@/pages/product-search";
 import TripsPage from "@/pages/trips";
 import PackingListsPage from "@/pages/packing-lists";
+import ImmersiveExperiencePage from "@/pages/immersive-experience";
 import { useState, useEffect } from "react";
 
 // Ruta base para despliegue
@@ -35,6 +36,7 @@ function AppRouter() {
           <Route path="/profile" component={Profile} />
           <Route path="/magazine" component={MagazineView} />
           <Route path="/ai-images" component={AIImageGeneratorPage} />
+          <Route path="/immersive-experience" component={ImmersiveExperiencePage} />
           <Route path="/api-debug" component={APIDebugPage} />
           <Route path="/product-search" component={ProductSearchPage} />
           <Route path="/trips" component={TripsPage} />
