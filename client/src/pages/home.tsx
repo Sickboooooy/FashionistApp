@@ -101,7 +101,10 @@ const ParticleTrail: FC = () => {
     };
 
     const onMouseMove = (e: MouseEvent) => {
-      spawn(e.clientX, e.clientY, Math.floor(Math.random() * 3) + 1);
+      // Densidad reducida ~60%: emite el burst (1-3) solo en el 40% de los movimientos
+      if (Math.random() < 0.4) {
+        spawn(e.clientX, e.clientY, Math.floor(Math.random() * 3) + 1);
+      }
     };
 
     // Touch: más partículas, más grandes, en cada punto del dedo
