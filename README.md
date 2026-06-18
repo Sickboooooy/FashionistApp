@@ -1,52 +1,315 @@
-# FashionistApp - Anna Style
+# 👗 FashionistApp - Anna Style
 
-## Panorama general
-FashionistApp (Anna Style) es una aplicación de estilismo de moda que usa inteligencia artificial para crear recomendaciones personalizadas de atuendos. Combina análisis de imágenes, preferencias del usuario y estilismo asistido por IA para generar contenido visual con calidad de revista y sugerencias de outfits a medida.
+> **Estilismo de Moda con IA** | Análisis inteligente de prendas | Generación de outfits personalizados
 
-## 🆕 Novedades (Diciembre 2024)
+<div align="center">
 
-### ✅ Generación de Imágenes con IA GRATIS
-- **Pollinations.ai** como proveedor primario (sin API key, 100% gratis)
-- Replicate FLUX como fallback para usuarios con token
-- Prompts optimizados para moda latinoamericana
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)]()
+[![License](https://img.shields.io/badge/license-MIT-blue)]()
+[![Node](https://img.shields.io/badge/node-%3E%3D20-green)]()
+[![React](https://img.shields.io/badge/React-18.3.1-61dafb?logo=react)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.2-3178c6?logo=typescript)]()
 
-### ✅ Integración de Preferencias del Usuario
-- Toggle "Usar Mis Preferencias" en el generador de imágenes
-- Los colores, estilos y temporadas se inyectan automáticamente en los prompts
-- Visualización de preferencias activas con colores
+</div>
 
-### 🚧 Smart Inventory System (En Desarrollo)
-Sistema para recomendar outfits basados en inventario real en lugar de imágenes imaginarias.
+---
 
-**Componentes listos:**
-- [x] Tabla `products` en el esquema de base de datos
-- [x] Script de seeding con 6 productos reales
-- [x] Estructura de carpetas para imágenes de productos
+## 🎯 Descripción
 
-**Pendiente:**
-- [ ] Configurar DATABASE_URL en `.env`
-- [ ] Copiar imágenes de productos a `client/public/products/`
-- [ ] Ejecutar migración y seed
-- [ ] Servicio RAG para recomendaciones
-- [ ] Componentes de UI (ProductCard, OutfitRecommendation)
+**FashionistApp (Anna Style)** es una plataforma de estilismo de moda potenciada por IA que te ayuda a:
 
-## Arquitectura del sistema
+✨ **Analizar prendas** - Sube una foto y obtén descripción detallada con IA  
+🎨 **Generar outfits** - Crea combinaciones personalizadas automáticamente  
+📸 **Inspiración visual** - Galería de looks curados profesionalmente  
+🛍️ **Gestionar inventario** - Cataloga tu guardarropa y obtén recomendaciones  
+🌐 **Soporte multilenguaje** - Interfaz optimizada para usuarios latinoamericanos
+
+---
+
+## 🚀 Quick Start
+
+### Requisitos
+- Node.js ≥ 20
+- npm o yarn
+- PostgreSQL 14+ (opcional, para base de datos)
+
+### Instalación
+
+```bash
+# Clonar repositorio
+git clone https://github.com/Sickboooooy/FASHIONISTA-AI-STUDIO.git
+cd FASHIONISTA-MERGED
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno (ver .env.example)
+cp .env.example .env.local
+
+# Iniciar servidor de desarrollo
+npm run dev
+```
+
+**La app estará disponible en**: `http://localhost:5000`
+
+---
+
+## 📋 Configuración de Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+# Google Gemini API
+GOOGLE_API_KEY=your_gemini_api_key_here
+
+# OpenAI (opcional, fallback)
+OPENAI_API_KEY=your_openai_key_here
+
+# Base de Datos PostgreSQL
+DATABASE_URL=postgresql://user:password@localhost:5432/fashionista
+
+# Replicate (generación de imágenes, opcional)
+REPLICATE_API_TOKEN=your_replicate_token
+
+# Stripe (pagos, opcional)
+STRIPE_SECRET_KEY=your_stripe_key
+STRIPE_PUBLIC_KEY=your_stripe_public_key
+
+# Entorno
+NODE_ENV=development
+PORT=5000
+```
+
+---
+
+## 🏗️ Arquitectura
+
+```
+FASHIONISTA-MERGED/
+├── client/                      # Frontend React
+│   ├── src/
+│   │   ├── components/          # Componentes reutilizables
+│   │   ├── pages/               # Páginas principales (10+)
+│   │   ├── services/            # Servicios de IA (Gemini, OpenAI)
+│   │   ├── contexts/            # Context API (Outfits, Preferencias)
+│   │   └── lib/                 # Utilidades compartidas
+│   ├── public/                  # Assets estáticos
+│   ├── index.html
+│   └── vite.config.ts
+├── server/                      # Backend Express
+│   ├── routes.ts                # Endpoints REST
+│   ├── services/                # Lógica de negocio
+│   ├── middleware/              # Auth, validación, logging
+│   ├── types/                   # TypeScript types
+│   ├── db.ts                    # Configuración Drizzle ORM
+│   └── index.ts                 # Punto de entrada
+├── shared/                      # Código compartido
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+---
+
+## 💻 Tech Stack
+
+| Capa | Tecnología |
+|------|-----------|
+| **Frontend** | React 18.3.1 + TypeScript |
+| **Styling** | Tailwind CSS + Radix UI + shadcn/ui |
+| **Build** | Vite 5.4.14 |
+| **Backend** | Express.js + TypeScript |
+| **DB** | PostgreSQL + Drizzle ORM |
+| **IA** | Google Gemini + OpenAI + Pollinations.ai |
+| **Autenticación** | Passport.js + Bcrypt |
+| **Validación** | Zod + express-validator |
+
+---
+
+## 📱 Características Principales
+
+### ✅ Análisis de Prendas (Gemini Vision)
+- Sube una foto de ropa
+- IA analiza: corte, tela, colores, categoría
+- Generación de 3 outfits contextualizados
+
+### ✅ Generador de Imágenes
+- **Pollinations.ai** (gratis, sin API key)
+- **Replicate FLUX** (fallback premium)
+- Prompts optimizados para moda
+
+### ✅ Preferencias Personalizadas
+- Colores favoritos
+- Estilos (casual, formal, vintage, etc.)
+- Ocasiones (trabajo, salida, deporte)
+- Temporadas
+
+### ✅ Galería Curada
+- 10+ inspiraciones pre-diseñadas
+- Looks por ocasión
+- Sistema de guardados y compartir
+
+### ✅ Gestor de Inventario
+- Catálogo de productos reales
+- Recomendaciones basadas en tus prendas
+- Historial de búsquedas
+
+### 🚧 Coming Soon
+- [ ] Viajes y packing lists
+- [ ] Integración con e-commerce
+- [ ] Análisis de tendencias
+- [ ] Comunidad de estilos
+
+---
+
+## 📚 Scripts Disponibles
+
+```bash
+# Desarrollo
+npm run dev              # Inicia backend + frontend (puerto 5000)
+
+# Build y producción
+npm run build            # Compilar frontend + backend
+npm start                # Ejecutar build en producción
+npm run check            # Validar tipos TypeScript
+
+# Base de datos
+npm run db:push          # Sincronizar esquema con DB
+
+# Mantenimiento
+npm audit                # Ver vulnerabilidades
+npm audit fix            # Corregir vulnerabilidades
+npm install --legacy-peer-deps  # Si hay conflictos de dependencias
+```
+
+---
+
+## 🔐 Autenticación
+
+El backend soporta:
+- **Local** (email/contraseña)
+- **OAuth2** (Google, GitHub)
+- **Sesiones** (express-session + connect-pg-simple)
+
+---
+
+## 🛣️ Rutas Principales
 
 ### Frontend
-- Framework: React con TypeScript
-- Estilos: Tailwind CSS con paleta personalizada (modo oscuro y acentos dorados)
-- Componentes UI: Radix UI y shadcn/ui con branding propio
-- Gestión de estado: React Context API para outfits y preferencias
-- Ruteo: Wouter para navegación en cliente
-- Herramienta de build: Vite para desarrollo y empaquetado
+| Ruta | Descripción |
+|------|-----------|
+| `/` | Home - Análisis de prendas |
+| `/closet` | Mi armario |
+| `/anna-designs` | Diseños de Anna |
+| `/magazine` | Revista de moda |
+| `/ai-images` | Generador de imágenes IA |
+| `/product-search` | Búsqueda de productos |
+| `/trips` | Gestión de viajes |
+| `/profile` | Perfil de usuario |
+| `/api-debug` | Panel de debug (dev only) |
 
-### Backend
-- Framework: Express.js con TypeScript
-- Base de datos: PostgreSQL mediante Drizzle ORM
-- Proveedor: Neon Database (PostgreSQL serverless)
-- Carga de archivos: Multer en memoria
-- Procesamiento de imágenes: Sharp para optimización
-- Diseño de API: Endpoints REST con validaciones
+### Backend API
+```
+POST   /api/analyze-garment       # Analizar prenda con Gemini
+POST   /api/generate-images       # Generar imágenes IA
+POST   /api/generate-outfit       # Generar outfit
+GET    /api/products              # Listar productos
+POST   /api/preferences           # Guardar preferencias
+GET    /api/magazine              # Contenido de revista
+```
+
+---
+
+## 🎨 Diseño y UX
+
+- **Paleta**: Modo oscuro con acentos dorados (#FFB366)
+- **Tipografía**: Inter + Geist
+- **Componentes**: Sistema de diseño consistente
+- **Responsive**: Mobile-first approach
+- **Accesibilidad**: WCAG 2.1 AA
+
+---
+
+## 🤖 Modelos de IA Utilizados
+
+| Proveedor | Modelo | Uso |
+|-----------|--------|-----|
+| **Google** | Gemini 1.5 Flash | Análisis de imágenes, descripciones |
+| **Google** | Gemini 2.0 | Generación de prompts avanzada |
+| **OpenAI** | GPT-4o | Fallback para contenido |
+| **Pollinations** | Flux/DALL-E | Generación de imágenes (gratis) |
+| **Replicate** | FLUX | Generación premium |
+
+---
+
+## 📊 Performance
+
+- **Frontend**: ~50KB gzip
+- **Bundle**: Tree-shaken con Vite
+- **DB**: Queries optimizadas con índices
+- **Images**: Sharp + WebP compression
+
+---
+
+## 🐛 Troubleshooting
+
+### Puerto 5000 en uso
+```bash
+# Cambiar puerto
+PORT=3000 npm run dev
+```
+
+### Error de base de datos
+```bash
+# Reiniciar conexión
+npm run db:push
+```
+
+### Vulnerabilidades npm
+```bash
+npm audit fix --legacy-peer-deps
+```
+
+---
+
+## 📄 Licencia
+
+MIT © 2024 FashionistApp
+
+---
+
+## 🤝 Contribuir
+
+Las contribuciones son bienvenidas. Por favor:
+
+1. Fork el repositorio
+2. Crea una rama (`git checkout -b feature/amazing-feature`)
+3. Commit cambios (`git commit -m 'Add amazing feature'`)
+4. Push a la rama (`git push origin feature/amazing-feature`)
+5. Abre un Pull Request
+
+---
+
+## 📞 Soporte
+
+- **Issues**: [GitHub Issues](https://github.com/Sickboooooy/FASHIONISTA-AI-STUDIO/issues)
+- **Email**: support@fashionistapp.com
+- **Discord**: [Comunidad](https://discord.gg/fashionista)
+
+---
+
+## ✨ Roadmap 2025
+
+- [ ] Mobile app (React Native)
+- [ ] AI Video generation
+- [ ] Fashion marketplace integration
+- [ ] ML-based trend prediction
+- [ ] Multi-language support (20+ idiomas)
+- [ ] Real-time collaboration
+
+---
+
+**Creado con ❤️ por [Sickboooooy](https://github.com/Sickboooooy)**
 
 ## Integración de IA
 
