@@ -149,10 +149,11 @@ FASHIONISTA-MERGED/
 - Looks por ocasión
 - Sistema de guardados y compartir
 
-### ✅ Gestor de Inventario
-- Catálogo de productos reales
-- Recomendaciones basadas en tus prendas
-- Historial de búsquedas
+### ✅ Smart Inventory System
+- Catálogo de productos reales (6 productos sembrados, modo demo sin DB)
+- Búsqueda y filtrado por categoría, rango de precio (MXN), tags y texto
+- Recomendaciones RAG: productos sugeridos según el outfit y tus preferencias
+- API: `/api/products`, `/api/products/suggestions`, `/api/products/:id`
 
 ### 🚧 Coming Soon
 - [ ] Viajes y packing lists
@@ -210,12 +211,14 @@ El backend soporta:
 
 ### Backend API
 ```
-POST   /api/analyze-garment       # Analizar prenda con Gemini
-POST   /api/generate-images       # Generar imágenes IA
-POST   /api/generate-outfit       # Generar outfit
-GET    /api/products              # Listar productos
-POST   /api/preferences           # Guardar preferencias
-GET    /api/magazine              # Contenido de revista
+POST   /api/analyze-garment        # Analizar prenda con Gemini
+POST   /api/generate-images        # Generar imágenes IA
+POST   /api/generate-outfit        # Generar outfit
+GET    /api/products               # Listar/buscar productos (q, category, minPrice, maxPrice, tags)
+GET    /api/products/suggestions   # Recomendar productos (outfitId | prompt, limit)
+GET    /api/products/:id           # Detalle de un producto
+POST   /api/preferences            # Guardar preferencias
+GET    /api/magazine               # Contenido de revista
 ```
 
 ---
@@ -326,14 +329,14 @@ Las contribuciones son bienvenidas. Por favor:
 - `pollinations-service.ts`: Generación de imágenes gratuita
 - `image-generation-service.ts`: Orquestación de proveedores de IA
 - `gemini-service.ts`: Análisis de prendas con visión
-- `inventory-service.ts`: (Próximamente) Consultas de inventario
-- `outfit-recommendation-service.ts`: (Próximamente) RAG para outfits
+- `inventory-service.ts`: ✅ Consultas y búsqueda del inventario (categoría, precio, tags, texto)
+- `outfit-recommendation-service.ts`: ✅ RAG ligero que recomienda productos según outfit + preferencias
 
 ### Frontend
 - `ai-image-generator.tsx`: Generador con integración de preferencias
 - `preference-manager.tsx`: Configuración de estilos y colores
-- `ProductCard.tsx`: (Próximamente) Tarjeta de producto
-- `OutfitRecommendation.tsx`: (Próximamente) Visualización de recomendaciones
+- `product-search.tsx`: ✅ Búsqueda de productos contra el inventario real (con fallback a datos simulados)
+- `product-suggestions.tsx`: ✅ Sugerencias de productos por outfit vía `/api/products/suggestions`
 
 ### Esquema de datos
 - **users**: Autenticación y perfil
@@ -412,6 +415,11 @@ Ver `deployment_guide.md` para detalles completos.
 
 ## Registro de cambios
 
+- **18 de junio de 2026**:
+  - Smart Inventory System conectado de extremo a extremo
+  - `inventory-service.ts` (búsqueda/filtrado) y `outfit-recommendation-service.ts` (RAG) implementados
+  - Nuevos endpoints `/api/products`, `/api/products/suggestions`, `/api/products/:id`
+  - `product-search.tsx` y `product-suggestions.tsx` ahora consumen la API real con fallback a datos simulados
 - **06 de diciembre de 2024**: 
   - Implementación de Pollinations.ai para generación gratuita
   - Integración de preferencias en generador de IA
