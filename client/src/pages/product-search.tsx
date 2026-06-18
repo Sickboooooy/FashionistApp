@@ -90,9 +90,48 @@ const ProductSearchPage = () => {
     { id: 'massimo', label: 'Massimo Dutti' }
   ];
 
-  const handleSearch = () => {
+  // Filtrado local sobre los datos simulados (fallback cuando la API no responde)
+  const filterMockProducts = () => {
+    let results = [...mockProducts];
+
+    if (category !== 'all') {
+      results = results.filter(product => product.category === category);
+    }
+
+    results = results.filter(product =>
+      product.price >= priceRange[0] && product.price <= priceRange[1]
+    );
+
+    if (stores.length > 0) {
+      results = results.filter(product =>
+        stores.some(store => product.store.toLowerCase().includes(store.toLowerCase()))
+      );
+    }
+
+    if (query) {
+      const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
+      results = results.filter(product => {
+        const nameMatches = searchTerms.filter(term => product.name.toLowerCase().includes(term)).length;
+        const colorMatches = searchTerms.filter(term => product.color.toLowerCase().includes(term)).length;
+        return nameMatches > 0 || colorMatches > 0;
+      });
+      results.sort((a, b) => {
+        const aRelevance = searchTerms.filter(term =>
+          a.name.toLowerCase().includes(term) || a.color.toLowerCase().includes(term)
+        ).length;
+        const bRelevance = searchTerms.filter(term =>
+          b.name.toLowerCase().includes(term) || b.color.toLowerCase().includes(term)
+        ).length;
+        return bRelevance - aRelevance;
+      });
+    }
+
+    return results;
+  };
+
+  const handleSearch = async () => {
     setIsLoading(true);
-    
+
     // Guardamos los filtros en el URL para permitir compartir/recargar
     const queryParams = new URLSearchParams(window.location.search);
     if (query) queryParams.set('q', query);
@@ -100,80 +139,53 @@ const ProductSearchPage = () => {
     queryParams.set('minPrice', priceRange[0].toString());
     queryParams.set('maxPrice', priceRange[1].toString());
     if (stores.length > 0) queryParams.set('stores', stores.join(','));
-    
-    // Actualizamos la URL sin recargar la página
+
     window.history.replaceState(
-      {}, 
-      '', 
+      {},
+      '',
       `${window.location.pathname}?${queryParams.toString()}`
     );
-    
-    // Simulamos una búsqueda con debounce (para producción usaríamos la API real)
-    const searchTimeout = setTimeout(() => {
-      try {
-        let results = [...mockProducts];
-        
-        // Filtrar por categoría si no es 'all'
-        if (category !== 'all') {
-          results = results.filter(product => product.category === category);
-        }
-        
-        // Filtrar por precio
-        results = results.filter(product => 
-          product.price >= priceRange[0] && product.price <= priceRange[1]
-        );
-        
-        // Filtrar por tiendas
-        if (stores.length > 0) {
-          results = results.filter(product => 
-            stores.some(store => product.store.toLowerCase().includes(store.toLowerCase()))
-          );
-        }
-        
-        // Filtrar por texto de búsqueda con búsqueda avanzada
-        if (query) {
-          const searchTerms = query.toLowerCase().split(' ').filter(term => term.length > 0);
-          
-          results = results.filter(product => {
-            // Búsqueda en múltiples campos con puntuación
-            const nameMatches = searchTerms.filter(term => 
-              product.name.toLowerCase().includes(term)
-            ).length;
-            
-            const colorMatches = searchTerms.filter(term => 
-              product.color.toLowerCase().includes(term)
-            ).length;
-            
-            // Considerar relevante si coincide al menos con un término en cualquier campo
-            return nameMatches > 0 || colorMatches > 0;
-          });
-          
-          // Ordenar por relevancia (cantidad de coincidencias)
-          results.sort((a, b) => {
-            const aRelevance = searchTerms.filter(term => 
-              a.name.toLowerCase().includes(term) || a.color.toLowerCase().includes(term)
-            ).length;
-            
-            const bRelevance = searchTerms.filter(term => 
-              b.name.toLowerCase().includes(term) || b.color.toLowerCase().includes(term)
-            ).length;
-            
-            return bRelevance - aRelevance;
-          });
-        }
-        
-        // Almacenar en sessionStorage para recuperar al volver a la página
-        sessionStorage.setItem('lastSearchResults', JSON.stringify(results));
-        
-        setSearchResults(results);
-      } catch (error) {
-        console.error("Error al procesar la búsqueda:", error);
-      } finally {
-        setIsLoading(false);
+
+    try {
+      // Consultamos el inventario real vía API.
+      const apiParams = new URLSearchParams();
+      if (query) apiParams.set('q', query);
+      if (category !== 'all') apiParams.set('category', category);
+      apiParams.set('minPrice', priceRange[0].toString());
+      apiParams.set('maxPrice', priceRange[1].toString());
+
+      const response = await fetch(`/api/products?${apiParams.toString()}`);
+      if (!response.ok) throw new Error(`API respondió ${response.status}`);
+
+      const data = await response.json();
+      let results: any[];
+
+      if (Array.isArray(data) && data.length > 0) {
+        // Mapeamos el inventario real al formato que espera la vista.
+        results = data.map((p: any) => ({
+          id: String(p.id),
+          name: p.name,
+          price: p.priceMXN ?? (p.price ?? 0) / 100,
+          priceLabel: p.priceFormatted ?? `$${(((p.price ?? 0) / 100)).toFixed(2)}`,
+          store: 'FashionistApp',
+          category: p.category,
+          color: (p.tags && p.tags[0]) || '',
+          imageUrl: p.imageUrl || '',
+          url: `/product-search`,
+        }));
+      } else {
+        // La API no devolvió resultados: usamos los simulados filtrados.
+        results = filterMockProducts();
       }
-    }, 500); // Reducido a 500ms para mayor responsividad
-    
-    return () => clearTimeout(searchTimeout);
+
+      sessionStorage.setItem('lastSearchResults', JSON.stringify(results));
+      setSearchResults(results);
+    } catch (error) {
+      console.error("Error al consultar la API, usando datos simulados:", error);
+      setSearchResults(filterMockProducts());
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const toggleStore = (storeId: string) => {
@@ -316,7 +328,7 @@ const ProductSearchPage = () => {
                               <h4 className="font-playfair text-sm text-amber-300">{product.name}</h4>
                               <p className="text-xs opacity-70">{product.store}</p>
                             </div>
-                            <span className="font-montserrat text-xs text-amber-deep">{product.price}€</span>
+                            <span className="font-montserrat text-xs text-amber-deep">{product.priceLabel ?? `${product.price}€`}</span>
                           </div>
                           <Button variant="link" size="sm" className="text-xs p-0 h-auto mt-2 text-amber-deep">
                             Ver producto
@@ -355,7 +367,7 @@ const ProductSearchPage = () => {
                               <p className="text-xs opacity-70">{product.store} · {product.category}</p>
                             </div>
                             <div className="text-right">
-                              <span className="font-montserrat text-sm text-amber-deep">{product.price}€</span>
+                              <span className="font-montserrat text-sm text-amber-deep">{product.priceLabel ?? `${product.price}€`}</span>
                               <Button variant="link" size="sm" className="text-xs p-0 h-auto block mt-1 text-amber-deep">
                                 Ver producto
                               </Button>

@@ -25,6 +25,9 @@ import optimizeImage from "./middleware/imageOptimizer";
 // 🔍 NUEVOS SERVICIOS DE DEBUGGING Y TESTING
 import { runCompleteAPITest, quickHealthCheck, getDebugInfo } from "./services/api-testing";
 import { getAPIConfig, checkAPIHealth } from "./services/api-config";
+// 🛒 SMART INVENTORY SYSTEM
+import { listProducts, getProductById } from "./services/inventory-service";
+import { recommendForOutfit, recommendProducts } from "./services/outfit-recommendation-service";
 
 // Función de ayuda para convertir null a undefined en las preferencias
 function formatPreferences(prefs: UserPreferences | undefined) {
@@ -350,6 +353,60 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(201).json(design);
     } catch (error) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // 🛒 SMART INVENTORY SYSTEM - Product routes
+  // List / search products from the real inventory.
+  // Query params: q, category, minPrice, maxPrice (in MXN), tags (comma-separated)
+  app.get("/api/products", async (req: Request, res: Response) => {
+    try {
+      const { q, category, minPrice, maxPrice, tags } = req.query;
+      const products = await listProducts({
+        query: typeof q === "string" ? q : undefined,
+        category: typeof category === "string" ? category : undefined,
+        minPrice: typeof minPrice === "string" ? parseFloat(minPrice) : undefined,
+        maxPrice: typeof maxPrice === "string" ? parseFloat(maxPrice) : undefined,
+        tags: typeof tags === "string" && tags.length > 0 ? tags.split(",") : undefined,
+      });
+      res.json(products);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Product suggestions (RAG): recommend products for an outfit or preferences.
+  // Query params: outfitId (number) OR prompt (string), limit (number)
+  app.get("/api/products/suggestions", async (req: Request, res: Response) => {
+    try {
+      const { outfitId, prompt, limit } = req.query;
+      const max = typeof limit === "string" ? parseInt(limit) : 3;
+
+      let suggestions;
+      if (typeof outfitId === "string") {
+        suggestions = await recommendForOutfit(parseInt(outfitId), max);
+      } else {
+        suggestions = await recommendProducts({
+          prompt: typeof prompt === "string" ? prompt : undefined,
+          limit: max,
+        });
+      }
+      res.json(suggestions);
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  app.get("/api/products/:id", async (req: Request, res: Response) => {
+    try {
+      const product = await getProductById(parseInt(req.params.id));
+      if (product) {
+        res.json(product);
+      } else {
+        res.status(404).json({ message: "Producto no encontrado" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
     }
   });
 

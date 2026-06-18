@@ -1,15 +1,25 @@
 import { 
-  users, User, InsertUser, 
+  users, User, InsertUser,
   garments, Garment, InsertGarment,
   outfits, Outfit, InsertOutfit,
   userPreferences, UserPreferences, InsertUserPreferences,
   annaDesigns, AnnaDesign, InsertAnnaDesign,
+  products, Product, InsertProduct,
   // Backward compatibility
   seleneDesigns, SeleneDesign, InsertSeleneDesign,
   trips, Trip, InsertTrip,
   packingLists, PackingList, InsertPackingList,
   packingItems, PackingItem, InsertPackingItem
 } from "@shared/schema";
+
+export interface ProductSearchFilters {
+  query?: string;
+  category?: string;
+  minPrice?: number; // in cents
+  maxPrice?: number; // in cents
+  tags?: string[];
+  activeOnly?: boolean;
+}
 
 export interface IStorage {
   // User methods
@@ -48,6 +58,13 @@ export interface IStorage {
   getAllSeleneDesigns(): Promise<SeleneDesign[]>;
   getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]>;
   createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign>;
+
+  // Product (Smart Inventory) methods
+  getProduct(id: number): Promise<Product | undefined>;
+  getAllProducts(): Promise<Product[]>;
+  getProductsByCategory(category: string): Promise<Product[]>;
+  searchProducts(filters: ProductSearchFilters): Promise<Product[]>;
+  createProduct(product: InsertProduct): Promise<Product>;
   
   // Trip planning methods
   getTrip(id: number): Promise<Trip | undefined>;
@@ -78,15 +95,17 @@ export class MemStorage implements IStorage {
   private outfits: Map<number, Outfit>;
   private userPreferences: Map<number, UserPreferences>;
   private annaDesigns: Map<number, AnnaDesign>;
+  private products: Map<number, Product>;
   private trips: Map<number, Trip>;
   private packingLists: Map<number, PackingList>;
   private packingItems: Map<number, PackingItem>;
-  
+
   private currentUserId: number;
   private currentGarmentId: number;
   private currentOutfitId: number;
   private currentPreferencesId: number;
   private currentDesignId: number;
+  private currentProductId: number;
   private currentTripId: number;
   private currentPackingListId: number;
   private currentPackingItemId: number;
@@ -97,21 +116,25 @@ export class MemStorage implements IStorage {
     this.outfits = new Map();
     this.userPreferences = new Map();
     this.annaDesigns = new Map();
+    this.products = new Map();
     this.trips = new Map();
     this.packingLists = new Map();
     this.packingItems = new Map();
-    
+
     this.currentUserId = 1;
     this.currentGarmentId = 1;
     this.currentOutfitId = 1;
     this.currentPreferencesId = 1;
     this.currentDesignId = 1;
+    this.currentProductId = 1;
     this.currentTripId = 1;
     this.currentPackingListId = 1;
     this.currentPackingItemId = 1;
-    
+
     // Initialize with some demo Anna designs
     this.initializeAnnaDesigns();
+    // Initialize with real inventory products
+    this.initializeProducts();
   }
 
   // User methods
@@ -268,7 +291,182 @@ export class MemStorage implements IStorage {
   async createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign> {
     return this.createAnnaDesign(design);
   }
-  
+
+  // Product (Smart Inventory) methods
+  async getProduct(id: number): Promise<Product | undefined> {
+    return this.products.get(id);
+  }
+
+  async getAllProducts(): Promise<Product[]> {
+    return Array.from(this.products.values());
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    return Array.from(this.products.values()).filter(
+      (product) => product.category.toLowerCase() === category.toLowerCase()
+    );
+  }
+
+  async searchProducts(filters: ProductSearchFilters): Promise<Product[]> {
+    let results = Array.from(this.products.values());
+
+    if (filters.activeOnly !== false) {
+      results = results.filter((product) => product.isActive !== false);
+    }
+
+    if (filters.category && filters.category !== "all") {
+      results = results.filter(
+        (product) => product.category.toLowerCase() === filters.category!.toLowerCase()
+      );
+    }
+
+    if (typeof filters.minPrice === "number") {
+      results = results.filter((product) => product.price >= filters.minPrice!);
+    }
+
+    if (typeof filters.maxPrice === "number") {
+      results = results.filter((product) => product.price <= filters.maxPrice!);
+    }
+
+    if (filters.tags && filters.tags.length > 0) {
+      const wanted = filters.tags.map((t) => t.toLowerCase());
+      results = results.filter((product) =>
+        (product.tags || []).some((tag) => wanted.includes(tag.toLowerCase()))
+      );
+    }
+
+    if (filters.query) {
+      const terms = filters.query
+        .toLowerCase()
+        .split(" ")
+        .filter((term) => term.length > 0);
+
+      const score = (product: Product): number => {
+        const haystack = [
+          product.name,
+          product.description || "",
+          product.category,
+          ...(product.tags || []),
+        ]
+          .join(" ")
+          .toLowerCase();
+        return terms.filter((term) => haystack.includes(term)).length;
+      };
+
+      results = results
+        .map((product) => ({ product, relevance: score(product) }))
+        .filter((entry) => entry.relevance > 0)
+        .sort((a, b) => b.relevance - a.relevance)
+        .map((entry) => entry.product);
+    }
+
+    return results;
+  }
+
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const id = this.currentProductId++;
+    const timestamp = new Date();
+    const newProduct: Product = {
+      ...product,
+      id,
+      createdAt: timestamp,
+      description: product.description ?? null,
+      tags: product.tags ?? [],
+      stock: product.stock ?? 0,
+      imageUrl: product.imageUrl ?? null,
+      isActive: product.isActive ?? true,
+    };
+    this.products.set(id, newProduct);
+    return newProduct;
+  }
+
+  // Initialize with real inventory products (mirrors server/seedProducts.ts)
+  private initializeProducts() {
+    const inventory: InsertProduct[] = [
+      {
+        name: "Jogger Wide Leg Beige",
+        description:
+          "Jogger estilo wide leg en tela tipo velvet. Súper cómodo para looks casuales y relajados. Ideal para otoño e invierno.",
+        category: "bottom",
+        tags: ["comfy", "velvet", "beige", "casual", "wide-leg", "invierno", "otoño"],
+        price: 39900,
+        stock: 15,
+        imageUrl: "/products/jogger-wide-leg-beige.jpg",
+        isActive: true,
+      },
+      {
+        name: "Pantalón Deportivo Gris Acero",
+        description:
+          "Pantalón deportivo con cierres decorativos en gris acero. Perfecto para un look urbano y moderno con toques streetwear.",
+        category: "bottom",
+        tags: ["sport", "cierres", "gris", "urbano", "streetwear", "moderno"],
+        price: 34900,
+        stock: 20,
+        imageUrl: "/products/pantalon-deportivo-gris.jpg",
+        isActive: true,
+      },
+      {
+        name: "Suéter Tejido Rayas B&W",
+        description:
+          "Suéter tejido clásico con rayas blancas y negras. Un básico atemporal que combina con todo. Perfecto para looks casuales y de oficina.",
+        category: "top",
+        tags: ["tejido", "rayas", "blanco", "negro", "clásico", "atemporal", "oficina"],
+        price: 45900,
+        stock: 12,
+        imageUrl: "/products/sueter-rayas-bw.jpg",
+        isActive: true,
+      },
+      {
+        name: "Suéter Punto Rosa Pastel",
+        description:
+          "Suéter de punto texturizado en rosa pastel con manga corta. Suave al tacto, ideal para looks femeninos y románticos.",
+        category: "top",
+        tags: ["texturizado", "suave", "rosa", "manga-corta", "femenino", "romántico", "primavera"],
+        price: 37900,
+        stock: 10,
+        imageUrl: "/products/sueter-rosa-pastel.jpg",
+        isActive: true,
+      },
+      {
+        name: "Cardigan Botones Vintage",
+        description:
+          "Cardigan con botones estilo vintage en rosa viejo. Tejido grueso perfecto como abrigo ligero. Dale un toque retro a tu outfit.",
+        category: "top",
+        tags: ["botones", "rosa-viejo", "tejido-grueso", "abrigo", "vintage", "retro", "invierno"],
+        price: 54900,
+        stock: 8,
+        imageUrl: "/products/cardigan-vintage.jpg",
+        isActive: true,
+      },
+      {
+        name: "Leggings Térmicos Translúcidos",
+        description:
+          "Leggings térmicos con efecto translúcido tipo piel. Ideales para invierno, mantienen el calor con un look elegante y discreto.",
+        category: "bottom",
+        tags: ["invierno", "térmico", "negro", "piel", "elegante", "caliente", "leggins"],
+        price: 29900,
+        stock: 25,
+        imageUrl: "/products/leggings-termicos.jpg",
+        isActive: true,
+      },
+    ];
+
+    inventory.forEach((product) => {
+      const id = this.currentProductId++;
+      const timestamp = new Date();
+      this.products.set(id, {
+        ...product,
+        id,
+        createdAt: timestamp,
+        description: product.description ?? null,
+        tags: product.tags ?? [],
+        stock: product.stock ?? 0,
+        imageUrl: product.imageUrl ?? null,
+        isActive: product.isActive ?? true,
+      });
+    });
+  }
+
   // Initialize with some demo Anna designs
   private initializeAnnaDesigns() {
     const designs: InsertAnnaDesign[] = [

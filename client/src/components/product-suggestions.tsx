@@ -55,33 +55,43 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
     },
   ];
   
-  // Efecto para simular carga de productos desde API
+  // Carga de productos sugeridos desde la API real (RAG de inventario),
+  // con fallback a datos simulados si la API falla o no devuelve resultados.
   useEffect(() => {
     const loadProducts = async () => {
       if (outfits.length === 0) return;
-      
+
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        // Simulamos la carga de datos con un retraso
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // En una aplicación real, aquí harías la llamada a la API
-        // const response = await fetch(`/api/products/suggestions?outfitId=${outfits[0].id}`);
-        // const data = await response.json();
-        // setProducts(data);
-        
-        // Por ahora, usamos los datos simulados
-        setProducts(mockProducts);
+        const response = await fetch(`/api/products/suggestions?outfitId=${outfits[0].id}`);
+        if (!response.ok) throw new Error(`API respondió ${response.status}`);
+
+        const data = await response.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setProducts(
+            data.map((p: any) => ({
+              id: String(p.id),
+              name: p.name,
+              price: p.priceFormatted ?? `$${((p.price ?? 0) / 100).toFixed(2)}`,
+              store: 'FashionistApp',
+              imageUrl: p.imageUrl || '',
+              url: `/product-search`,
+            }))
+          );
+        } else {
+          // Sin resultados de la API: usar simulados.
+          setProducts(mockProducts);
+        }
       } catch (err) {
         console.error("Error al cargar productos sugeridos:", err);
-        setError("No pudimos cargar los productos sugeridos");
+        setProducts(mockProducts);
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     loadProducts();
   }, [outfits]);
 
@@ -117,7 +127,7 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
         {outfits.map((outfit) => (
           <TabsContent key={outfit.id} value={outfit.id.toString()}>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {mockProducts.map((product) => (
+              {(products.length > 0 ? products : mockProducts).map((product) => (
                 <GoldBorder key={product.id} className="overflow-hidden bg-black group hover:shadow-[0_0_15px_rgba(255,215,0,0.15)] transition-all duration-300">
                   <div className="aspect-square overflow-hidden relative">
                     <img 
