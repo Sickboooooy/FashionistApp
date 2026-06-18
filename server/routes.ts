@@ -28,6 +28,8 @@ import { getAPIConfig, checkAPIHealth } from "./services/api-config";
 // 🛒 SMART INVENTORY SYSTEM
 import { listProducts, getProductById } from "./services/inventory-service";
 import { recommendForOutfit, recommendProducts } from "./services/outfit-recommendation-service";
+// 👗 VIRTUAL TRY-ON (ModelsLab)
+import { generateVirtualTryOn, categoryToClothType } from "./services/modelslab-tryon-service";
 
 // Función de ayuda para convertir null a undefined en las preferencias
 function formatPreferences(prefs: UserPreferences | undefined) {
@@ -405,6 +407,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
       } else {
         res.status(404).json({ message: "Producto no encontrado" });
       }
+    } catch (error) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // 👗 VIRTUAL TRY-ON: prueba una prenda del inventario sobre la foto del usuario.
+  // Acepta la imagen del modelo como archivo (campo "modelImage"), base64
+  // (body.modelImage) o URL pública (body.modelImageUrl). Usa la imagen del
+  // producto del inventario como prenda.
+  // NOTA: ModelsLab necesita URLs PÚBLICAS; en localhost usar modelImageUrl
+  // públicas o desplegar a un dominio accesible.
+  app.post("/api/products/:id/try-on", upload.single("modelImage"), async (req: Request, res: Response) => {
+    try {
+      const product = await storage.getProduct(parseInt(req.params.id));
+      if (!product) {
+        return res.status(404).json({ message: "Producto no encontrado" });
+      }
+      if (!product.imageUrl) {
+        return res.status(400).json({ message: "El producto no tiene imagen para la prueba virtual" });
+      }
+
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const toAbsolute = (u: string) =>
+        u.startsWith("http") ? u : `${baseUrl}${u.startsWith("/") ? "" : "/"}${u}`;
+
+      // Resolver la imagen del modelo a una URL pública.
+      let modelImageUrl: string;
+      if (req.file) {
+        const saved = saveBase64Image(
+          `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`
+        );
+        modelImageUrl = toAbsolute(`/${saved}`);
+      } else if (typeof req.body.modelImageUrl === "string" && req.body.modelImageUrl) {
+        modelImageUrl = req.body.modelImageUrl;
+      } else if (typeof req.body.modelImage === "string" && req.body.modelImage) {
+        const saved = saveBase64Image(req.body.modelImage);
+        modelImageUrl = toAbsolute(`/${saved}`);
+      } else {
+        return res.status(400).json({
+          message: "Falta la imagen del modelo (campo 'modelImage' o 'modelImageUrl')",
+        });
+      }
+
+      const clothImageUrl = toAbsolute(product.imageUrl);
+      const clothType = categoryToClothType(product.category);
+
+      const image = await generateVirtualTryOn({
+        modelImageUrl,
+        clothImageUrl,
+        productCategory: product.category,
+      });
+
+      res.json({
+        image,
+        clothType,
+        product: { id: product.id, name: product.name, category: product.category },
+      });
     } catch (error) {
       res.status(500).json({ message: error.message });
     }

@@ -217,6 +217,7 @@ POST   /api/generate-outfit        # Generar outfit
 GET    /api/products               # Listar/buscar productos (q, category, minPrice, maxPrice, tags)
 GET    /api/products/suggestions   # Recomendar productos (outfitId | prompt, limit)
 GET    /api/products/:id           # Detalle de un producto
+POST   /api/products/:id/try-on     # Virtual try-on: prueba la prenda sobre la foto del usuario
 POST   /api/preferences            # Guardar preferencias
 GET    /api/magazine               # Contenido de revista
 ```
@@ -322,6 +323,7 @@ Las contribuciones son bienvenidas. Por favor:
 | **Replicate FLUX** | Generación de imágenes (fallback) | Bajo |
 | **Google Gemini** | Análisis de imágenes y descripciones | Gratis (tier) |
 | **OpenAI GPT-4o** | Respaldo para contenido | Pagado |
+| **ModelsLab** | Virtual try-on de prendas del inventario | ~$0.002/img · free tier 100/día |
 
 ## Componentes clave
 
@@ -416,6 +418,8 @@ Ver `deployment_guide.md` para detalles completos.
 ## Registro de cambios
 
 - **18 de junio de 2026**:
+  - Virtual Try-On con ModelsLab: `POST /api/products/:id/try-on` prueba prendas
+    del inventario sobre la foto del usuario (`modelslab-tryon-service.ts`)
   - Smart Inventory System conectado de extremo a extremo
   - `inventory-service.ts` (búsqueda/filtrado) y `outfit-recommendation-service.ts` (RAG) implementados
   - Nuevos endpoints `/api/products`, `/api/products/suggestions`, `/api/products/:id`
