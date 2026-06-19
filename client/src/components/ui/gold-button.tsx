@@ -14,9 +14,9 @@ const GoldButton: FC<GoldButtonProps> = ({
   ...props
 }) => {
   const variantClasses = {
-    default: 'gold-button',
+    default: 'gold-button gold-shine',
     outline: 'border border-amber-deep bg-transparent text-amber-deep hover:text-black-elegant hover:gold-button',
-    rounded: 'gold-button rounded-full',
+    rounded: 'gold-button gold-shine rounded-full',
   };
 
   const sizeClasses = {
@@ -28,7 +28,7 @@ const GoldButton: FC<GoldButtonProps> = ({
   return (
     <button
       className={cn(
-        'font-montserrat font-medium shadow-lg hover:shadow-xl transition-all',
+        'font-montserrat font-medium shadow-lg hover:shadow-xl transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],
         className

@@ -1,8 +1,6 @@
 import { useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import GoldBorder from "@/components/ui/gold-border";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, Upload, Sparkles, Shirt, X, Download } from "lucide-react";
 
@@ -96,20 +94,45 @@ const VirtualTryOnPage = () => {
 
   return (
     <div className="container mx-auto px-4 py-10">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-amber-400 to-amber-600 bg-clip-text text-transparent">
+      <div className="text-center mb-10">
+        <p className="text-amber-400/80 text-xs uppercase tracking-[0.3em] mb-3">
+          Anna &middot; AI Fitting Room
+        </p>
+        <h1 className="font-playfair text-4xl md:text-5xl font-bold bg-gradient-to-r from-amber-300 via-amber-400 to-amber-600 bg-clip-text text-transparent leading-tight">
           Probador Virtual
         </h1>
-        <p className="text-amber-200/80 mt-2 max-w-2xl mx-auto">
+        <p className="font-cormorant text-amber-100/70 mt-3 max-w-2xl mx-auto text-lg">
           Sube tu foto, elige una prenda de la tienda y mira cómo te queda. En 3 sencillos pasos.
         </p>
+
+        {/* Progress indicator */}
+        <div className="flex items-center justify-center gap-2 mt-6 text-xs">
+          {[
+            { n: 1, label: "Foto", done: !!modelFile },
+            { n: 2, label: "Prenda", done: !!selectedId },
+            { n: 3, label: "Resultado", done: !!resultImage },
+          ].map((s, i) => (
+            <div key={s.n} className="flex items-center gap-2">
+              <span
+                className={`flex items-center justify-center w-6 h-6 rounded-full border transition-colors ${
+                  s.done
+                    ? "bg-amber-500 border-amber-500 text-black font-bold"
+                    : "border-amber-700/50 text-amber-300/70"
+                }`}
+              >
+                {s.done ? "✓" : s.n}
+              </span>
+              <span className={s.done ? "text-amber-200" : "text-amber-300/50"}>{s.label}</span>
+              {i < 2 && <span className="w-6 h-px bg-amber-700/40 mx-1" />}
+            </div>
+          ))}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {/* PASO 1: Tu foto */}
-        <GoldBorder>
-          <Card className="bg-black text-amber-50 border-amber-700 h-full">
-            <CardContent className="p-5 space-y-4">
+        <div className="glass-card glass-sheen h-full text-amber-50">
+          <div className="p-5 space-y-4">
               <h2 className="flex items-center gap-2 text-amber-300 font-semibold">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-600 text-black text-sm font-bold">1</span>
                 Tu foto
@@ -124,7 +147,7 @@ const VirtualTryOnPage = () => {
                     e.preventDefault();
                     handleFile(e.dataTransfer.files?.[0]);
                   }}
-                  className="w-full aspect-[3/4] rounded-lg border-2 border-dashed border-amber-700/60 hover:border-amber-500 hover:bg-amber-900/10 transition-colors flex flex-col items-center justify-center gap-3 text-amber-300/80"
+                  className="w-full aspect-[3/4] rounded-lg border-2 border-dashed border-amber-700/60 hover:border-amber-500 hover:bg-amber-900/10 transition-colors flex flex-col items-center justify-center gap-3 text-amber-300/80 cursor-pointer"
                 >
                   <Upload className="h-10 w-10" />
                   <span className="text-sm font-medium">Sube tu foto</span>
@@ -165,14 +188,12 @@ const VirtualTryOnPage = () => {
                 className="hidden"
                 onChange={(e) => handleFile(e.target.files?.[0])}
               />
-            </CardContent>
-          </Card>
-        </GoldBorder>
+          </div>
+        </div>
 
         {/* PASO 2: Elige una prenda */}
-        <GoldBorder>
-          <Card className="bg-black text-amber-50 border-amber-700 h-full">
-            <CardContent className="p-5 space-y-4">
+        <div className="glass-card glass-sheen h-full text-amber-50">
+          <div className="p-5 space-y-4">
               <h2 className="flex items-center gap-2 text-amber-300 font-semibold">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-600 text-black text-sm font-bold">2</span>
                 Elige una prenda
@@ -187,7 +208,7 @@ const VirtualTryOnPage = () => {
                   <button
                     key={f.key}
                     onClick={() => setFilter(f.key)}
-                    className={`text-xs px-3 py-1 rounded-full border transition-colors ${
+                    className={`text-xs px-3 py-1 rounded-full border transition-colors cursor-pointer ${
                       filter === f.key
                         ? "bg-amber-600 text-black border-amber-600 font-semibold"
                         : "border-amber-700/50 text-amber-300 hover:bg-amber-900/30"
@@ -211,7 +232,7 @@ const VirtualTryOnPage = () => {
                         setSelectedId(p.id);
                         setResultImage(null);
                       }}
-                      className={`text-left rounded-lg overflow-hidden border transition-all ${
+                      className={`group text-left rounded-lg overflow-hidden border transition-all cursor-pointer ${
                         selectedId === p.id
                           ? "border-amber-500 ring-2 ring-amber-500/60"
                           : "border-amber-700/30 hover:border-amber-600"
@@ -221,7 +242,7 @@ const VirtualTryOnPage = () => {
                         <img
                           src={p.imageUrl || ""}
                           alt={p.name}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                           loading="lazy"
                         />
                       </div>
@@ -233,14 +254,12 @@ const VirtualTryOnPage = () => {
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </GoldBorder>
+          </div>
+        </div>
 
         {/* PASO 3: Resultado */}
-        <GoldBorder>
-          <Card className="bg-black text-amber-50 border-amber-700 h-full">
-            <CardContent className="p-5 space-y-4">
+        <div className="glass-card glass-sheen h-full text-amber-50">
+          <div className="p-5 space-y-4">
               <h2 className="flex items-center gap-2 text-amber-300 font-semibold">
                 <span className="flex items-center justify-center w-6 h-6 rounded-full bg-amber-600 text-black text-sm font-bold">3</span>
                 Resultado
@@ -277,7 +296,7 @@ const VirtualTryOnPage = () => {
               <Button
                 onClick={handleTryOn}
                 disabled={!canTryOn}
-                className="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-black font-semibold disabled:opacity-50"
+                className="gold-shine w-full bg-gradient-to-r from-amber-500 to-amber-700 hover:from-amber-600 hover:to-amber-800 text-black font-semibold disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 {isLoading ? (
                   <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generando...</>
@@ -302,9 +321,8 @@ const VirtualTryOnPage = () => {
                   <Download className="h-4 w-4 mr-2" /> Abrir / Descargar
                 </Button>
               )}
-            </CardContent>
-          </Card>
-        </GoldBorder>
+          </div>
+        </div>
       </div>
     </div>
   );

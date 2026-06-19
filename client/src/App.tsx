@@ -28,7 +28,7 @@ function AppRouter() {
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-grow pt-16">
+      <main className="flex-grow pt-24">
         <Switch>
           <Route path="/" component={Home} />
           <Route path="/closet" component={MyCloset} />

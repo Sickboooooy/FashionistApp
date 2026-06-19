@@ -45,60 +45,77 @@ const Navbar = () => {
   };
 
   return (
-    <header className="py-3 px-4 md:px-8 border-b border-amber-deep/30 backdrop-blur-sm bg-black/80 fixed w-full top-0 z-50">
+    <header className="glass-nav glass-sheen fixed top-3 inset-x-3 md:top-4 md:inset-x-6 z-50 py-2.5 px-4 md:px-6 rounded-2xl border border-amber-deep/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.7)]">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
-          <Link href="/">
+          <Link href="/" className="rounded-md">
             <Logo />
           </Link>
         </div>
-        
+
         {/* Menú desktop */}
-        <nav className="hidden md:flex space-x-6 font-montserrat text-xs tracking-wider">
-          {navItems.map((item) => (
-            <Link 
-              key={item.path} 
-              href={item.path}
-              className={`
-                text-cream-soft/90 hover:gold-text transition-colors py-1 relative
-                ${location === item.path ? 'gold-text after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[1px] after:bg-amber-deep' : ''}
-              `}
-            >
-              {item.name}
-            </Link>
-          ))}
+        <nav className="hidden md:flex items-center gap-1 font-montserrat text-xs tracking-wider">
+          {navItems.map((item) => {
+            const active = location === item.path;
+            return (
+              <Link
+                key={item.path}
+                href={item.path}
+                aria-current={active ? 'page' : undefined}
+                className={`
+                  px-3 py-2 rounded-lg cursor-pointer transition-all duration-200
+                  ${active
+                    ? 'gold-text bg-amber-deep/10 ring-1 ring-amber-deep/30'
+                    : 'text-cream-soft/80 hover:text-cream-soft hover:bg-amber-deep/[0.07]'}
+                `}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
         </nav>
-        
+
         {/* Botón de menú móvil */}
         <div className="md:hidden">
           <button
-            className="text-cream-soft focus:outline-none"
+            className="flex items-center justify-center w-11 h-11 -mr-1 rounded-lg text-cream-soft hover:bg-amber-deep/10 transition-colors cursor-pointer"
             onClick={toggleMobileMenu}
-            aria-label="Alternar menú de navegación"
+            aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            aria-expanded={isMobileMenuOpen}
+            aria-controls="mobile-nav"
           >
-            <i className={`fas ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+            <i className={`fas text-lg ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
           </button>
         </div>
       </div>
       
       {/* Menú móvil desplegable */}
       {isMobileMenuOpen && (
-        <div className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-sm z-40 pt-20 px-4 flex flex-col">
-          <nav className="flex flex-col space-y-4 font-montserrat text-sm">
-            {navItems.map((item) => (
-              <Link 
-                key={item.path} 
-                href={item.path}
-                onClick={handleNavigation}
-                className={`
-                  text-cream-soft/90 hover:gold-text transition-all p-3 flex items-center border-b border-amber-deep/10
-                  ${location === item.path ? 'gold-text bg-amber-deep/5 rounded-md' : ''}
-                `}
-              >
-                <i className={`fas ${item.icon} mr-3 w-6 text-center ${location === item.path ? 'text-amber-deep' : 'text-amber-deep/60'}`}></i>
-                {item.name}
-              </Link>
-            ))}
+        <div
+          id="mobile-nav"
+          className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-md z-40 pt-24 px-4 flex flex-col"
+        >
+          <nav className="flex flex-col space-y-1.5 font-montserrat text-sm">
+            {navItems.map((item) => {
+              const active = location === item.path;
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  onClick={handleNavigation}
+                  aria-current={active ? 'page' : undefined}
+                  className={`
+                    min-h-[44px] p-3 flex items-center rounded-lg transition-all cursor-pointer
+                    ${active
+                      ? 'gold-text bg-amber-deep/10 ring-1 ring-amber-deep/20'
+                      : 'text-cream-soft/90 hover:text-cream-soft hover:bg-amber-deep/[0.07]'}
+                  `}
+                >
+                  <i className={`fas ${item.icon} mr-3 w-6 text-center ${active ? 'text-amber-deep' : 'text-amber-deep/60'}`}></i>
+                  {item.name}
+                </Link>
+              );
+            })}
           </nav>
         </div>
       )}

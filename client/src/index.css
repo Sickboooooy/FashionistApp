@@ -6,9 +6,17 @@
   :root {
     --background: 0 0% 0%;
     --foreground: 38 100% 97%;
-    
+
     --card: 0 0% 0%;
     --card-foreground: 38 100% 97%;
+
+    /* Liquid Glass + motion design tokens */
+    --glass-bg: 0 0% 8%;
+    --glass-border: 43 80% 55%;
+    --ease-lux: cubic-bezier(0.22, 1, 0.36, 1);
+    --dur-fast: 180ms;
+    --dur-base: 280ms;
+    --dur-slow: 480ms;
     
     --popover: 0 0% 0%;
     --popover-foreground: 38 100% 97%;
@@ -84,4 +92,116 @@ p, span, div {
 
 button, a, input, select, textarea {
   font-family: 'Montserrat', sans-serif;
+}
+
+/* ── Liquid Glass utilities ─────────────────────────────────────────────── */
+@layer components {
+  /* Frosted glass surface for cards and panels */
+  .glass-card {
+    @apply relative rounded-2xl border border-amber-deep/25 bg-white/[0.04];
+    backdrop-filter: blur(16px) saturate(140%);
+    -webkit-backdrop-filter: blur(16px) saturate(140%);
+    box-shadow:
+      0 8px 32px -8px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+    transition: border-color var(--dur-base) var(--ease-lux),
+                box-shadow var(--dur-base) var(--ease-lux),
+                transform var(--dur-base) var(--ease-lux);
+  }
+
+  .glass-card:hover {
+    @apply border-amber-deep/50;
+    box-shadow:
+      0 16px 48px -12px rgba(0, 0, 0, 0.7),
+      0 0 24px -6px rgba(255, 215, 0, 0.18),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+  }
+
+  /* Sheen highlight line at the top edge of a glass element */
+  .glass-sheen::before {
+    content: '';
+    @apply pointer-events-none absolute inset-x-0 top-0 h-px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 215, 0, 0.5),
+      transparent
+    );
+  }
+
+  /* Floating frosted navbar */
+  .glass-nav {
+    background: hsl(var(--glass-bg) / 0.6);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+  }
+
+  /* Animated gold shine sweep on primary buttons */
+  .gold-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .gold-shine::after {
+    content: '';
+    @apply pointer-events-none absolute inset-0;
+    background: linear-gradient(
+      120deg,
+      transparent 30%,
+      rgba(255, 255, 255, 0.45) 50%,
+      transparent 70%
+    );
+    transform: translateX(-120%);
+    transition: transform var(--dur-slow) var(--ease-lux);
+  }
+  .gold-shine:hover::after {
+    transform: translateX(120%);
+  }
+}
+
+/* ── Accessibility & polish ─────────────────────────────────────────────── */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Visible, on-brand focus ring for keyboard navigation */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: rgba(255, 215, 0, 0.28);
+  color: #fff8e1;
+}
+
+/* Subtle gold scrollbar to match the luxury theme */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(184, 134, 11, 0.5) transparent;
+}
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+*::-webkit-scrollbar-thumb {
+  background: rgba(184, 134, 11, 0.45);
+  border-radius: 9999px;
+}
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 215, 0, 0.6);
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
