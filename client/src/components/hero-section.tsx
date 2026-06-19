@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'wouter';
-import SpotlightContainer from './ui/spotlight-container';
-import GoldText from './ui/gold-text';
 import InputMethods from './input-methods';
 import GoldButton from './ui/gold-button';
 
@@ -72,16 +70,17 @@ const HeroSection = () => {
       </div>
 
       {/* Interactive Options Section */}
-      <SpotlightContainer className="py-16 relative overflow-hidden bg-stone-950">
-        <div className="absolute inset-0 bg-gradient-radial from-amber-deep/5 to-transparent opacity-30"></div>
-        
-        <div className={`container mx-auto text-center max-w-3xl transition-all duration-1000 relative z-10 ${
-          isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'
-        }`}>
-          <h2 className="font-playfair text-3xl md:text-4xl mb-6 leading-tight tracking-wide">
-            <GoldText>Anna</GoldText>
+      <section className="section-editorial relative overflow-hidden">
+        <div className="container mx-auto text-center max-w-3xl relative z-10">
+          <span className="section-label">Tu estilista IA</span>
+          <h2 className={`section-title transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}>
+            <span className="italic text-amber-500">Anna</span>
           </h2>
-          <p className="font-cormorant text-lg md:text-xl text-cream-soft/90 mb-10 italic">
+          <p className={`section-desc italic transition-all duration-1000 ${
+            isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-6'
+          }`}>
             Elegancia personalizada
           </p>
           
@@ -97,13 +96,13 @@ const HeroSection = () => {
             <GoldButton 
               variant="rounded" 
               onClick={scrollToShowcase}
-              className="px-8 py-3 text-sm tracking-wider"
+              className="px-8 py-3 text-xs tracking-[0.2em] uppercase"
             >
-              INSPIRACIONES
+              Inspiraciones
             </GoldButton>
           </div>
         </div>
-      </SpotlightContainer>
+      </section>
     </>
   );
 };

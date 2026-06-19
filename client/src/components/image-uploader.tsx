@@ -89,7 +89,7 @@ const ImageUploader = () => {
   return (
     <div className="w-full max-w-md mx-auto">
       <GoldBorder 
-        className={`p-8 relative ${isDragging ? 'bg-amber-50/10' : ''} transition-colors`}
+        className={`p-8 relative ${isDragging ? 'border-amber-500/50 bg-amber-500/5' : ''} transition-colors`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -105,7 +105,7 @@ const ImageUploader = () => {
               <button
                 type="button"
                 onClick={handleReset}
-                className="absolute top-2 right-2 bg-black/70 text-cream-soft rounded-full p-1 hover:bg-black"
+                className="absolute top-2 right-2 bg-stone-950/80 text-stone-300 rounded-full p-1.5 hover:bg-stone-900 border border-amber-500/20"
                 aria-label="Remove image"
               >
                 <i className="fas fa-times"></i>
@@ -116,27 +116,27 @@ const ImageUploader = () => {
               type="button"
               onClick={handleSubmit}
               disabled={isLoading}
-              className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full"
+              className="gold-button gold-shine font-montserrat text-xs font-medium uppercase tracking-wider px-8 py-3 rounded-full"
             >
-              {isLoading ? 'GENERANDO OUTFITS...' : 'GENERAR OUTFITS'}
+              {isLoading ? 'Generando outfits...' : 'Generar outfits'}
             </button>
           </div>
         ) : (
           <div className="text-center">
             <div className="mb-4">
-              <i className="fas fa-cloud-upload-alt text-4xl text-amber-deep"></i>
+              <i className="fas fa-cloud-upload-alt text-4xl text-amber-500/60"></i>
             </div>
-            <h3 className="font-playfair text-xl mb-2 gold-text">Sube una Prenda</h3>
-            <p className="font-cormorant mb-6">
+            <h3 className="font-serif text-xl mb-2 text-stone-100">Sube una Prenda</h3>
+            <p className="text-stone-400 font-light mb-6">
               Arrastra y suelta una imagen de tu prenda o haz clic para buscar
             </p>
             
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="gold-button font-montserrat text-sm font-medium px-8 py-3 rounded-full"
+              className="gold-button gold-shine font-montserrat text-xs font-medium uppercase tracking-wider px-8 py-3 rounded-full"
             >
-              SELECCIONAR IMAGEN
+              Seleccionar imagen
             </button>
             
             <input
@@ -147,7 +147,7 @@ const ImageUploader = () => {
               className="hidden"
             />
             
-            <p className="mt-4 font-cormorant text-sm opacity-70">
+            <p className="mt-4 text-stone-500 text-sm font-light">
               Formatos permitidos: JPG, PNG, WEBP
             </p>
           </div>

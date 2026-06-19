@@ -26,7 +26,7 @@ const basePath = ""; // Si se despliega en una subruta, cambia esto a "/subruta"
 
 function AppRouter() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-stone-950">
       <Navbar />
       <main className="flex-grow pt-24">
         <Switch>

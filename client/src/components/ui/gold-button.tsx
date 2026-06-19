@@ -15,7 +15,7 @@ const GoldButton: FC<GoldButtonProps> = ({
 }) => {
   const variantClasses = {
     default: 'gold-button gold-shine',
-    outline: 'border border-amber-deep bg-transparent text-amber-deep hover:text-black-elegant hover:gold-button',
+    outline: 'border border-amber-500/60 bg-transparent text-amber-300 hover:bg-amber-500/10 hover:text-amber-200',
     rounded: 'gold-button gold-shine rounded-full',
   };
 

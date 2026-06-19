@@ -45,7 +45,7 @@ const Navbar = () => {
   };
 
   return (
-    <header className="glass-nav glass-sheen fixed top-3 inset-x-3 md:top-4 md:inset-x-6 z-50 py-2.5 px-4 md:px-6 rounded-2xl border border-amber-deep/30 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.7)]">
+    <header className="glass-nav glass-sheen fixed top-3 inset-x-3 md:top-4 md:inset-x-6 z-50 py-2.5 px-4 md:px-6 rounded-2xl border border-amber-500/20 shadow-[0_8px_32px_-8px_rgba(0,0,0,0.7)]">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center">
           <Link href="/" className="rounded-md">
@@ -65,8 +65,8 @@ const Navbar = () => {
                 className={`
                   px-3 py-2 rounded-lg cursor-pointer transition-all duration-200
                   ${active
-                    ? 'gold-text bg-amber-deep/10 ring-1 ring-amber-deep/30'
-                    : 'text-cream-soft/80 hover:text-cream-soft hover:bg-amber-deep/[0.07]'}
+                    ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/25'
+                    : 'text-stone-400 hover:text-stone-200 hover:bg-white/[0.04]'}
                 `}
               >
                 {item.name}
@@ -78,7 +78,7 @@ const Navbar = () => {
         {/* Botón de menú móvil */}
         <div className="md:hidden">
           <button
-            className="flex items-center justify-center w-11 h-11 -mr-1 rounded-lg text-cream-soft hover:bg-amber-deep/10 transition-colors cursor-pointer"
+            className="flex items-center justify-center w-11 h-11 -mr-1 rounded-lg text-stone-300 hover:bg-white/[0.04] transition-colors cursor-pointer"
             onClick={toggleMobileMenu}
             aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
             aria-expanded={isMobileMenuOpen}
@@ -93,7 +93,7 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div
           id="mobile-nav"
-          className="md:hidden fixed inset-0 bg-black/95 backdrop-blur-md z-40 pt-24 px-4 flex flex-col"
+          className="md:hidden fixed inset-0 bg-stone-950/95 backdrop-blur-md z-40 pt-24 px-4 flex flex-col"
         >
           <nav className="flex flex-col space-y-1.5 font-montserrat text-sm">
             {navItems.map((item) => {
@@ -107,11 +107,11 @@ const Navbar = () => {
                   className={`
                     min-h-[44px] p-3 flex items-center rounded-lg transition-all cursor-pointer
                     ${active
-                      ? 'gold-text bg-amber-deep/10 ring-1 ring-amber-deep/20'
-                      : 'text-cream-soft/90 hover:text-cream-soft hover:bg-amber-deep/[0.07]'}
+                      ? 'text-amber-400 bg-amber-500/10 ring-1 ring-amber-500/20'
+                      : 'text-stone-300 hover:text-stone-100 hover:bg-white/[0.04]'}
                   `}
                 >
-                  <i className={`fas ${item.icon} mr-3 w-6 text-center ${active ? 'text-amber-deep' : 'text-amber-deep/60'}`}></i>
+                  <i className={`fas ${item.icon} mr-3 w-6 text-center ${active ? 'text-amber-400' : 'text-amber-500/50'}`}></i>
                   {item.name}
                 </Link>
               );

@@ -1,5 +1,4 @@
 import { useOutfit } from '../contexts/outfit-context';
-import GoldText from './ui/gold-text';
 import ImageUploader from './image-uploader';
 import OutfitResults from './outfit-results';
 import OutfitCard from './outfit-card';
@@ -38,14 +37,15 @@ const OutfitShowcase = () => {
   const showSampleOutfits = !isLoading && generatedOutfits.length === 0;
   
   return (
-    <section id="outfit-showcase" className="py-12 px-4 md:px-8">
+    <section id="outfit-showcase" className="section-editorial">
       <div className="container mx-auto">
         {/* Main Outfit Generation Section */}
         <div className="mb-16">
-          <h2 className="font-playfair text-2xl md:text-3xl mb-2 text-center">
-            <GoldText>Crea Tu</GoldText> Outfit Perfecto
+          <span className="section-label">Personalizado con IA</span>
+          <h2 className="section-title">
+            Crea tu <span className="italic text-amber-500">outfit</span> perfecto
           </h2>
-          <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
+          <p className="section-desc">
             Sube una imagen de tu prenda y nuestra estilista con IA generará combinaciones personalizadas
           </p>
           
@@ -61,10 +61,11 @@ const OutfitShowcase = () => {
         {/* Sample Outfits or Saved Collections */}
         {showSampleOutfits && (
           <div>
-            <h3 className="font-playfair text-xl md:text-2xl mb-2 text-center">
-              <GoldText>Inspiraciones</GoldText> Curadas
+            <span className="section-label">Curado por Anna</span>
+            <h3 className="section-title text-2xl md:text-3xl">
+              <span className="italic text-amber-500">Inspiraciones</span> seleccionadas
             </h3>
-            <p className="font-cormorant text-center text-lg mb-10 opacity-80 max-w-2xl mx-auto">
+            <p className="section-desc">
               Explora estas propuestas o crea tus propios outfits personalizados arriba
             </p>
             
@@ -79,10 +80,11 @@ const OutfitShowcase = () => {
         {/* Saved Outfits Section (if any) */}
         {savedOutfits.length > 0 && (
           <div className="mt-20">
-            <h3 className="font-playfair text-xl md:text-2xl mb-2 text-center">
-              <GoldText>Tu Colección</GoldText> Guardada
+            <span className="section-label">Tu guardarropa</span>
+            <h3 className="section-title text-2xl md:text-3xl">
+              Colección <span className="italic text-amber-500">guardada</span>
             </h3>
-            <p className="font-cormorant text-center text-lg mb-6 opacity-80 max-w-2xl mx-auto">
+            <p className="section-desc mb-6">
               Conjuntos que has guardado para consultarlos más adelante
             </p>
             
@@ -97,7 +99,7 @@ const OutfitShowcase = () => {
                 <Link href="/my-closet">
                   <Button 
                     variant="outline" 
-                    className="border-gold-light text-gold-light hover:bg-amber-deep/10"
+                    className="rounded-full border-amber-500/50 bg-amber-500/5 text-amber-300 hover:bg-amber-500/15 hover:text-amber-200"
                   >
                     Ver Todos los Outfits Guardados
                   </Button>

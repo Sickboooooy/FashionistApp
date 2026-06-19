@@ -177,7 +177,7 @@ const ParticleTrail: FC = () => {
 
 const Home: FC = () => {
   return (
-    <div className="relative w-full">
+    <div className="relative w-full bg-stone-950">
       <ParticleTrail />
       <div className="relative z-0">
         <HeroSection />

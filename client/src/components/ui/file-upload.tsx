@@ -82,8 +82,8 @@ const FileUpload: FC<FileUploadProps> = ({
   return (
     <div
       className={cn(
-        'relative gold-border rounded-lg p-6 bg-black hover:spotlight transition-all cursor-pointer h-48 flex flex-col items-center justify-center text-center group',
-        isDragOver && 'border-gold-light spotlight',
+        'glass-card p-6 h-48 flex flex-col items-center justify-center text-center group cursor-pointer',
+        isDragOver && 'border-amber-500/50 bg-amber-500/5',
         isLoading && 'opacity-70 cursor-wait',
         className
       )}
@@ -94,19 +94,19 @@ const FileUpload: FC<FileUploadProps> = ({
     >
       {isLoading ? (
         <div className="animate-pulse flex flex-col items-center">
-          <div className="w-8 h-8 border-4 border-t-gold-light border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
-          <p className="font-cormorant text-gold-light">Processing...</p>
+          <div className="w-8 h-8 border-2 border-t-amber-500 border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-amber-400/80 font-light text-sm">Procesando...</p>
         </div>
       ) : (
         <>
           {icon && (
-            <div className="text-3xl mb-4 text-amber-deep group-hover:gold-text transition-colors">
+            <div className="text-3xl mb-4 text-amber-500/60 group-hover:text-amber-400 transition-colors">
               {icon}
             </div>
           )}
-          <h3 className="font-playfair text-lg mb-2 gold-text">{label}</h3>
+          <h3 className="font-serif text-lg mb-2 text-stone-100">{label}</h3>
           {description && (
-            <p className="font-cormorant text-sm opacity-80 mb-4">{description}</p>
+            <p className="text-sm text-stone-400 font-light mb-4">{description}</p>
           )}
         </>
       )}

@@ -17,32 +17,32 @@ const OutfitItem = ({ outfit }: OutfitItemProps) => {
   const { saveOutfit } = useOutfit();
 
   return (
-    <GoldBorder className="overflow-hidden group transition-all duration-300 hover:shadow-[0_0_15px_rgba(255,215,0,0.3)]">
+    <GoldBorder className="overflow-hidden group transition-all duration-300">
       <div className="relative">
         <img 
           src={outfit.imageUrl} 
           alt={outfit.name} 
           className="w-full h-64 object-cover transition-transform duration-500 group-hover:scale-105"
         />
-        <Badge variant="outline" className="absolute bottom-2 right-2 bg-black/60 text-amber-300 border-amber-500">
+        <Badge variant="outline" className="absolute bottom-2 right-2 bg-stone-950/70 text-amber-400 border-amber-500/30 backdrop-blur-sm uppercase tracking-wider text-[10px]">
           {outfit.occasion}
         </Badge>
       </div>
 
-      <div className="p-4 bg-black">
-        <h3 className="font-playfair text-xl gold-text mb-2">{outfit.name}</h3>
+      <div className="p-5">
+        <h3 className="font-serif text-xl text-stone-100 mb-2">{outfit.name}</h3>
 
-        <p className="font-cormorant text-sm line-clamp-2 mb-4 text-cream-soft/80">
+        <p className="text-sm line-clamp-2 mb-4 text-stone-300/80 font-light">
           {outfit.description}
         </p>
 
-        <Separator className="bg-amber-deep/20 my-3" />
+        <Separator className="bg-amber-500/10 my-3" />
 
         <div className="flex justify-between items-center">
           <Button 
             variant="ghost" 
             size="sm"
-            className="p-0 text-cream-soft hover:text-amber-deep hover:bg-transparent"
+            className="p-0 text-stone-400 hover:text-amber-400 hover:bg-transparent"
             onClick={() => saveOutfit(outfit)}
           >
             <i className="far fa-bookmark mr-1"></i> Guardar
@@ -51,7 +51,7 @@ const OutfitItem = ({ outfit }: OutfitItemProps) => {
           <Button 
             variant="link" 
             size="sm"
-            className="text-xs font-montserrat text-amber-deep hover:text-amber-deep/80 p-0"
+            className="text-[10px] font-montserrat uppercase tracking-wider text-amber-400/80 hover:text-amber-400 p-0"
           >
             Detalles
           </Button>
@@ -64,17 +64,17 @@ const OutfitItem = ({ outfit }: OutfitItemProps) => {
 const LoadingState = () => (
   <div className="w-full max-w-xl mx-auto text-center py-12">
     <div className="flex flex-col items-center">
-      <Loader2 className="h-12 w-12 text-amber-deep animate-spin mb-4" />
-      <p className="text-amber-300/70">Generando conjuntos...</p>
+      <Loader2 className="h-10 w-10 text-amber-500/70 animate-spin mb-4" />
+      <p className="text-stone-400 font-light">Generando conjuntos...</p>
     </div>
   </div>
 );
 
 const ErrorState = ({ error }: { error: string }) => (
-  <div className="w-full max-w-xl mx-auto text-center py-12 bg-black-elegant rounded-lg border border-red-800/30 px-4">
-    <i className="fas fa-exclamation-triangle text-red-500 text-2xl mb-4"></i>
-    <p className="text-red-400 mb-2">Error al generar los conjuntos</p>
-    <p className="text-red-400/70 text-sm">{error}</p>
+  <div className="w-full max-w-xl mx-auto text-center py-12 glass-card px-4 border-red-500/20">
+    <i className="fas fa-exclamation-triangle text-red-400/80 text-2xl mb-4"></i>
+    <p className="text-red-400/90 mb-2 font-light">Error al generar los conjuntos</p>
+    <p className="text-stone-500 text-sm font-light">{error}</p>
   </div>
 );
 
@@ -114,9 +114,9 @@ const OutfitResults = () => {
       id="outfit-results"
     >
       <div className="relative mb-12">
-        <div className="absolute left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-amber-deep/30 to-transparent"></div>
-        <h2 className="font-playfair text-2xl md:text-3xl text-center gold-text py-4 relative">
-          <span className="bg-black px-6">Sugerencias para Ti</span>
+        <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-amber-500/20 to-transparent"></div>
+        <h2 className="font-serif text-2xl md:text-3xl text-center text-stone-100 py-4 relative">
+          <span className="bg-stone-950 px-6">Sugerencias para <span className="italic text-amber-500">ti</span></span>
         </h2>
       </div>
 

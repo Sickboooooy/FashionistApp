@@ -48,27 +48,29 @@
   }
   
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased bg-stone-950 text-stone-100;
   }
   
   /* Custom Utility Classes */
   .spotlight {
     @apply relative;
-    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+    background: radial-gradient(ellipse at 50% 0%, rgba(245, 158, 11, 0.04) 0%, transparent 55%);
   }
   
   .gold-border {
-    @apply border border-amber-deep transition-all;
+    @apply border border-amber-500/20 transition-all;
   }
   
   .gold-text {
-    @apply text-transparent bg-clip-text bg-gradient-to-r from-gold-light to-gold-dark;
+    @apply text-amber-400;
   }
   
   .gold-button {
-    @apply bg-gradient-to-r from-gold-light to-gold-dark text-black-elegant transition-all
-            hover:bg-gradient-to-r hover:from-gold-dark hover:to-gold-light
-            hover:shadow-[0_0_10px_rgba(255,215,0,0.5)];
+    @apply relative inline-flex items-center justify-center rounded-full
+            bg-amber-500/10 border border-amber-500/60 text-amber-300
+            backdrop-blur-md transition-all duration-300
+            hover:bg-amber-500 hover:border-amber-500 hover:text-stone-900
+            hover:shadow-[0_0_30px_-4px_rgba(245,158,11,0.35)];
   }
   
   .gold-glow {
@@ -96,25 +98,48 @@ button, a, input, select, textarea {
 
 /* ── Liquid Glass utilities ─────────────────────────────────────────────── */
 @layer components {
+  /* Editorial section rhythm (matches hero) */
+  .section-editorial {
+    @apply relative py-16 px-4 md:px-8 bg-stone-950;
+  }
+
+  .section-editorial::before {
+    content: '';
+    @apply pointer-events-none absolute inset-x-0 top-0 h-px;
+    background: linear-gradient(90deg, transparent, rgba(245, 158, 11, 0.18), transparent);
+  }
+
+  .section-label {
+    @apply block text-center text-amber-400/80 text-[10px] md:text-xs uppercase tracking-[0.35em] mb-4;
+  }
+
+  .section-title {
+    @apply font-serif text-3xl md:text-4xl text-stone-100 text-center leading-tight mb-4;
+  }
+
+  .section-desc {
+    @apply text-stone-300/80 text-base md:text-lg font-light text-center max-w-2xl mx-auto mb-10 leading-relaxed;
+  }
+
   /* Frosted glass surface for cards and panels */
   .glass-card {
-    @apply relative rounded-2xl border border-amber-deep/25 bg-white/[0.04];
+    @apply relative rounded-2xl border border-amber-500/20 bg-white/[0.03];
     backdrop-filter: blur(16px) saturate(140%);
     -webkit-backdrop-filter: blur(16px) saturate(140%);
     box-shadow:
-      0 8px 32px -8px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+      0 8px 32px -8px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.04);
     transition: border-color var(--dur-base) var(--ease-lux),
                 box-shadow var(--dur-base) var(--ease-lux),
                 transform var(--dur-base) var(--ease-lux);
   }
 
   .glass-card:hover {
-    @apply border-amber-deep/50;
+    @apply border-amber-500/40;
     box-shadow:
-      0 16px 48px -12px rgba(0, 0, 0, 0.7),
-      0 0 24px -6px rgba(255, 215, 0, 0.18),
-      inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+      0 16px 48px -12px rgba(0, 0, 0, 0.6),
+      0 0 24px -8px rgba(245, 158, 11, 0.12),
+      inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
   }
 
   /* Sheen highlight line at the top edge of a glass element */

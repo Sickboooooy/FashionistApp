@@ -15,7 +15,7 @@ const SpotlightContainer: FC<SpotlightContainerProps> = ({
   return (
     <div 
       className={cn(
-        'spotlight py-12 px-4 md:px-8',
+        'section-editorial',
         centered && 'flex flex-col items-center justify-center text-center',
         className
       )}

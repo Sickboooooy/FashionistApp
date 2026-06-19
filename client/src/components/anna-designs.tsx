@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import DesignCard from './design-card';
-import GoldText from './ui/gold-text';
 import GoldButton from './ui/gold-button';
 import { Link } from 'wouter';
 
@@ -36,25 +35,26 @@ const AnnaDesigns = () => {
     : designs.filter((design) => design.category === selectedCategory);
 
   return (
-    <section className="py-12 px-4 md:px-8 bg-gradient-to-b from-black to-[#0A0A0A]">
+    <section className="section-editorial">
       <div className="container mx-auto">
         <div className="text-center mb-10">
-          <h2 className="font-playfair text-2xl md:text-3xl mb-2">
-            <GoldText>Anna Designs</GoldText> Colección
+          <span className="section-label">Colección exclusiva</span>
+          <h2 className="section-title">
+            Anna Designs <span className="italic text-amber-500">Colección</span>
           </h2>
-          <p className="font-cormorant text-lg mb-8 opacity-80 max-w-2xl mx-auto">
+          <p className="section-desc">
             Piezas exclusivas hechas a mano que transforman lo cotidiano en extraordinario
           </p>
           
           {/* Category Tabs */}
-          <div className="inline-flex border border-amber-deep rounded-full p-1 bg-black mb-10">
+          <div className="inline-flex gap-1 border border-amber-500/20 rounded-full p-1 bg-white/[0.03] backdrop-blur-sm mb-10">
             {categoryOptions.map((category) => (
               <button
                 key={category.value}
-                className={`px-5 py-2 rounded-full text-sm font-montserrat ${
+                className={`px-5 py-2 rounded-full text-xs font-montserrat uppercase tracking-wider transition-all duration-200 ${
                   selectedCategory === category.value
-                    ? 'gold-button text-black'
-                    : 'text-cream-soft hover:text-amber-deep'
+                    ? 'bg-amber-500/15 text-amber-300 border border-amber-500/40'
+                    : 'text-stone-400 hover:text-stone-200 border border-transparent'
                 }`}
                 onClick={() => setSelectedCategory(category.value)}
               >
@@ -66,11 +66,11 @@ const AnnaDesigns = () => {
         
         {isLoading ? (
           <div className="text-center py-12">
-            <p className="font-cormorant text-lg">Cargando diseños...</p>
+            <p className="text-stone-400 font-light">Cargando diseños...</p>
           </div>
         ) : isError ? (
           <div className="text-center py-12">
-            <p className="font-cormorant text-lg text-red-500">Error al cargar los diseños</p>
+            <p className="text-red-400/90 font-light">Error al cargar los diseños</p>
           </div>
         ) : (
           <>

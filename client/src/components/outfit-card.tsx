@@ -62,36 +62,36 @@ const OutfitCard = ({ outfit }: OutfitCardProps) => {
         />
         {/* Gradient scrim improves legibility of the badge over any image */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-        <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full border border-amber-deep/50 bg-black/50 backdrop-blur-md">
-          <span className="font-montserrat text-[10px] tracking-[0.15em] gold-text">{outfit.occasion}</span>
+        <div className="absolute bottom-3 right-3 px-3 py-1 rounded-full border border-amber-500/30 bg-stone-950/70 backdrop-blur-md">
+          <span className="font-montserrat text-[10px] tracking-[0.15em] uppercase text-amber-400">{outfit.occasion}</span>
         </div>
       </div>
-      <div className="p-6 bg-black">
-        <h3 className="font-playfair text-xl mb-2 gold-text">{outfit.name}</h3>
-        <p className="font-cormorant mb-4 text-sm md:text-base text-cream-soft/85 line-clamp-3">
+      <div className="p-6">
+        <h3 className="font-serif text-xl mb-2 text-stone-100">{outfit.name}</h3>
+        <p className="mb-4 text-sm md:text-base text-stone-300/80 font-light line-clamp-3">
           {outfit.description}
         </p>
-        <div className="flex justify-between items-center pt-1 border-t border-amber-deep/15">
+        <div className="flex justify-between items-center pt-1 border-t border-amber-500/10">
           <div className="flex gap-3 pt-3">
             <button
-              className="text-cream-soft/90 hover:gold-text text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-stone-400 hover:text-amber-400 text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
               onClick={handleSaveOutfit}
               aria-pressed={isSaved}
             >
-              <i className={`${isSaved ? 'fas text-amber-deep' : 'far'} fa-bookmark`}></i> Guardar
+              <i className={`${isSaved ? 'fas text-amber-400' : 'far'} fa-bookmark`}></i> Guardar
             </button>
             <button
-              className="text-cream-soft/90 hover:gold-text text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+              className="text-stone-400 hover:text-amber-400 text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
               onClick={handleShareOutfit}
             >
               <i className="far fa-share-square"></i> Compartir
             </button>
           </div>
           <button
-            className="text-xs font-montserrat gold-text hover:underline pt-3 cursor-pointer"
+            className="text-[10px] font-montserrat uppercase tracking-wider text-amber-400/80 hover:text-amber-400 pt-3 cursor-pointer transition-colors"
             onClick={handleViewDetails}
           >
-            VER DETALLES
+            Ver detalles
           </button>
         </div>
       </div>
