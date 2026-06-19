@@ -386,7 +386,7 @@ export class MemStorage implements IStorage {
       {
         name: "Jogger Wide Leg Beige",
         description:
-          "Jogger estilo wide leg en tela tipo velvet. Súper cómodo para looks casuales y relajados. Ideal para otoño e invierno.",
+          "Jogger estilo wide leg en tela tipo velvet con cintura ajustable. Súper cómodo para looks casuales y relajados. Ideal para otoño e invierno.",
         category: "bottom",
         tags: ["comfy", "velvet", "beige", "casual", "wide-leg", "invierno", "otoño"],
         price: 39900,
@@ -408,7 +408,7 @@ export class MemStorage implements IStorage {
       {
         name: "Suéter Tejido Rayas B&W",
         description:
-          "Suéter tejido clásico con rayas blancas y negras. Un básico atemporal que combina con todo. Perfecto para looks casuales y de oficina.",
+          "Suéter tejido calado con rayas blancas y negras y detalle pointelle. Un básico atemporal que combina con todo. Perfecto para looks casuales y de oficina.",
         category: "top",
         tags: ["tejido", "rayas", "blanco", "negro", "clásico", "atemporal", "oficina"],
         price: 45900,
@@ -419,18 +419,18 @@ export class MemStorage implements IStorage {
       {
         name: "Suéter Punto Rosa Pastel",
         description:
-          "Suéter de punto texturizado en rosa pastel con manga corta. Suave al tacto, ideal para looks femeninos y románticos.",
+          "Suéter de punto texturizado en rosa pastel con manga corta y patrón a cuadros. Suave al tacto, ideal para looks femeninos y románticos. Disponible en varios tonos.",
         category: "top",
         tags: ["texturizado", "suave", "rosa", "manga-corta", "femenino", "romántico", "primavera"],
         price: 37900,
         stock: 10,
-        imageUrl: "/products/sueter-rosa-pastel.jpg",
+        imageUrl: "/products/sueter-punto-rosa.jpg",
         isActive: true,
       },
       {
-        name: "Cardigan Botones Vintage",
+        name: "Cardigan Botones Vintage ML-359",
         description:
-          "Cardigan con botones estilo vintage en rosa viejo. Tejido grueso perfecto como abrigo ligero. Dale un toque retro a tu outfit.",
+          "Cardigan con botones estilo vintage y tejido trenzado con bolsillos. Perfecto como abrigo ligero. Dale un toque retro a tu outfit. Disponible en 7 colores.",
         category: "top",
         tags: ["botones", "rosa-viejo", "tejido-grueso", "abrigo", "vintage", "retro", "invierno"],
         price: 54900,
@@ -439,14 +439,80 @@ export class MemStorage implements IStorage {
         isActive: true,
       },
       {
-        name: "Leggings Térmicos Translúcidos",
+        name: "Leggings Térmicos Afelpados",
         description:
-          "Leggings térmicos con efecto translúcido tipo piel. Ideales para invierno, mantienen el calor con un look elegante y discreto.",
+          "Leggings térmicos con efecto translúcido tipo piel y forro afelpado. Ideales para invierno, mantienen el calor con un look elegante y discreto.",
         category: "bottom",
         tags: ["invierno", "térmico", "negro", "piel", "elegante", "caliente", "leggins"],
         price: 29900,
         stock: 25,
         imageUrl: "/products/leggings-termicos.jpg",
+        isActive: true,
+      },
+      {
+        name: "Top Rayas Manga Corta Blanco",
+        description:
+          "Top de punto fino calado en blanco con rayas negras y manga abullonada corta. Ligero y fresco, ideal para primavera y looks casuales chic.",
+        category: "top",
+        tags: ["punto", "rayas", "blanco", "negro", "manga-corta", "primavera", "casual"],
+        price: 34900,
+        stock: 18,
+        imageUrl: "/products/top-rayas-manga-corta.jpg",
+        isActive: true,
+      },
+      {
+        name: "Pantalón Wide Leg Café",
+        description:
+          "Pantalón wide leg en tela suave color café con cintura elástica y cordón. Caída fluida y elegante para looks cómodos y sofisticados.",
+        category: "bottom",
+        tags: ["wide-leg", "café", "marrón", "cordón", "comfy", "otoño", "elegante"],
+        price: 41900,
+        stock: 14,
+        imageUrl: "/products/pantalon-wide-leg-cafe.jpg",
+        isActive: true,
+      },
+      {
+        name: "Pantalón Deportivo Rosa Palo",
+        description:
+          "Pantalón deportivo en rosa palo con cierres decorativos y bolsillos. Estilo athleisure femenino, cómodo para el día a día.",
+        category: "bottom",
+        tags: ["sport", "cierres", "rosa", "athleisure", "femenino", "cómodo", "urbano"],
+        price: 34900,
+        stock: 16,
+        imageUrl: "/products/pantalon-deportivo-rosa.jpg",
+        isActive: true,
+      },
+      {
+        name: "Pantalón Rayado Studio Moda",
+        description:
+          "Pantalón recto en tejido rayado fino color taupe con cintura con cordón. Look relajado y natural, perfecto para combinar con básicos.",
+        category: "bottom",
+        tags: ["rayado", "taupe", "cordón", "recto", "casual", "natural", "otoño"],
+        price: 38900,
+        stock: 11,
+        imageUrl: "/products/pantalon-rayado-studio.jpg",
+        isActive: true,
+      },
+      {
+        name: "Pantalón Wide Leg Verde Sage",
+        description:
+          "Pantalón wide leg en verde sage con cintura elástica y cordón. Tono tendencia que aporta frescura a cualquier outfit casual.",
+        category: "bottom",
+        tags: ["wide-leg", "verde", "sage", "cordón", "tendencia", "casual", "primavera"],
+        price: 39900,
+        stock: 13,
+        imageUrl: "/products/pantalon-wide-leg-sage.jpg",
+        isActive: true,
+      },
+      {
+        name: "Suéter Punto Rosa Diamante",
+        description:
+          "Suéter de punto en rosa pastel con textura de rombos y manga larga. Suave, abrigador y femenino. Ideal para otoño e invierno.",
+        category: "top",
+        tags: ["punto", "rosa", "rombos", "manga-larga", "femenino", "abrigador", "invierno"],
+        price: 39900,
+        stock: 9,
+        imageUrl: "/products/sueter-rosa-diamante.jpg",
         isActive: true,
       },
     ];

@@ -11,6 +11,7 @@ import AnnaDesignsPage from "@/pages/anna-designs-page";
 import Profile from "@/pages/profile";
 import MagazineView from "@/pages/magazine-view";
 import AIImageGeneratorPage from "@/pages/ai-image-generator";
+import VirtualTryOnPage from "@/pages/virtual-tryon";
 import APIDebugPage from "@/pages/api-debug-page";
 import { TextInputModal } from "@/components/text-input-modal";
 import { OutfitProvider } from "@/contexts/outfit-context";
@@ -35,6 +36,7 @@ function AppRouter() {
           <Route path="/profile" component={Profile} />
           <Route path="/magazine" component={MagazineView} />
           <Route path="/ai-images" component={AIImageGeneratorPage} />
+          <Route path="/probador" component={VirtualTryOnPage} />
           <Route path="/api-debug" component={APIDebugPage} />
           <Route path="/product-search" component={ProductSearchPage} />
           <Route path="/trips" component={TripsPage} />

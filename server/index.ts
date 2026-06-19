@@ -39,6 +39,10 @@ app.use('/uploads/*.svg', (req, res, next) => {
 // Servir la carpeta uploads estáticamente
 app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
+// Servir el catálogo de prendas (imágenes de la tienda) estáticamente.
+// Debe ir antes de Vite para que /products/*.jpg no caiga en el fallback SPA.
+app.use('/products', express.static(path.join(process.cwd(), 'products')));
+
 app.use((req, res, next) => {
   const start = Date.now();
   const path = req.path;

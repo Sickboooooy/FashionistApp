@@ -4,3 +4,8 @@ dist
 server/public
 vite.config.ts.*
 *.tar.gz.local/
+
+# Secrets — never commit real env files
+.env
+.env.local
+.env.*.local
