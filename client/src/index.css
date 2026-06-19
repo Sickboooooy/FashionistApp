@@ -170,6 +170,18 @@ html {
   border-radius: 4px;
 }
 
+/* Every interactive control gets the right cursor (skill: cursor-pointer) */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+label[for],
+summary {
+  cursor: pointer;
+}
+button:disabled,
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+}
+
 ::selection {
   background: rgba(255, 215, 0, 0.28);
   color: #fff8e1;

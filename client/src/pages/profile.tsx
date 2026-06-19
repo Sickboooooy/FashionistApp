@@ -30,7 +30,7 @@ const Profile = () => {
         
         {/* Profile navigation tabs */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex border border-amber-deep rounded-full p-1 bg-black">
+          <div className="inline-flex border border-amber-deep/40 rounded-full p-1 bg-black/60 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
             <button
               className={`px-6 py-2 rounded-full text-sm font-montserrat ${activeTab === 'preferences' ? 'gold-button text-black' : 'text-cream-soft hover:text-amber-deep'}`}
               onClick={() => setActiveTab('preferences')}

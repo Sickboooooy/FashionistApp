@@ -67,7 +67,7 @@ const AnnaDesignsPage = () => {
           
           {/* Category Tabs */}
           <div className="flex justify-center mb-10">
-            <div className="inline-flex border border-amber-deep rounded-full p-1 bg-black">
+            <div className="inline-flex border border-amber-deep/40 rounded-full p-1 bg-black/60 backdrop-blur-md shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)]">
               {categoryOptions.map((category) => (
                 <button
                   key={category.value}
