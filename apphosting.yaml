@@ -1,0 +1,40 @@
+# Firebase App Hosting — build/run de FashionistApp (Express + Vite, full-stack)
+# Docs: https://firebase.google.com/docs/app-hosting/configure
+#
+# App Hosting ejecuta `npm ci` -> `npm run build` -> `npm start`, e inyecta PORT
+# (el server ya usa process.env.PORT y escucha en 0.0.0.0).
+
+runConfig:
+  minInstances: 0
+  maxInstances: 2
+  concurrency: 80
+  cpu: 1
+  memoryMiB: 512
+
+env:
+  - variable: NODE_ENV
+    value: production
+    availability:
+      - BUILD
+      - RUNTIME
+
+  # ─────────────────────────────────────────────────────────────
+  # OPCIÓN A — Demo rápido SIN base de datos (datos efímeros).
+  # Descomenta esto para que arranque sin DATABASE_URL:
+  # - variable: ALLOW_MEMORY_STORE
+  #   value: "true"
+  #   availability: [RUNTIME]
+  #
+  # OPCIÓN B — Producción con persistencia (recomendado).
+  # 1) Crea los secretos (una vez):
+  #      firebase apphosting:secrets:set DATABASE_URL
+  #      firebase apphosting:secrets:set XAI_API_KEY
+  #      firebase apphosting:secrets:set SESSION_SECRET
+  #    (o en la consola: App Hosting -> backend -> Variables y secretos)
+  # 2) Descomenta:
+  # - variable: DATABASE_URL
+  #   secret: DATABASE_URL
+  # - variable: XAI_API_KEY
+  #   secret: XAI_API_KEY
+  # - variable: SESSION_SECRET
+  #   secret: SESSION_SECRET

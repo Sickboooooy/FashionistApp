@@ -987,7 +987,8 @@ export class DatabaseStorage implements IStorage {
 /**
  * Selección de almacenamiento:
  *  - Con DATABASE_URL → DatabaseStorage (persistente).
- *  - Sin DATABASE_URL en producción → FAIL-CLOSED (no arrancar con datos volátiles).
+ *  - Sin DATABASE_URL en producción → FAIL-CLOSED, salvo ALLOW_MEMORY_STORE=true
+ *    (demo efímero: los datos se pierden al reiniciar).
  *  - Sin DATABASE_URL en desarrollo → MemStorage (no persiste; solo para dev/demo).
  */
 function selectStorage(): IStorage {
@@ -995,12 +996,12 @@ function selectStorage(): IStorage {
     console.log("🗄️ Almacenamiento: PostgreSQL (Neon + Drizzle)");
     return new DatabaseStorage();
   }
-  if (process.env.NODE_ENV === "production") {
+  if (process.env.NODE_ENV === "production" && process.env.ALLOW_MEMORY_STORE !== "true") {
     throw new Error(
-      "DATABASE_URL es obligatoria en producción: sin base de datos los datos (catálogos, outfits, futuros pedidos y balances) se perderían al reiniciar."
+      "DATABASE_URL es obligatoria en producción (o define ALLOW_MEMORY_STORE=true para un demo efímero sin persistencia): sin base de datos los datos se perderían al reiniciar."
     );
   }
-  console.warn("⚠️ Sin DATABASE_URL: usando almacenamiento en memoria (solo desarrollo, NO persiste).");
+  console.warn("⚠️ Sin DATABASE_URL: almacenamiento en memoria (NO persiste; solo dev o demo con ALLOW_MEMORY_STORE).");
   return new MemStorage();
 }
 
