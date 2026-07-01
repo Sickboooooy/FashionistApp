@@ -18,12 +18,6 @@ const Navbar = () => {
     { name: 'PERFIL', path: '/profile', icon: 'fa-user' },
   ];
 
-  // Agregar debug en desarrollo
-  const isDevelopment = import.meta.env.DEV;
-  if (isDevelopment) {
-    navItems.push({ name: 'DEBUG', path: '/api-debug', icon: 'fa-cog' });
-  }
-
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
     
@@ -78,10 +72,11 @@ const Navbar = () => {
         {/* Botón de menú móvil */}
         <div className="md:hidden">
           <button
+            type="button"
             className="flex items-center justify-center w-11 h-11 -mr-1 rounded-lg text-stone-300 hover:bg-white/[0.04] transition-colors cursor-pointer"
             onClick={toggleMobileMenu}
             aria-label={isMobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-            aria-expanded={isMobileMenuOpen}
+            aria-expanded={isMobileMenuOpen ? 'true' : 'false'}
             aria-controls="mobile-nav"
           >
             <i className={`fas text-lg ${isMobileMenuOpen ? 'fa-times' : 'fa-bars'}`}></i>
