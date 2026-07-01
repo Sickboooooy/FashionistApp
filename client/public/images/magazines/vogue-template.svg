@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <linearGradient id="vbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#faf7f0"/>
+      <stop offset="1" stop-color="#e9dfcd"/>
+    </linearGradient>
+    <linearGradient id="vfig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#403b36"/>
+      <stop offset="1" stop-color="#111"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#vbg)"/>
+  <g fill="url(#vfig)">
+    <circle cx="150" cy="96" r="17"/>
+    <path d="M150,112 C137,112 132,124 135,137 C137,146 132,154 130,162 C120,209 112,266 104,319 L196,319 C188,266 180,209 172,162 C170,154 165,146 167,137 C170,124 165,112 150,112 Z"/>
+  </g>
+  <text x="150" y="76" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="bold" font-size="62" letter-spacing="3" fill="#141210">VOGUE</text>
+  <line x1="70" y1="88" x2="230" y2="88" stroke="#141210" stroke-width="1"/>
+  <text x="22" y="346" font-family="Georgia,serif" font-size="15" font-weight="bold" fill="#b3322a">MODA 2026</text>
+  <text x="22" y="365" font-family="Georgia,serif" font-size="11" fill="#2a2622">El nuevo lujo silencioso</text>
+  <text x="278" y="346" text-anchor="end" font-family="Georgia,serif" font-size="11" fill="#2a2622">Tendencias · Otoño</text>
+  <g fill="#141210">
+    <rect x="22" y="378" width="2" height="13"/><rect x="26" y="378" width="1" height="13"/><rect x="29" y="378" width="3" height="13"/><rect x="34" y="378" width="1" height="13"/><rect x="37" y="378" width="2" height="13"/><rect x="41" y="378" width="1" height="13"/>
+  </g>
+  <text x="278" y="388" text-anchor="end" font-family="Georgia,serif" font-size="10" letter-spacing="1" fill="#2a2622">ESTILO ANNA</text>
+</svg>

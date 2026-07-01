@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <linearGradient id="ebg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ef5a54"/>
+      <stop offset="1" stop-color="#c02e2b"/>
+    </linearGradient>
+    <linearGradient id="efig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f2d6d4"/>
+    </linearGradient>
+    <radialGradient id="evig" cx="0.5" cy="0.4" r="0.75">
+      <stop offset="0.6" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.22"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#ebg)"/>
+  <g fill="url(#efig)" opacity="0.96">
+    <circle cx="150" cy="98" r="17"/>
+    <path d="M150,114 C137,114 132,126 135,139 C137,148 132,156 130,164 C120,211 112,268 104,321 L196,321 C188,268 180,211 172,164 C170,156 165,148 167,139 C170,126 165,114 150,114 Z"/>
+  </g>
+  <rect width="300" height="400" fill="url(#evig)"/>
+  <text x="150" y="80" text-anchor="middle" font-family="'Arial Narrow',Arial,sans-serif" font-weight="bold" font-size="70" letter-spacing="5" fill="#ffffff">ELLE</text>
+  <text x="20" y="344" font-family="Arial,sans-serif" font-size="14" font-weight="bold" fill="#ffffff">TENDENCIAS</text>
+  <text x="20" y="362" font-family="Arial,sans-serif" font-size="11" fill="#ffe8e6">Street style &amp; color</text>
+  <text x="280" y="344" text-anchor="end" font-family="Arial,sans-serif" font-size="11" font-weight="bold" fill="#ffffff">30 LOOKS</text>
+  <text x="280" y="388" text-anchor="end" font-family="Arial,sans-serif" font-size="10" letter-spacing="1" fill="#ffffff">ESTILO ANNA</text>
+</svg>

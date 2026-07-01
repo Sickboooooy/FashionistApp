@@ -13,57 +13,22 @@ interface ProductSuggestionsProps {
 interface Product {
   id: string;
   name: string;
-  price: string;
-  store: string;
+  price: string; // formateado en MXN, p.ej. "$399.00"
+  category: string;
   imageUrl: string;
-  url: string;
 }
 
 const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
-  const [selectedOutfit, setSelectedOutfit] = useState<number | null>(
-    outfits.length > 0 ? outfits[0].id : null
-  );
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
   const [products, setProducts] = useState<Product[]>([]);
 
-  // Simulated products con fallback
-  const mockProducts: Product[] = [
-    {
-      id: '1',
-      name: 'Blazer Minimalista',
-      price: '89,90€',
-      store: 'Zara',
-      imageUrl: 'https://images.unsplash.com/photo-1591047139829-d91aecb6caea?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-      url: '#'
-    },
-    {
-      id: '2',
-      name: 'Vestido Elegante',
-      price: '129,00€',
-      store: 'Mango',
-      imageUrl: 'https://images.unsplash.com/photo-1595777457583-95e059d581b8?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-      url: '#'
-    },
-    {
-      id: '3',
-      name: 'Pantalón Clásico',
-      price: '69,95€',
-      store: 'H&M',
-      imageUrl: 'https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3',
-      url: '#'
-    },
-  ];
-  
-  // Carga de productos sugeridos desde la API real (RAG de inventario),
-  // con fallback a datos simulados si la API falla o no devuelve resultados.
+  // Sugerencias de productos desde el inventario REAL (RAG). Sin datos mock:
+  // si la API no devuelve resultados, mostramos un estado vacío honesto.
   useEffect(() => {
     const loadProducts = async () => {
       if (outfits.length === 0) return;
 
       setIsLoading(true);
-      setError(null);
-
       try {
         const response = await fetch(`/api/products/suggestions?outfitId=${outfits[0].id}`);
         if (!response.ok) throw new Error(`API respondió ${response.status}`);
@@ -75,18 +40,16 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
               id: String(p.id),
               name: p.name,
               price: p.priceFormatted ?? `$${((p.price ?? 0) / 100).toFixed(2)}`,
-              store: 'FashionistApp',
+              category: p.category ?? '',
               imageUrl: p.imageUrl || '',
-              url: `/product-search`,
             }))
           );
         } else {
-          // Sin resultados de la API: usar simulados.
-          setProducts(mockProducts);
+          setProducts([]);
         }
       } catch (err) {
-        console.error("Error al cargar productos sugeridos:", err);
-        setProducts(mockProducts);
+        console.error('Error al cargar productos sugeridos:', err);
+        setProducts([]);
       } finally {
         setIsLoading(false);
       }
@@ -101,7 +64,7 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
     <div className="mt-20 mb-10">
       <div className="flex flex-col md:flex-row justify-between items-center mb-8">
         <h3 className="font-playfair text-2xl mb-3 md:mb-0">
-          <GoldText>Encuentra</GoldText> Piezas Similares
+          <GoldText>Encuentra</GoldText> Piezas de la Tienda
         </h3>
         <Link href="/product-search">
           <Button variant="outline" size="sm" className="border-amber-deep/40 hover:border-amber-deep text-amber-deep hover:bg-amber-deep/5">
@@ -114,8 +77,8 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
       <Tabs defaultValue={outfits[0].id.toString()}>
         <TabsList className="bg-black border border-amber-deep/30 mb-8 p-1 rounded-full w-auto mx-auto flex justify-center">
           {outfits.map((outfit) => (
-            <TabsTrigger 
-              key={outfit.id} 
+            <TabsTrigger
+              key={outfit.id}
               value={outfit.id.toString()}
               className="data-[state=active]:bg-amber-deep data-[state=active]:text-black rounded-full px-6 py-1.5 text-xs tracking-wide"
             >
@@ -126,37 +89,53 @@ const ProductSuggestions = ({ outfits }: ProductSuggestionsProps) => {
 
         {outfits.map((outfit) => (
           <TabsContent key={outfit.id} value={outfit.id.toString()}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {(products.length > 0 ? products : mockProducts).map((product) => (
-                <GoldBorder key={product.id} className="overflow-hidden bg-black group hover:shadow-[0_0_15px_rgba(255,215,0,0.15)] transition-all duration-300">
-                  <div className="aspect-square overflow-hidden relative">
-                    <img 
-                      src={product.imageUrl} 
-                      alt={product.name} 
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      className="absolute bottom-3 left-3 text-xs bg-black/80 border-amber-deep/50 text-amber-deep hover:bg-amber-deep hover:text-black opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0"
-                    >
-                      <i className="fas fa-shopping-bag mr-2"></i>
-                      Ver producto
-                    </Button>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <h4 className="font-playfair text-sm text-amber-300">{product.name}</h4>
-                        <p className="text-xs opacity-70 mt-1">{product.store}</p>
-                      </div>
-                      <span className="font-montserrat text-xs bg-amber-deep/10 px-2 py-1 rounded text-amber-deep">{product.price}</span>
+            {isLoading ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {Array(3).fill(0).map((_, i) => (
+                  <div key={i} className="bg-black-elegant rounded-md animate-pulse aspect-square"></div>
+                ))}
+              </div>
+            ) : products.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {products.map((product) => (
+                  <GoldBorder key={product.id} className="overflow-hidden bg-black group hover:shadow-[0_0_15px_rgba(255,215,0,0.15)] transition-all duration-300">
+                    <div className="aspect-square overflow-hidden relative">
+                      <img
+                        src={product.imageUrl}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                      <Link href="/product-search">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="absolute bottom-3 left-3 text-xs bg-black/80 border-amber-deep/50 text-amber-deep hover:bg-amber-deep hover:text-black opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0"
+                        >
+                          <i className="fas fa-shopping-bag mr-2"></i>
+                          Ver producto
+                        </Button>
+                      </Link>
                     </div>
-                  </div>
-                </GoldBorder>
-              ))}
-            </div>
+                    <div className="p-4">
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <h4 className="font-playfair text-sm text-amber-300">{product.name}</h4>
+                          <p className="text-xs opacity-70 mt-1 capitalize">{product.category}</p>
+                        </div>
+                        <span className="font-montserrat text-xs bg-amber-deep/10 px-2 py-1 rounded text-amber-deep">{product.price}</span>
+                      </div>
+                    </div>
+                  </GoldBorder>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-amber-deep/70 text-sm">
+                  Aún no hay piezas del inventario que combinen con este look.
+                </p>
+              </div>
+            )}
           </TabsContent>
         ))}
       </Tabs>

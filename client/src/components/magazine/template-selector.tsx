@@ -82,9 +82,9 @@ const TemplateCard: FC<TemplateCardProps> = ({ template, isPremiumUser, isSelect
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <GoldBorder className="aspect-[3/4] relative overflow-hidden">
-          <img 
-            src={template.imagePath} 
-            alt={`${template.name} template preview`}
+          <img
+            src={`${template.imagePath}?v=2`}
+            alt={`Vista previa de la plantilla ${template.name}`}
             className="w-full h-full object-cover"
           />
           {isDisabled && (

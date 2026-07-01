@@ -10,14 +10,13 @@ import {
   insertGarmentSchema, 
   insertOutfitSchema,
   insertAnnaDesignSchema,
-  // Backward compatibility
-  insertSeleneDesignSchema,
   UserPreferences
 } from "@shared/schema";
 import { generateOutfitSuggestions } from "./services/openai-service";
 import { analyzeGarmentImageWithGemini as analyzeGarmentImage } from "./services/gemini-service";
 import { generateOutfitsFromImage } from "./services/openai-service";
 import { generateMagazineContent } from "./services/magazine-service";
+import { generateMagazinePdf } from "./services/pdf-service";
 import { saveBase64Image, deleteImage, ensureUploadsDir } from "./services/image-service";
 import { generateFashionImage } from "./services/image-generation-service";
 import { validateImageAnalysis, validateOutfitGeneration, validateMagazineGeneration } from "./middleware/validator";
@@ -30,6 +29,8 @@ import { listProducts, getProductById } from "./services/inventory-service";
 import { recommendForOutfit, recommendProducts } from "./services/outfit-recommendation-service";
 // 👗 VIRTUAL TRY-ON (ModelsLab)
 import { generateVirtualTryOn, categoryToClothType } from "./services/modelslab-tryon-service";
+// 🤖 CHATBOT ESTILISTA (Grok / xAI)
+import { chatWithStylist, isGrokConfigured, type ChatMessage } from "./services/grok-service";
 
 // Función de ayuda para convertir null a undefined en las preferencias
 function formatPreferences(prefs: UserPreferences | undefined) {
@@ -315,49 +316,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Selene Designs routes (backward compatibility - redirects to Anna routes)
-  app.get("/api/selene-designs", async (req: Request, res: Response) => {
-    const category = req.query.category as string | undefined;
-    
-    if (category) {
-      const designs = await storage.getSeleneDesignsByCategory(category);
-      res.json(designs);
-    } else {
-      const designs = await storage.getAllSeleneDesigns();
-      res.json(designs);
-    }
-  });
-
-  app.get("/api/selene-designs/:id", async (req: Request, res: Response) => {
-    const id = parseInt(req.params.id);
-    const design = await storage.getSeleneDesign(id);
-    
-    if (design) {
-      res.json(design);
-    } else {
-      res.status(404).json({ message: "Design not found" });
-    }
-  });
-
-  app.post("/api/selene-designs", upload.single("image"), async (req: Request, res: Response) => {
-    try {
-      const designData = req.body.data ? JSON.parse(req.body.data) : req.body;
-      const designInput = insertSeleneDesignSchema.parse(designData);
-      
-      // Save image if provided
-      if (req.file) {
-        const base64Image = req.file.buffer.toString("base64");
-        const imageUrl = saveBase64Image(base64Image);
-        designInput.imageUrl = imageUrl;
-      }
-      
-      const design = await storage.createSeleneDesign(designInput);
-      res.status(201).json(design);
-    } catch (error) {
-      res.status(400).json({ message: error.message });
-    }
-  });
-
   // 🛒 SMART INVENTORY SYSTEM - Product routes
   // List / search products from the real inventory.
   // Query params: q, category, minPrice, maxPrice (in MXN), tags (comma-separated)
@@ -631,17 +589,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Validate the request body
       const request = requestSchema.parse(req.body);
       
-      // En una implementación real, aquí generaríamos un PDF con una biblioteca como PDFKit
-      // Por ahora, simplemente devolvemos un PDF vacío con el nombre correcto
-      
-      // Crear un buffer simple para simular un PDF
-      const buffer = Buffer.from("PDF simulado para " + request.content.title);
-      
-      // Configurar la respuesta para descargar el PDF
+      // Generar un PDF real de la revista con PDFKit.
+      const buffer = await generateMagazinePdf(request.content);
+
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', `attachment; filename="${request.content.title.replace(/\s+/g, '_').toLowerCase()}_magazine.pdf"`);
-      
-      // Enviar el buffer como respuesta
       res.send(buffer);
     } catch (error: any) {
       console.error("Error exportando revista a PDF:", error);
@@ -1243,8 +1195,43 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // 🤖 CHATBOT ESTILISTA — conversa con "Anna" (Grok/xAI) con acceso al inventario real.
+  // Endurecido contra prompt-injection / extracción: el servicio aplica guardas de
+  // entrada y salida. NOTA: no se acepta `storeContext` del cliente a propósito
+  // (evita inyección en el system prompt); se derivará server-side al añadir tenancy.
+  app.post("/api/chat", async (req: Request, res: Response) => {
+    try {
+      const requestSchema = z.object({
+        messages: z
+          .array(
+            z.object({
+              role: z.enum(["user", "assistant"]),
+              content: z.string().min(1).max(4000),
+            })
+          )
+          .min(1)
+          .max(40),
+      });
+
+      const { messages } = requestSchema.parse(req.body);
+      const result = await chatWithStylist({ messages: messages as ChatMessage[] });
+      res.json(result);
+    } catch (error: any) {
+      if (error?.name === "ZodError") {
+        return res.status(400).json({ message: "Formato de mensaje inválido", issues: error.issues });
+      }
+      console.error("Error en /api/chat:", error);
+      res.status(500).json({ message: error?.message || "Error en el chatbot" });
+    }
+  });
+
+  // Estado del chatbot (para que el frontend sepa si está configurado).
+  app.get("/api/chat/status", (_req: Request, res: Response) => {
+    res.json({ configured: isGrokConfigured() });
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
-  
+
   return httpServer;
 }

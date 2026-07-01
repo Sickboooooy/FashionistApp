@@ -123,12 +123,6 @@ export type InsertAnnaDesign = z.infer<typeof insertAnnaDesignSchema>;
 export type Product = typeof products.$inferSelect;
 export type InsertProduct = z.infer<typeof insertProductSchema>;
 
-// Backward compatibility aliases
-export const seleneDesigns = annaDesigns;
-export const insertSeleneDesignSchema = insertAnnaDesignSchema;
-export type SeleneDesign = AnnaDesign;
-export type InsertSeleneDesign = InsertAnnaDesign;
-
 // Tablas para planificación de viajes
 export const trips = pgTable("trips", {
   id: serial("id").primaryKey(),

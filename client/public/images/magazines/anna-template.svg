@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <linearGradient id="abg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#171310"/>
+      <stop offset="1" stop-color="#000000"/>
+    </linearGradient>
+    <linearGradient id="agold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f6df9a"/>
+      <stop offset="0.5" stop-color="#d4af37"/>
+      <stop offset="1" stop-color="#9c7a1e"/>
+    </linearGradient>
+    <radialGradient id="aglow" cx="0.5" cy="0.45" r="0.7">
+      <stop offset="0" stop-color="#d4af37" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#d4af37" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#abg)"/>
+  <rect width="300" height="400" fill="url(#aglow)"/>
+  <rect x="10" y="10" width="280" height="380" fill="none" stroke="url(#agold)" stroke-width="1.5"/>
+  <g fill="url(#agold)">
+    <circle cx="150" cy="100" r="17"/>
+    <path d="M150,116 C137,116 132,128 135,141 C137,150 132,158 130,166 C120,213 112,270 104,323 L196,323 C188,270 180,213 172,166 C170,158 165,150 167,141 C170,128 165,116 150,116 Z"/>
+  </g>
+  <g fill="#fff6da">
+    <circle cx="132" cy="150" r="2.4"/><circle cx="139" cy="154" r="2.6"/><circle cx="146" cy="156" r="2.8"/><circle cx="150" cy="157" r="3"/><circle cx="154" cy="156" r="2.8"/><circle cx="161" cy="154" r="2.6"/><circle cx="168" cy="150" r="2.4"/>
+  </g>
+  <text x="150" y="72" text-anchor="middle" font-family="'Brush Script MT','Segoe Script',Georgia,serif" font-style="italic" font-size="52" fill="url(#agold)">Anna</text>
+  <text x="150" y="92" text-anchor="middle" font-family="Georgia,serif" font-size="11" letter-spacing="7" fill="#e7c477">SIGNATURE</text>
+  <text x="150" y="352" text-anchor="middle" font-family="Georgia,serif" font-size="13" letter-spacing="2" font-weight="bold" fill="#f6df9a">COLECCIÓN DE LUJO</text>
+  <text x="150" y="372" text-anchor="middle" font-family="Georgia,serif" font-size="10" letter-spacing="1" fill="#c9a94f">Hecho a mano · Edición limitada</text>
+</svg>

@@ -111,7 +111,9 @@ export async function recommendProducts(input: RecommendationInput): Promise<Sco
 
   try {
     const products = await storage.getAllProducts();
-    const active = products.filter((p) => p.isActive !== false);
+    // Solo productos activos Y con stock: nunca recomendar prendas agotadas
+    // (anti-alucinación de inventario).
+    const active = products.filter((p) => p.isActive !== false && (p.stock ?? 0) > 0);
     const intent = buildIntentTerms(input);
 
     // Sin señal → fallback: productos con más stock.

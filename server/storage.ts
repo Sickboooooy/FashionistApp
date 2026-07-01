@@ -5,12 +5,12 @@ import {
   userPreferences, UserPreferences, InsertUserPreferences,
   annaDesigns, AnnaDesign, InsertAnnaDesign,
   products, Product, InsertProduct,
-  // Backward compatibility
-  seleneDesigns, SeleneDesign, InsertSeleneDesign,
   trips, Trip, InsertTrip,
   packingLists, PackingList, InsertPackingList,
   packingItems, PackingItem, InsertPackingItem
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, ilike } from "drizzle-orm";
 
 export interface ProductSearchFilters {
   query?: string;
@@ -52,12 +52,6 @@ export interface IStorage {
   getAllAnnaDesigns(): Promise<AnnaDesign[]>;
   getAnnaDesignsByCategory(category: string): Promise<AnnaDesign[]>;
   createAnnaDesign(design: InsertAnnaDesign): Promise<AnnaDesign>;
-  
-  // Backward compatibility - Selene designs methods (alias for Anna)
-  getSeleneDesign(id: number): Promise<SeleneDesign | undefined>;
-  getAllSeleneDesigns(): Promise<SeleneDesign[]>;
-  getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]>;
-  createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign>;
 
   // Product (Smart Inventory) methods
   getProduct(id: number): Promise<Product | undefined>;
@@ -87,6 +81,141 @@ export interface IStorage {
   updatePackingItem(id: number, packingItem: Partial<InsertPackingItem>): Promise<PackingItem | undefined>;
   deletePackingItem(id: number): Promise<boolean>;
   generatePackingListForTrip(tripId: number, userId: number): Promise<PackingList>;
+}
+
+/**
+ * Filtro puro de productos, compartido por MemStorage y DatabaseStorage.
+ * Aplica: activo, categoría, rango de precio (en centavos), tags y relevancia por texto.
+ */
+export function filterProducts(all: Product[], filters: ProductSearchFilters): Product[] {
+  let results = [...all];
+
+  if (filters.activeOnly !== false) {
+    results = results.filter((product) => product.isActive !== false);
+  }
+
+  if (filters.category && filters.category !== "all") {
+    results = results.filter(
+      (product) => product.category.toLowerCase() === filters.category!.toLowerCase()
+    );
+  }
+
+  if (typeof filters.minPrice === "number") {
+    results = results.filter((product) => product.price >= filters.minPrice!);
+  }
+
+  if (typeof filters.maxPrice === "number") {
+    results = results.filter((product) => product.price <= filters.maxPrice!);
+  }
+
+  if (filters.tags && filters.tags.length > 0) {
+    const wanted = filters.tags.map((t) => t.toLowerCase());
+    results = results.filter((product) =>
+      (product.tags || []).some((tag) => wanted.includes(tag.toLowerCase()))
+    );
+  }
+
+  if (filters.query) {
+    const terms = filters.query
+      .toLowerCase()
+      .split(" ")
+      .filter((term) => term.length > 0);
+
+    const score = (product: Product): number => {
+      const haystack = [
+        product.name,
+        product.description || "",
+        product.category,
+        ...(product.tags || []),
+      ]
+        .join(" ")
+        .toLowerCase();
+      return terms.filter((term) => haystack.includes(term)).length;
+    };
+
+    results = results
+      .map((product) => ({ product, relevance: score(product) }))
+      .filter((entry) => entry.relevance > 0)
+      .sort((a, b) => b.relevance - a.relevance)
+      .map((entry) => entry.product);
+  }
+
+  return results;
+}
+
+/**
+ * Genera una lista de equipaje recomendada usando cualquier IStorage.
+ * Compartida por MemStorage y DatabaseStorage para evitar duplicar la lógica.
+ */
+export async function buildRecommendedPackingList(
+  store: IStorage,
+  tripId: number,
+  userId: number
+): Promise<PackingList> {
+  const trip = await store.getTrip(tripId);
+  if (!trip) throw new Error("Viaje no encontrado");
+
+  const packingList = await store.createPackingList({
+    tripId,
+    name: `Lista para ${trip.destination}`,
+    isRecommended: true,
+  });
+
+  const userGarments = await store.getGarmentsByUserId(userId);
+
+  const basicItems: { name: string; category: string; isEssential: boolean }[] = [];
+
+  if (trip.season === "Verano") {
+    basicItems.push(
+      { name: "Protector solar", category: "Higiene", isEssential: true },
+      { name: "Gafas de sol", category: "Accesorios", isEssential: true },
+      { name: "Traje de baño", category: "Ropa", isEssential: false }
+    );
+  } else if (trip.season === "Invierno") {
+    basicItems.push(
+      { name: "Bufanda", category: "Accesorios", isEssential: true },
+      { name: "Guantes", category: "Accesorios", isEssential: true },
+      { name: "Gorro", category: "Accesorios", isEssential: false }
+    );
+  }
+
+  basicItems.push(
+    { name: "Pasaporte/DNI", category: "Documentos", isEssential: true },
+    { name: "Cargador de móvil", category: "Electrónicos", isEssential: true },
+    { name: "Medicamentos personales", category: "Higiene", isEssential: true },
+    { name: "Cepillo de dientes", category: "Higiene", isEssential: true },
+    { name: "Pasta de dientes", category: "Higiene", isEssential: true }
+  );
+
+  const seasonalGarments = userGarments
+    .filter((garment) => !garment.season || garment.season === trip.season)
+    .slice(0, 5);
+
+  for (const item of basicItems) {
+    await store.createPackingItem({
+      packingListId: packingList.id,
+      name: item.name,
+      category: item.category,
+      isEssential: item.isEssential,
+      quantity: 1,
+      isPacked: false,
+    });
+  }
+
+  for (const garment of seasonalGarments) {
+    await store.createPackingItem({
+      packingListId: packingList.id,
+      name: garment.name,
+      category: "Ropa",
+      isEssential: true,
+      quantity: 1,
+      isPacked: false,
+      imageUrl: garment.imageUrl || null,
+      garmentId: garment.id,
+    });
+  }
+
+  return packingList;
 }
 
 export class MemStorage implements IStorage {
@@ -275,23 +404,6 @@ export class MemStorage implements IStorage {
     return newDesign;
   }
   
-  // Backward compatibility - Selene designs methods (alias for Anna)
-  async getSeleneDesign(id: number): Promise<SeleneDesign | undefined> {
-    return this.getAnnaDesign(id);
-  }
-  
-  async getAllSeleneDesigns(): Promise<SeleneDesign[]> {
-    return this.getAllAnnaDesigns();
-  }
-  
-  async getSeleneDesignsByCategory(category: string): Promise<SeleneDesign[]> {
-    return this.getAnnaDesignsByCategory(category);
-  }
-  
-  async createSeleneDesign(design: InsertSeleneDesign): Promise<SeleneDesign> {
-    return this.createAnnaDesign(design);
-  }
-
   // Product (Smart Inventory) methods
   async getProduct(id: number): Promise<Product | undefined> {
     return this.products.get(id);
@@ -308,59 +420,7 @@ export class MemStorage implements IStorage {
   }
 
   async searchProducts(filters: ProductSearchFilters): Promise<Product[]> {
-    let results = Array.from(this.products.values());
-
-    if (filters.activeOnly !== false) {
-      results = results.filter((product) => product.isActive !== false);
-    }
-
-    if (filters.category && filters.category !== "all") {
-      results = results.filter(
-        (product) => product.category.toLowerCase() === filters.category!.toLowerCase()
-      );
-    }
-
-    if (typeof filters.minPrice === "number") {
-      results = results.filter((product) => product.price >= filters.minPrice!);
-    }
-
-    if (typeof filters.maxPrice === "number") {
-      results = results.filter((product) => product.price <= filters.maxPrice!);
-    }
-
-    if (filters.tags && filters.tags.length > 0) {
-      const wanted = filters.tags.map((t) => t.toLowerCase());
-      results = results.filter((product) =>
-        (product.tags || []).some((tag) => wanted.includes(tag.toLowerCase()))
-      );
-    }
-
-    if (filters.query) {
-      const terms = filters.query
-        .toLowerCase()
-        .split(" ")
-        .filter((term) => term.length > 0);
-
-      const score = (product: Product): number => {
-        const haystack = [
-          product.name,
-          product.description || "",
-          product.category,
-          ...(product.tags || []),
-        ]
-          .join(" ")
-          .toLowerCase();
-        return terms.filter((term) => haystack.includes(term)).length;
-      };
-
-      results = results
-        .map((product) => ({ product, relevance: score(product) }))
-        .filter((entry) => entry.relevance > 0)
-        .sort((a, b) => b.relevance - a.relevance)
-        .map((entry) => entry.product);
-    }
-
-    return results;
+    return filterProducts(Array.from(this.products.values()), filters);
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
@@ -699,88 +759,249 @@ export class MemStorage implements IStorage {
     return this.packingItems.delete(id);
   }
   
-  // Automatic packing list generation using AI and user's outfits and garments
+  // Generación automática de lista de equipaje (lógica compartida con DatabaseStorage)
   async generatePackingListForTrip(tripId: number, userId: number): Promise<PackingList> {
-    const trip = await this.getTrip(tripId);
-    if (!trip) throw new Error("Viaje no encontrado");
-    
-    // Crear lista de equipaje recomendada
-    const packingList = await this.createPackingList({
-      tripId,
-      name: `Lista para ${trip.destination}`,
-      isRecommended: true
-    });
-    
-    // Obtener preferencias y prendas del usuario
-    const userPrefs = await this.getUserPreferences(userId);
-    const userGarments = await this.getGarmentsByUserId(userId);
-    
-    // Categorías básicas de elementos para empacar
-    const itemCategories = [
-      "Ropa", "Calzado", "Accesorios", "Higiene", "Documentos", "Electrónicos", "Otros"
-    ];
-    
-    // Elementos básicos según temporada y destino
-    const basicItems: {name: string; category: string; isEssential: boolean}[] = [];
-    
-    // Añadir elementos básicos según la temporada
-    if (trip.season === "Verano") {
-      basicItems.push(
-        {name: "Protector solar", category: "Higiene", isEssential: true},
-        {name: "Gafas de sol", category: "Accesorios", isEssential: true},
-        {name: "Traje de baño", category: "Ropa", isEssential: false}
-      );
-    } else if (trip.season === "Invierno") {
-      basicItems.push(
-        {name: "Bufanda", category: "Accesorios", isEssential: true},
-        {name: "Guantes", category: "Accesorios", isEssential: true},
-        {name: "Gorro", category: "Accesorios", isEssential: false}
-      );
-    }
-    
-    // Añadir elementos básicos para cualquier viaje
-    basicItems.push(
-      {name: "Pasaporte/DNI", category: "Documentos", isEssential: true},
-      {name: "Cargador de móvil", category: "Electrónicos", isEssential: true},
-      {name: "Medicamentos personales", category: "Higiene", isEssential: true},
-      {name: "Cepillo de dientes", category: "Higiene", isEssential: true},
-      {name: "Pasta de dientes", category: "Higiene", isEssential: true}
-    );
-    
-    // Añadir prendas apropiadas del guardarropa del usuario
-    // Filtrar las prendas según la temporada del viaje
-    const seasonalGarments = userGarments.filter(garment => 
-      !garment.season || garment.season === trip.season
-    ).slice(0, 5); // Limitar a 5 prendas para el ejemplo
-    
-    // Crear items para la lista de empaque
-    for (const item of basicItems) {
-      await this.createPackingItem({
-        packingListId: packingList.id,
-        name: item.name,
-        category: item.category,
-        isEssential: item.isEssential,
-        quantity: 1,
-        isPacked: false
-      });
-    }
-    
-    // Añadir prendas del usuario a la lista
-    for (const garment of seasonalGarments) {
-      await this.createPackingItem({
-        packingListId: packingList.id,
-        name: garment.name,
-        category: "Ropa",
-        isEssential: true,
-        quantity: 1,
-        isPacked: false,
-        imageUrl: garment.imageUrl || null,
-        garmentId: garment.id
-      });
-    }
-    
-    return packingList;
+    return buildRecommendedPackingList(this, tripId, userId);
   }
 }
 
-export const storage = new MemStorage();
+/**
+ * 🗄️ DatabaseStorage — implementación de IStorage sobre PostgreSQL (Neon + Drizzle).
+ * Se usa cuando hay DATABASE_URL. Persiste catálogos, outfits, viajes, etc.
+ * Las FKs con onDelete: "cascade" (packing_lists → trips, packing_items → packing_lists)
+ * hacen que borrar un viaje/lista limpie sus dependientes automáticamente.
+ */
+export class DatabaseStorage implements IStorage {
+  // User methods
+  async getUser(id: number): Promise<User | undefined> {
+    const rows = await db.select().from(users).where(eq(users.id, id));
+    return rows[0];
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const rows = await db.select().from(users).where(eq(users.username, username));
+    return rows[0];
+  }
+
+  async createUser(user: InsertUser): Promise<User> {
+    const rows = await db.insert(users).values(user).returning();
+    return rows[0];
+  }
+
+  // User preferences methods
+  async getUserPreferences(userId: number): Promise<UserPreferences | undefined> {
+    const rows = await db.select().from(userPreferences).where(eq(userPreferences.userId, userId));
+    return rows[0];
+  }
+
+  async createUserPreferences(preferences: InsertUserPreferences): Promise<UserPreferences> {
+    const rows = await db.insert(userPreferences).values(preferences).returning();
+    return rows[0];
+  }
+
+  async updateUserPreferences(id: number, preferences: Partial<InsertUserPreferences>): Promise<UserPreferences | undefined> {
+    const rows = await db.update(userPreferences).set(preferences).where(eq(userPreferences.id, id)).returning();
+    return rows[0];
+  }
+
+  // Garment methods
+  async getGarment(id: number): Promise<Garment | undefined> {
+    const rows = await db.select().from(garments).where(eq(garments.id, id));
+    return rows[0];
+  }
+
+  async getGarmentsByUserId(userId: number): Promise<Garment[]> {
+    return await db.select().from(garments).where(eq(garments.userId, userId));
+  }
+
+  async createGarment(garment: InsertGarment): Promise<Garment> {
+    const rows = await db.insert(garments).values(garment).returning();
+    return rows[0];
+  }
+
+  async updateGarment(id: number, garment: Partial<InsertGarment>): Promise<Garment | undefined> {
+    const rows = await db.update(garments).set(garment).where(eq(garments.id, id)).returning();
+    return rows[0];
+  }
+
+  async deleteGarment(id: number): Promise<boolean> {
+    const rows = await db.delete(garments).where(eq(garments.id, id)).returning();
+    return rows.length > 0;
+  }
+
+  // Outfit methods
+  async getOutfit(id: number): Promise<Outfit | undefined> {
+    const rows = await db.select().from(outfits).where(eq(outfits.id, id));
+    return rows[0];
+  }
+
+  async getOutfitsByUserId(userId: number): Promise<Outfit[]> {
+    return await db.select().from(outfits).where(eq(outfits.userId, userId));
+  }
+
+  async createOutfit(outfit: InsertOutfit): Promise<Outfit> {
+    const rows = await db.insert(outfits).values(outfit).returning();
+    return rows[0];
+  }
+
+  async updateOutfit(id: number, outfit: Partial<InsertOutfit>): Promise<Outfit | undefined> {
+    const rows = await db.update(outfits).set(outfit).where(eq(outfits.id, id)).returning();
+    return rows[0];
+  }
+
+  async deleteOutfit(id: number): Promise<boolean> {
+    const rows = await db.delete(outfits).where(eq(outfits.id, id)).returning();
+    return rows.length > 0;
+  }
+
+  async saveOutfit(id: number): Promise<Outfit | undefined> {
+    const rows = await db.update(outfits).set({ isSaved: true }).where(eq(outfits.id, id)).returning();
+    return rows[0];
+  }
+
+  // Anna designs methods
+  async getAnnaDesign(id: number): Promise<AnnaDesign | undefined> {
+    const rows = await db.select().from(annaDesigns).where(eq(annaDesigns.id, id));
+    return rows[0];
+  }
+
+  async getAllAnnaDesigns(): Promise<AnnaDesign[]> {
+    return await db.select().from(annaDesigns);
+  }
+
+  async getAnnaDesignsByCategory(category: string): Promise<AnnaDesign[]> {
+    return await db.select().from(annaDesigns).where(ilike(annaDesigns.category, category));
+  }
+
+  async createAnnaDesign(design: InsertAnnaDesign): Promise<AnnaDesign> {
+    const rows = await db.insert(annaDesigns).values(design).returning();
+    return rows[0];
+  }
+
+  // Product (Smart Inventory) methods
+  async getProduct(id: number): Promise<Product | undefined> {
+    const rows = await db.select().from(products).where(eq(products.id, id));
+    return rows[0];
+  }
+
+  async getAllProducts(): Promise<Product[]> {
+    return await db.select().from(products);
+  }
+
+  async getProductsByCategory(category: string): Promise<Product[]> {
+    return await db.select().from(products).where(ilike(products.category, category));
+  }
+
+  async searchProducts(filters: ProductSearchFilters): Promise<Product[]> {
+    // Recupera de la DB y aplica el mismo filtro que MemStorage (una sola fuente de verdad).
+    return filterProducts(await this.getAllProducts(), filters);
+  }
+
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const rows = await db.insert(products).values(product).returning();
+    return rows[0];
+  }
+
+  // Trip methods
+  async getTrip(id: number): Promise<Trip | undefined> {
+    const rows = await db.select().from(trips).where(eq(trips.id, id));
+    return rows[0];
+  }
+
+  async getTripsByUserId(userId: number): Promise<Trip[]> {
+    return await db.select().from(trips).where(eq(trips.userId, userId));
+  }
+
+  async createTrip(trip: InsertTrip): Promise<Trip> {
+    const rows = await db.insert(trips).values(trip).returning();
+    return rows[0];
+  }
+
+  async updateTrip(id: number, trip: Partial<InsertTrip>): Promise<Trip | undefined> {
+    const rows = await db.update(trips).set(trip).where(eq(trips.id, id)).returning();
+    return rows[0];
+  }
+
+  async deleteTrip(id: number): Promise<boolean> {
+    // onDelete: cascade limpia packing_lists y packing_items asociados.
+    const rows = await db.delete(trips).where(eq(trips.id, id)).returning();
+    return rows.length > 0;
+  }
+
+  // Packing list methods
+  async getPackingList(id: number): Promise<PackingList | undefined> {
+    const rows = await db.select().from(packingLists).where(eq(packingLists.id, id));
+    return rows[0];
+  }
+
+  async getPackingListsByTripId(tripId: number): Promise<PackingList[]> {
+    return await db.select().from(packingLists).where(eq(packingLists.tripId, tripId));
+  }
+
+  async createPackingList(packingList: InsertPackingList): Promise<PackingList> {
+    const rows = await db.insert(packingLists).values(packingList).returning();
+    return rows[0];
+  }
+
+  async updatePackingList(id: number, packingList: Partial<InsertPackingList>): Promise<PackingList | undefined> {
+    const rows = await db.update(packingLists).set(packingList).where(eq(packingLists.id, id)).returning();
+    return rows[0];
+  }
+
+  async deletePackingList(id: number): Promise<boolean> {
+    // onDelete: cascade limpia packing_items asociados.
+    const rows = await db.delete(packingLists).where(eq(packingLists.id, id)).returning();
+    return rows.length > 0;
+  }
+
+  // Packing item methods
+  async getPackingItem(id: number): Promise<PackingItem | undefined> {
+    const rows = await db.select().from(packingItems).where(eq(packingItems.id, id));
+    return rows[0];
+  }
+
+  async getPackingItemsByListId(packingListId: number): Promise<PackingItem[]> {
+    return await db.select().from(packingItems).where(eq(packingItems.packingListId, packingListId));
+  }
+
+  async createPackingItem(packingItem: InsertPackingItem): Promise<PackingItem> {
+    const rows = await db.insert(packingItems).values(packingItem).returning();
+    return rows[0];
+  }
+
+  async updatePackingItem(id: number, packingItem: Partial<InsertPackingItem>): Promise<PackingItem | undefined> {
+    const rows = await db.update(packingItems).set(packingItem).where(eq(packingItems.id, id)).returning();
+    return rows[0];
+  }
+
+  async deletePackingItem(id: number): Promise<boolean> {
+    const rows = await db.delete(packingItems).where(eq(packingItems.id, id)).returning();
+    return rows.length > 0;
+  }
+
+  async generatePackingListForTrip(tripId: number, userId: number): Promise<PackingList> {
+    return buildRecommendedPackingList(this, tripId, userId);
+  }
+}
+
+/**
+ * Selección de almacenamiento:
+ *  - Con DATABASE_URL → DatabaseStorage (persistente).
+ *  - Sin DATABASE_URL en producción → FAIL-CLOSED (no arrancar con datos volátiles).
+ *  - Sin DATABASE_URL en desarrollo → MemStorage (no persiste; solo para dev/demo).
+ */
+function selectStorage(): IStorage {
+  if (process.env.DATABASE_URL) {
+    console.log("🗄️ Almacenamiento: PostgreSQL (Neon + Drizzle)");
+    return new DatabaseStorage();
+  }
+  if (process.env.NODE_ENV === "production") {
+    throw new Error(
+      "DATABASE_URL es obligatoria en producción: sin base de datos los datos (catálogos, outfits, futuros pedidos y balances) se perderían al reiniciar."
+    );
+  }
+  console.warn("⚠️ Sin DATABASE_URL: usando almacenamiento en memoria (solo desarrollo, NO persiste).");
+  return new MemStorage();
+}
+
+export const storage: IStorage = selectStorage();

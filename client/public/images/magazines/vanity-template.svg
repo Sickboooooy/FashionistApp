@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <linearGradient id="vfbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#123b3a"/>
+      <stop offset="1" stop-color="#06201f"/>
+    </linearGradient>
+    <linearGradient id="vffig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f3e4c6"/>
+      <stop offset="1" stop-color="#c9a86a"/>
+    </linearGradient>
+    <radialGradient id="vfvig" cx="0.5" cy="0.42" r="0.8">
+      <stop offset="0.55" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.3"/>
+    </radialGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#vfbg)"/>
+  <g fill="url(#vffig)" opacity="0.95">
+    <circle cx="150" cy="100" r="17"/>
+    <path d="M150,116 C137,116 132,128 135,141 C137,150 132,158 130,166 C120,213 112,270 104,323 L196,323 C188,270 180,213 172,166 C170,158 165,150 167,141 C170,128 165,116 150,116 Z"/>
+  </g>
+  <rect width="300" height="400" fill="url(#vfvig)"/>
+  <text x="150" y="60" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="bold" font-size="30" letter-spacing="2" fill="#f3e4c6">VANITY</text>
+  <text x="150" y="88" text-anchor="middle" font-family="Georgia,'Times New Roman',serif" font-weight="bold" font-size="30" letter-spacing="6" fill="#f3e4c6">FAIR</text>
+  <g fill="#e7c477">
+    <path d="M64,64 l2,5 5,0 -4,3 2,5 -5,-3 -5,3 2,-5 -4,-3 5,0 z"/>
+    <path d="M236,64 l2,5 5,0 -4,3 2,5 -5,-3 -5,3 2,-5 -4,-3 5,0 z"/>
+  </g>
+  <text x="22" y="348" font-family="Georgia,serif" font-size="14" font-weight="bold" fill="#e7c477">EDITORIAL</text>
+  <text x="22" y="366" font-family="Georgia,serif" font-size="11" fill="#e9ddc4">Moda, arte y cultura</text>
+  <text x="278" y="366" text-anchor="end" font-family="Georgia,serif" font-size="10" letter-spacing="1" fill="#cdbf9f">ESTILO ANNA</text>
+</svg>

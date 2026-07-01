@@ -57,9 +57,9 @@ const AnnaDesignsPage = () => {
               <div className="md:w-2/3">
                 <h2 className="font-playfair text-2xl mb-3 gold-text text-center md:text-left">Sobre Anna</h2>
                 <p className="font-cormorant text-lg">
-                  Anna es abogada y posee un talento creativo excepcional para elaborar piezas de moda únicas de forma artesanal.
+                  Anna es diseñadora de moda con un talento creativo excepcional para elaborar piezas únicas de forma artesanal.
                   Sus diseños exclusivos incluyen calzado, blusas y accesorios personalizados con perlas y aplicaciones elegantes,
-                  fusionando su experiencia profesional con una visión artística de la moda.
+                  fusionando técnica artesanal con una visión artística de la moda.
                 </p>
               </div>
             </div>

@@ -66,6 +66,24 @@ export function setupSecurity(app: Express): void {
   // Aplicar limites más estrictos a rutas de IA intensivas
   app.use('/api/generate-outfits', authLimiter);
   app.use('/api/generate-magazine', authLimiter);
+
+  // Límite dedicado para el chatbot (protege la clave de pago de xAI/Grok),
+  // pero permisivo para conversaciones reales multi-turno.
+  const chatLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minutos
+    max: 40, // Máximo 40 mensajes por ventana por IP
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: "Demasiados mensajes al asistente. Espera un momento e intenta de nuevo." },
+    keyGenerator: (req, res) => {
+      const realIp = req.headers['x-forwarded-for'] as string;
+      if (realIp) {
+        return realIp.split(',')[0].trim();
+      }
+      return (req.ip || '').toString();
+    }
+  });
+  app.use('/api/chat', chatLimiter);
   
   // Prevenir ataques XSS (Cross-Site Scripting)
   app.use(xssClean());

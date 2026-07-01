@@ -9,3 +9,7 @@ vite.config.ts.*
 .env
 .env.local
 .env.*.local
+
+# Editor/tool history backups (regenerados localmente)
+.history/
+.snapshots/

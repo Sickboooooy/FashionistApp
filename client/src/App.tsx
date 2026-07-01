@@ -14,6 +14,7 @@ import AIImageGeneratorPage from "@/pages/ai-image-generator";
 import VirtualTryOnPage from "@/pages/virtual-tryon";
 import APIDebugPage from "@/pages/api-debug-page";
 import { TextInputModal } from "@/components/text-input-modal";
+import StylistChat from "@/components/chat/stylist-chat";
 import { OutfitProvider } from "@/contexts/outfit-context";
 import { PreferencesProvider } from "@/contexts/preferences-context";
 import ProductSearchPage from "@/pages/product-search";
@@ -46,6 +47,7 @@ function AppRouter() {
       </main>
       <Footer />
       <TextInputModal />
+      <StylistChat />
     </div>
   );
 }

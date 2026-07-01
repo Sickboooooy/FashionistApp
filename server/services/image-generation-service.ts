@@ -260,7 +260,7 @@ async function generateImageWithGemini(prompt: string): Promise<string> {
         <rect x="15" y="15" width="994" height="994" fill="none" stroke="url(#goldGradient)" stroke-width="2" rx="12" ry="12"/>
         
         <text x="512" y="80" font-family="Arial, sans-serif" font-size="40" fill="url(#goldGradient)" text-anchor="middle" filter="url(#dropShadow)">
-          Selene Style - Diseño de Moda con Gemini
+          Anna Style - Diseño de Moda con Gemini
         </text>
         
         <text x="512" y="130" font-family="Arial, sans-serif" font-size="24" fill="#f9f295" text-anchor="middle">

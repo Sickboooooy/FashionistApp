@@ -127,7 +127,7 @@ export async function generateMagazineContent(request: MagazineGenerationRequest
       
       // Validar estructura 
       const magazine: MagazineContent = {
-        title: result.title || "Revista de Moda Selene Style",
+        title: result.title || "Revista de Moda Anna Style",
         subtitle: result.subtitle || "Edición Especial",
         introduction: result.introduction || "Bienvenido a esta edición especial de moda.",
         outfits: result.outfits || [],
@@ -180,7 +180,7 @@ async function generateMagazineWithGemini(request: MagazineGenerationRequest): P
         
         // Validar estructura 
         const magazine: MagazineContent = {
-          title: parsedResult.title || "Revista de Moda Selene Style",
+          title: parsedResult.title || "Revista de Moda Anna Style",
           subtitle: parsedResult.subtitle || "Edición Especial",
           introduction: parsedResult.introduction || "Bienvenido a esta edición especial de moda.",
           outfits: parsedResult.outfits || [],
@@ -284,9 +284,9 @@ function getDefaultMagazineContent(request: MagazineGenerationRequest): Magazine
   }));
   
   return {
-    title: "Selene Style: Tu Revista Personal de Moda",
+    title: "Anna Style: Tu Revista Personal de Moda",
     subtitle: "Elegancia y Estilo para Cada Ocasión",
-    introduction: "Bienvenido a esta edición especial de Selene Style, donde encontrarás outfits cuidadosamente seleccionados que reflejan tu estilo personal y las últimas tendencias de la moda. Cada conjunto ha sido diseñado pensando en versatilidad, elegancia y comodidad.",
+    introduction: "Bienvenido a esta edición especial de Anna Style, donde encontrarás outfits cuidadosamente seleccionados que reflejan tu estilo personal y las últimas tendencias de la moda. Cada conjunto ha sido diseñado pensando en versatilidad, elegancia y comodidad.",
     outfits: outfitsWithEditorial,
     conclusion: "Esperamos que hayas disfrutado de esta cuidadosa selección de outfits. Recuerda que la verdadera elegancia está en cómo te sientes con lo que llevas puesto. ¡Experimenta, combina y crea tu propio estilo único!",
     template: template

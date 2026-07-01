@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 400" width="300" height="400">
+  <defs>
+    <linearGradient id="bbg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbf9f4"/>
+      <stop offset="1" stop-color="#efe9dc"/>
+    </linearGradient>
+    <linearGradient id="bfig" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2b2824"/>
+      <stop offset="1" stop-color="#0d0c0a"/>
+    </linearGradient>
+    <linearGradient id="bgold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#b8860b"/>
+      <stop offset="0.5" stop-color="#f4d97a"/>
+      <stop offset="1" stop-color="#b8860b"/>
+    </linearGradient>
+  </defs>
+  <rect width="300" height="400" fill="url(#bbg)"/>
+  <rect x="8" y="8" width="284" height="384" fill="none" stroke="url(#bgold)" stroke-width="1.5"/>
+  <g fill="url(#bfig)">
+    <circle cx="150" cy="100" r="17"/>
+    <path d="M150,116 C137,116 132,128 135,141 C137,150 132,158 130,166 C120,213 112,270 104,323 L196,323 C188,270 180,213 172,166 C170,158 165,150 167,141 C170,128 165,116 150,116 Z"/>
+  </g>
+  <g transform="translate(150,52)">
+    <path d="M-9,-4 L9,-4 L14,2 L0,16 L-14,2 Z" fill="url(#bgold)"/>
+    <path d="M-9,-4 L9,-4 L4,2 L-4,2 Z" fill="#fff3cf" opacity="0.7"/>
+  </g>
+  <text x="150" y="90" text-anchor="middle" font-family="'Didot','Bodoni MT',Georgia,serif" font-weight="bold" font-size="34" letter-spacing="2" fill="#141210">BAZAAR</text>
+  <text x="22" y="348" font-family="Georgia,serif" font-size="14" font-weight="bold" fill="#a8850f">ALTA COSTURA</text>
+  <text x="22" y="366" font-family="Georgia,serif" font-size="11" fill="#2a2622">Elegancia atemporal</text>
+  <text x="278" y="366" text-anchor="end" font-family="Georgia,serif" font-size="10" letter-spacing="1" fill="#2a2622">ESTILO ANNA</text>
+</svg>
