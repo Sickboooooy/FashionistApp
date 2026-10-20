@@ -1,0 +1,589 @@
+/*
+ * War Room · vistas (En vivo, teletipo, escaparates, estrategias, tribunal) y ajustes
+ * de pantalla, movimiento reducido y colores forzados. Se carga al final.
+ */
+
+/* --- En vivo ------------------------------------------------------------------------------- */
+
+.envivo {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+}
+
+.envivo-principal {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+@media (min-width: 1280px) {
+  .envivo {
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: start;
+  }
+
+  .envivo-lateral {
+    position: sticky;
+    top: 60px;
+  }
+
+  .envivo-lateral .teletipo-marco {
+    max-height: calc(100vh - 170px);
+  }
+}
+
+.franja-ronda {
+  padding: 12px 16px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.empresa {
+  border-top: 3px solid var(--eje);
+}
+
+.empresa-alfa {
+  border-top-color: var(--alfa);
+}
+
+.empresa-omega {
+  border-top-color: var(--omega);
+}
+
+.empresa-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 8px;
+}
+
+.empresa-nombre {
+  font-size: 18px;
+}
+
+.empresa-perfil,
+.empresa-ambito {
+  color: var(--tinta-3);
+  font-size: 12.5px;
+}
+
+.empresa-ambito {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.empresa-caja {
+  display: grid;
+  justify-items: end;
+  text-align: right;
+}
+
+.empresa-caja-valor {
+  font-size: 22px;
+  font-weight: 750;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 8px;
+}
+
+.kpis-resumen {
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+.kpi {
+  display: grid;
+  align-content: start;
+  gap: 2px;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+}
+
+.kpi-nombre {
+  color: var(--tinta-3);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.kpi-valor {
+  overflow-wrap: anywhere;
+  font-size: 17px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-sec {
+  color: var(--tinta-3);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+}
+
+.kpi-destacado {
+  grid-column: 1 / -1;
+  background: linear-gradient(135deg, var(--superficie-2), var(--superficie-3));
+}
+
+.kpi-destacado .kpi-valor {
+  font-size: 28px;
+  letter-spacing: -0.01em;
+}
+
+.kpis-compactos .kpi-valor {
+  font-size: 15px;
+}
+
+.lista-conciliacion {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.conciliacion-ronda {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 16px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--borde);
+}
+
+.conciliacion-r {
+  min-width: 70px;
+  font-weight: 700;
+}
+
+.conciliacion-empresa {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.diferencias {
+  margin: 4px 0 0;
+  padding-left: 18px;
+  color: var(--tinta-2);
+  font-size: 12.5px;
+}
+
+/* --- Teletipo -------------------------------------------------------------------------------- */
+
+.teletipo-marco {
+  max-height: 520px;
+  overscroll-behavior: contain;
+}
+
+.teletipo-lista,
+.linea-tiempo {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.teletipo-item {
+  padding: 8px 4px;
+  border-bottom: 1px solid var(--borde);
+}
+
+.teletipo-linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.teletipo-seq {
+  color: var(--tinta-3);
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+}
+
+.teletipo-ronda {
+  color: var(--tinta-3);
+  font-variant-numeric: tabular-nums;
+}
+
+.teletipo-resumen {
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+  color: var(--tinta-2);
+  font-size: 12.5px;
+}
+
+.codigo-evento {
+  padding: 1px 6px;
+  border-radius: 4px;
+  background: var(--superficie-3);
+  color: var(--tinta-2);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+}
+
+.codigo-judge_verdict .codigo-evento,
+.codigo-round_closed .codigo-evento,
+.codigo-round_started .codigo-evento {
+  background: var(--acento-fondo);
+  color: var(--acento-tinta);
+  font-weight: 700;
+}
+
+.codigo-strategy_changed .codigo-evento,
+.codigo-agent_decision_recorded .codigo-evento {
+  outline: 1px solid var(--borde-fuerte);
+}
+
+/* --- Escaparates ------------------------------------------------------------------------------ */
+
+.lista-anuncios {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.anuncio {
+  padding: 10px 12px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+}
+
+.anuncio-meta {
+  color: var(--tinta-3);
+  font-size: 11.5px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.anuncio-mensaje {
+  margin-top: 2px;
+}
+
+/* --- Estrategias -------------------------------------------------------------------------------- */
+
+.declaracion {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--eje);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+}
+
+.declaracion.empresa-alfa,
+.decision.empresa-alfa {
+  border-left-color: var(--alfa);
+  border-top: 1px solid var(--borde);
+}
+
+.declaracion.empresa-omega,
+.decision.empresa-omega {
+  border-left-color: var(--omega);
+  border-top: 1px solid var(--borde);
+}
+
+.declaracion-titulo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+  font-size: 13px;
+}
+
+.marca-cambio {
+  color: var(--acento-tinta);
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.grupo-decisiones {
+  padding-top: 12px;
+  border-top: 1px solid var(--borde);
+}
+
+.grupo-titulo {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 15px;
+}
+
+.grupo-estrategia {
+  margin: 4px 0 12px;
+}
+
+.lista-cambios {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 13px;
+}
+
+.lista-cambios li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 8px;
+}
+
+.cambio-campo {
+  min-width: min(100%, 220px);
+  color: var(--tinta-2);
+  font-weight: 600;
+}
+
+.cambio-anterior {
+  color: var(--tinta-3);
+}
+
+.cambio-flecha {
+  color: var(--acento-tinta);
+  font-weight: 800;
+}
+
+.decisiones {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 12px;
+}
+
+.decision {
+  min-width: 0;
+  padding: 12px;
+  border: 1px solid var(--borde);
+  border-left: 3px solid var(--eje);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+}
+
+.decision-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin-bottom: 6px;
+  font-size: 12.5px;
+}
+
+.rol {
+  padding: 1px 7px;
+  border-radius: 4px;
+  background: var(--acento-fondo);
+  color: var(--acento-tinta);
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.decision-actor,
+.decision-seq {
+  color: var(--tinta-3);
+}
+
+.decision-resumen {
+  font-size: 13px;
+}
+
+/* --- Tribunal ----------------------------------------------------------------------------------- */
+
+.tribunal {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+@media (min-width: 1100px) {
+  .tribunal {
+    grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr);
+  }
+}
+
+.sentencia-cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: 12px;
+}
+
+.sentencia-id {
+  color: var(--acento-tinta);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 700;
+}
+
+.sentencia-titulo {
+  font-size: 18px;
+}
+
+.sentencia-motivo {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.comprobacion {
+  display: grid;
+  justify-items: start;
+  gap: 2px;
+}
+
+.comprobacion-detalle {
+  color: var(--tinta-3);
+  font-size: 12px;
+}
+
+.nota-hash {
+  margin-top: 12px;
+}
+
+.verificacion {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 12px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+}
+
+.verificacion .tarjeta-desc {
+  margin-bottom: 0;
+}
+
+.verificacion-salida {
+  display: grid;
+  gap: 8px;
+  width: 100%;
+}
+
+.acciones-sentencia {
+  margin-top: 12px;
+}
+
+.linea-tiempo-marco {
+  max-height: 480px;
+}
+
+.hito {
+  position: relative;
+  margin-left: 6px;
+  padding: 6px 0 10px 16px;
+  border-left: 2px solid var(--borde-fuerte);
+}
+
+.hito::before {
+  content: '';
+  position: absolute;
+  left: -6px;
+  top: 10px;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--superficie);
+  border-radius: 50%;
+  background: var(--tinta-3);
+}
+
+.hito.codigo-judge_verdict::before {
+  background: var(--acento);
+}
+
+/* --- Ajustes de pantalla, movimiento y colores forzados ---------------------------------------------- */
+
+@media (max-width: 640px) {
+  .tarjeta {
+    padding: 12px;
+  }
+
+  .marca-titulo {
+    font-size: 18px;
+  }
+
+  .kpis {
+    grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  }
+
+  .kpi-destacado .kpi-valor {
+    font-size: 24px;
+  }
+
+  .empresa-caja {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .estado-global {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .estado-item {
+    padding: 6px 8px;
+  }
+
+  .estado-item dd {
+    font-size: 13px;
+  }
+
+  .marca-desc {
+    font-size: 12px;
+  }
+
+  .definiciones {
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+@media (forced-colors: active) {
+  .insignia,
+  .kpi,
+  .tarjeta,
+  .estado-item {
+    border: 1px solid CanvasText;
+  }
+
+  .relleno-alfa,
+  .relleno-omega {
+    fill: CanvasText;
+  }
+
+  .trazo-alfa,
+  .trazo-omega {
+    stroke: CanvasText;
+  }
+}

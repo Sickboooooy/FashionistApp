@@ -1,0 +1,5 @@
+node_modules/
+# Corridas de prueba (decenas de MB de evidencia regenerable con la semilla)
+runs/
+# Temporales de escritura atómica
+*.tmp-*

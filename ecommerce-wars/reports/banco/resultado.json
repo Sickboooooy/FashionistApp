@@ -1,0 +1,1826 @@
+{
+  "generadoEn": "2026-10-20T07:16:19.975Z",
+  "semillas": [
+    20261019,
+    20261020,
+    20261021,
+    20261022,
+    20261023,
+    20261024,
+    20261025,
+    20261026,
+    20261027,
+    20261028
+  ],
+  "rondasMaximas": 12,
+  "porEstrategia": {
+    "alfa": {
+      "perfil": "Atelier ALFA",
+      "victorias": 1,
+      "ventasNetasMediaPorRonda": 18854051,
+      "margenMedioPorRonda": 6624958,
+      "calidadMedia": 77,
+      "rondasConMargenNegativo": 0
+    },
+    "omega": {
+      "perfil": "OMEGA Pulso",
+      "victorias": 0,
+      "ventasNetasMediaPorRonda": 15151450,
+      "margenMedioPorRonda": 3471748,
+      "calidadMedia": 78,
+      "rondasConMargenNegativo": 0
+    }
+  },
+  "corridas": [
+    {
+      "semilla": 20261019,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 8553200,
+            "omega": 6385720
+          },
+          "margen": {
+            "alfa": 2756509,
+            "omega": 621501
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 59
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 9386400,
+            "omega": 7535138
+          },
+          "margen": {
+            "alfa": 3749151,
+            "omega": 2291046
+          },
+          "calidad": {
+            "alfa": 92,
+            "omega": 84
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 14760164,
+            "omega": 11660114
+          },
+          "margen": {
+            "alfa": 5877143,
+            "omega": 3413035
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 97
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 15191684,
+            "omega": 12075053
+          },
+          "margen": {
+            "alfa": 5758695,
+            "omega": 3207560
+          },
+          "calidad": {
+            "alfa": 72,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 11720328,
+            "omega": 13958292
+          },
+          "margen": {
+            "alfa": 4159225,
+            "omega": 3395706
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 75
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 18066356,
+            "omega": 14762101
+          },
+          "margen": {
+            "alfa": 6237526,
+            "omega": 3095234
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 18386276,
+            "omega": 13894879
+          },
+          "margen": {
+            "alfa": 6269944,
+            "omega": 2856024
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 21339220,
+            "omega": 17555445
+          },
+          "margen": {
+            "alfa": 7113335,
+            "omega": 4157400
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 24721836,
+            "omega": 17011542
+          },
+          "margen": {
+            "alfa": 8687748,
+            "omega": 4087696
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 13159952,
+            "omega": 16287413
+          },
+          "margen": {
+            "alfa": 3987371,
+            "omega": 3491027
+          },
+          "calidad": {
+            "alfa": 69,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 18354448,
+            "omega": 17612537
+          },
+          "margen": {
+            "alfa": 6158435,
+            "omega": 4044979
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 25592524,
+            "omega": 15500622
+          },
+          "margen": {
+            "alfa": 7952327,
+            "omega": 3090019
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 74
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261020,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 7909900,
+            "omega": 5325936
+          },
+          "margen": {
+            "alfa": 2359557,
+            "omega": 201244
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 51
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 9446300,
+            "omega": 7936041
+          },
+          "margen": {
+            "alfa": 3728226,
+            "omega": 2676562
+          },
+          "calidad": {
+            "alfa": 83,
+            "omega": 94
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 13805548,
+            "omega": 10517599
+          },
+          "margen": {
+            "alfa": 4935281,
+            "omega": 2640665
+          },
+          "calidad": {
+            "alfa": 72,
+            "omega": 91
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 17770772,
+            "omega": 11219689
+          },
+          "margen": {
+            "alfa": 6010303,
+            "omega": 2688036
+          },
+          "calidad": {
+            "alfa": 73,
+            "omega": 86
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 13961500,
+            "omega": 13943237
+          },
+          "margen": {
+            "alfa": 4335015,
+            "omega": 2661349
+          },
+          "calidad": {
+            "alfa": 70,
+            "omega": 74
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 9923916,
+            "omega": 15230835
+          },
+          "margen": {
+            "alfa": 3385367,
+            "omega": 2952162
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 75
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 19996948,
+            "omega": 14884030
+          },
+          "margen": {
+            "alfa": 6598353,
+            "omega": 3485941
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 19909660,
+            "omega": 16842096
+          },
+          "margen": {
+            "alfa": 6364575,
+            "omega": 3510233
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 18830500,
+            "omega": 21420524
+          },
+          "margen": {
+            "alfa": 5703755,
+            "omega": 5102893
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 27961728,
+            "omega": 17125315
+          },
+          "margen": {
+            "alfa": 9491843,
+            "omega": 3443170
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 74
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 20633452,
+            "omega": 20526219
+          },
+          "margen": {
+            "alfa": 6462861,
+            "omega": 4560866
+          },
+          "calidad": {
+            "alfa": 73,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 20936176,
+            "omega": 17843032
+          },
+          "margen": {
+            "alfa": 6615160,
+            "omega": 3546968
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 77
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261021,
+      "ganador": "alfa",
+      "rondaFin": 6,
+      "motivo": "ALFA cumplió todas las condiciones de victoria en la ronda 6, validadas por el Juez.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 7540600,
+            "omega": 6036060
+          },
+          "margen": {
+            "alfa": 2154500,
+            "omega": 238892
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 54
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 9418100,
+            "omega": 7580560
+          },
+          "margen": {
+            "alfa": 4112795,
+            "omega": 2531528
+          },
+          "calidad": {
+            "alfa": 97,
+            "omega": 84
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 14745436,
+            "omega": 8503571
+          },
+          "margen": {
+            "alfa": 5920399,
+            "omega": 1839757
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 84
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 15355856,
+            "omega": 11064513
+          },
+          "margen": {
+            "alfa": 6041156,
+            "omega": 2611923
+          },
+          "calidad": {
+            "alfa": 72,
+            "omega": 86
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 15034096,
+            "omega": 13141882
+          },
+          "margen": {
+            "alfa": 5426685,
+            "omega": 2896051
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 18199040,
+            "omega": 8845403
+          },
+          "margen": {
+            "alfa": 6322436,
+            "omega": 1912443
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 94
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261022,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 8585300,
+            "omega": 6064540
+          },
+          "margen": {
+            "alfa": 2761206,
+            "omega": 601691
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 70
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 13789200,
+            "omega": 10946441
+          },
+          "margen": {
+            "alfa": 5320514,
+            "omega": 3384873
+          },
+          "calidad": {
+            "alfa": 83,
+            "omega": 88
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 18343132,
+            "omega": 13639824
+          },
+          "margen": {
+            "alfa": 7332905,
+            "omega": 3669211
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 24058868,
+            "omega": 19727197
+          },
+          "margen": {
+            "alfa": 9420912,
+            "omega": 4690604
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 20864928,
+            "omega": 17150566
+          },
+          "margen": {
+            "alfa": 7305194,
+            "omega": 4190874
+          },
+          "calidad": {
+            "alfa": 70,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 21512556,
+            "omega": 22283309
+          },
+          "margen": {
+            "alfa": 7056470,
+            "omega": 5317353
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 29079032,
+            "omega": 18341667
+          },
+          "margen": {
+            "alfa": 10219321,
+            "omega": 3899549
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 24127904,
+            "omega": 22322313
+          },
+          "margen": {
+            "alfa": 7733331,
+            "omega": 5407482
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 28707732,
+            "omega": 23032951
+          },
+          "margen": {
+            "alfa": 10130749,
+            "omega": 4331364
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 23789088,
+            "omega": 18634650
+          },
+          "margen": {
+            "alfa": 7897449,
+            "omega": 3543137
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 74
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 29008720,
+            "omega": 24964109
+          },
+          "margen": {
+            "alfa": 10386455,
+            "omega": 5172054
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 25935220,
+            "omega": 25387958
+          },
+          "margen": {
+            "alfa": 9094359,
+            "omega": 5177331
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 78
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261023,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 7949500,
+            "omega": 6216300
+          },
+          "margen": {
+            "alfa": 2422673,
+            "omega": 556119
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 60
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 11801700,
+            "omega": 7206919
+          },
+          "margen": {
+            "alfa": 4970626,
+            "omega": 2109416
+          },
+          "calidad": {
+            "alfa": 88,
+            "omega": 74
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 18448504,
+            "omega": 12116694
+          },
+          "margen": {
+            "alfa": 7745431,
+            "omega": 3436693
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 85
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 17258664,
+            "omega": 15971460
+          },
+          "margen": {
+            "alfa": 6722614,
+            "omega": 4106907
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 21146024,
+            "omega": 15503212
+          },
+          "margen": {
+            "alfa": 7497972,
+            "omega": 3708345
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 18578204,
+            "omega": 14223344
+          },
+          "margen": {
+            "alfa": 6705415,
+            "omega": 2969959
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 75
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 20058272,
+            "omega": 15267615
+          },
+          "margen": {
+            "alfa": 6661335,
+            "omega": 3212387
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 19299436,
+            "omega": 21289414
+          },
+          "margen": {
+            "alfa": 6134912,
+            "omega": 4865806
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 75
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 23329628,
+            "omega": 19831623
+          },
+          "margen": {
+            "alfa": 7922835,
+            "omega": 4851237
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 21081112,
+            "omega": 20383415
+          },
+          "margen": {
+            "alfa": 6855777,
+            "omega": 4644185
+          },
+          "calidad": {
+            "alfa": 73,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 25113588,
+            "omega": 19252946
+          },
+          "margen": {
+            "alfa": 8870991,
+            "omega": 4973087
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 20550076,
+            "omega": 21653178
+          },
+          "margen": {
+            "alfa": 6558974,
+            "omega": 4131528
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 77
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261024,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 7832500,
+            "omega": 6950820
+          },
+          "margen": {
+            "alfa": 2413184,
+            "omega": 662040
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 66
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 10898500,
+            "omega": 9189409
+          },
+          "margen": {
+            "alfa": 4720038,
+            "omega": 2621241
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 93
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 18285104,
+            "omega": 12509493
+          },
+          "margen": {
+            "alfa": 7174742,
+            "omega": 3168220
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 82
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 17842048,
+            "omega": 16338656
+          },
+          "margen": {
+            "alfa": 6945383,
+            "omega": 4098869
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 74
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 18865400,
+            "omega": 17601322
+          },
+          "margen": {
+            "alfa": 6978424,
+            "omega": 4055929
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 24378812,
+            "omega": 17847748
+          },
+          "margen": {
+            "alfa": 7986309,
+            "omega": 3883290
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 21507060,
+            "omega": 20306894
+          },
+          "margen": {
+            "alfa": 7578625,
+            "omega": 4205325
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 27524068,
+            "omega": 19526913
+          },
+          "margen": {
+            "alfa": 9830077,
+            "omega": 4133825
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 75
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 25218012,
+            "omega": 22048902
+          },
+          "margen": {
+            "alfa": 8624533,
+            "omega": 4650212
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 22544612,
+            "omega": 20418094
+          },
+          "margen": {
+            "alfa": 7514977,
+            "omega": 4392350
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 22990232,
+            "omega": 21671726
+          },
+          "margen": {
+            "alfa": 7645337,
+            "omega": 4613380
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 24216728,
+            "omega": 24662040
+          },
+          "margen": {
+            "alfa": 7859933,
+            "omega": 5208962
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261025,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 9447600,
+            "omega": 7593898
+          },
+          "margen": {
+            "alfa": 3145994,
+            "omega": 806902
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 65
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 10976400,
+            "omega": 9352640
+          },
+          "margen": {
+            "alfa": 4042191,
+            "omega": 2871393
+          },
+          "calidad": {
+            "alfa": 88,
+            "omega": 80
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 17469356,
+            "omega": 11770142
+          },
+          "margen": {
+            "alfa": 7038333,
+            "omega": 3245347
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 93
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 18561852,
+            "omega": 17328012
+          },
+          "margen": {
+            "alfa": 7189906,
+            "omega": 4814887
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 19019836,
+            "omega": 10360698
+          },
+          "margen": {
+            "alfa": 6732724,
+            "omega": 2196392
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 17596576,
+            "omega": 16831373
+          },
+          "margen": {
+            "alfa": 5600621,
+            "omega": 3528488
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 24195852,
+            "omega": 18314011
+          },
+          "margen": {
+            "alfa": 8871797,
+            "omega": 4426862
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 23866280,
+            "omega": 18489695
+          },
+          "margen": {
+            "alfa": 8150901,
+            "omega": 5037617
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 25484476,
+            "omega": 20522960
+          },
+          "margen": {
+            "alfa": 9324471,
+            "omega": 4603587
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 24308616,
+            "omega": 17377702
+          },
+          "margen": {
+            "alfa": 8686821,
+            "omega": 3941798
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 26389856,
+            "omega": 18164992
+          },
+          "margen": {
+            "alfa": 9278909,
+            "omega": 4331099
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 22851980,
+            "omega": 19600085
+          },
+          "margen": {
+            "alfa": 7968847,
+            "omega": 4318877
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 79
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261026,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 9230700,
+            "omega": 4936456
+          },
+          "margen": {
+            "alfa": 2908388,
+            "omega": 401197
+          },
+          "calidad": {
+            "alfa": 82,
+            "omega": 59
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 13258900,
+            "omega": 9812599
+          },
+          "margen": {
+            "alfa": 5371249,
+            "omega": 3247926
+          },
+          "calidad": {
+            "alfa": 96,
+            "omega": 97
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 19116468,
+            "omega": 11900864
+          },
+          "margen": {
+            "alfa": 7873736,
+            "omega": 3212352
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 15900212,
+            "omega": 15292160
+          },
+          "margen": {
+            "alfa": 5767239,
+            "omega": 3600101
+          },
+          "calidad": {
+            "alfa": 70,
+            "omega": 73
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 20885924,
+            "omega": 16828950
+          },
+          "margen": {
+            "alfa": 7680787,
+            "omega": 3970185
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 16373288,
+            "omega": 15900664
+          },
+          "margen": {
+            "alfa": 4666098,
+            "omega": 3695673
+          },
+          "calidad": {
+            "alfa": 74,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 21754876,
+            "omega": 16145616
+          },
+          "margen": {
+            "alfa": 7905098,
+            "omega": 3622692
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 21425924,
+            "omega": 17193430
+          },
+          "margen": {
+            "alfa": 7252109,
+            "omega": 4485359
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 24208868,
+            "omega": 18693784
+          },
+          "margen": {
+            "alfa": 8645272,
+            "omega": 4362684
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 22070900,
+            "omega": 19939563
+          },
+          "margen": {
+            "alfa": 7532922,
+            "omega": 4228524
+          },
+          "calidad": {
+            "alfa": 76,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 22122244,
+            "omega": 15408896
+          },
+          "margen": {
+            "alfa": 7623152,
+            "omega": 3761559
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 25855228,
+            "omega": 15030785
+          },
+          "margen": {
+            "alfa": 8996043,
+            "omega": 2991563
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261027,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 9651300,
+            "omega": 7916814
+          },
+          "margen": {
+            "alfa": 3186841,
+            "omega": 866920
+          },
+          "calidad": {
+            "alfa": 73,
+            "omega": 68
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 11133500,
+            "omega": 9777735
+          },
+          "margen": {
+            "alfa": 4292888,
+            "omega": 2855775
+          },
+          "calidad": {
+            "alfa": 85,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 16452616,
+            "omega": 12147742
+          },
+          "margen": {
+            "alfa": 6098103,
+            "omega": 3220474
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 93
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 17499860,
+            "omega": 13160666
+          },
+          "margen": {
+            "alfa": 6635819,
+            "omega": 3400554
+          },
+          "calidad": {
+            "alfa": 73,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 19927948,
+            "omega": 12516856
+          },
+          "margen": {
+            "alfa": 7197466,
+            "omega": 2948615
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 19854204,
+            "omega": 13468197
+          },
+          "margen": {
+            "alfa": 6930206,
+            "omega": 3353438
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 23706424,
+            "omega": 15491276
+          },
+          "margen": {
+            "alfa": 8566925,
+            "omega": 3943645
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 25082024,
+            "omega": 15870906
+          },
+          "margen": {
+            "alfa": 8653541,
+            "omega": 4228603
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 78
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 25213424,
+            "omega": 18186061
+          },
+          "margen": {
+            "alfa": 8904102,
+            "omega": 4262907
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 75
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 25709564,
+            "omega": 15675640
+          },
+          "margen": {
+            "alfa": 8749188,
+            "omega": 4112157
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 25048048,
+            "omega": 18059463
+          },
+          "margen": {
+            "alfa": 8726015,
+            "omega": 4153533
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 26478660,
+            "omega": 15560093
+          },
+          "margen": {
+            "alfa": 9136051,
+            "omega": 3842040
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 77
+          }
+        }
+      ]
+    },
+    {
+      "semilla": 20261028,
+      "ganador": null,
+      "rondaFin": 12,
+      "motivo": "Se alcanzó el máximo de 12 rondas sin que ninguna empresa cumpliera las condiciones de victoria.",
+      "rondas": [
+        {
+          "ronda": 1,
+          "ventasNetas": {
+            "alfa": 7500800,
+            "omega": 7437860
+          },
+          "margen": {
+            "alfa": 2089829,
+            "omega": 667696
+          },
+          "calidad": {
+            "alfa": 70,
+            "omega": 62
+          }
+        },
+        {
+          "ronda": 2,
+          "ventasNetas": {
+            "alfa": 11031500,
+            "omega": 7908137
+          },
+          "margen": {
+            "alfa": 4641051,
+            "omega": 2349245
+          },
+          "calidad": {
+            "alfa": 89,
+            "omega": 74
+          }
+        },
+        {
+          "ronda": 3,
+          "ventasNetas": {
+            "alfa": 16365160,
+            "omega": 10825880
+          },
+          "margen": {
+            "alfa": 6812102,
+            "omega": 3105872
+          },
+          "calidad": {
+            "alfa": 73,
+            "omega": 96
+          }
+        },
+        {
+          "ronda": 4,
+          "ventasNetas": {
+            "alfa": 20191976,
+            "omega": 14749099
+          },
+          "margen": {
+            "alfa": 7735456,
+            "omega": 4073320
+          },
+          "calidad": {
+            "alfa": 75,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 5,
+          "ventasNetas": {
+            "alfa": 19018612,
+            "omega": 12783435
+          },
+          "margen": {
+            "alfa": 7074402,
+            "omega": 3057746
+          },
+          "calidad": {
+            "alfa": 77,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 6,
+          "ventasNetas": {
+            "alfa": 21845996,
+            "omega": 16572610
+          },
+          "margen": {
+            "alfa": 7757240,
+            "omega": 4034212
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 7,
+          "ventasNetas": {
+            "alfa": 13252404,
+            "omega": 16844770
+          },
+          "margen": {
+            "alfa": 4399638,
+            "omega": 4071971
+          },
+          "calidad": {
+            "alfa": 71,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 8,
+          "ventasNetas": {
+            "alfa": 25958972,
+            "omega": 19415111
+          },
+          "margen": {
+            "alfa": 9051483,
+            "omega": 4605075
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 9,
+          "ventasNetas": {
+            "alfa": 14294072,
+            "omega": 19652357
+          },
+          "margen": {
+            "alfa": 4271848,
+            "omega": 4462449
+          },
+          "calidad": {
+            "alfa": 69,
+            "omega": 79
+          }
+        },
+        {
+          "ronda": 10,
+          "ventasNetas": {
+            "alfa": 25725992,
+            "omega": 20504397
+          },
+          "margen": {
+            "alfa": 8864304,
+            "omega": 4651900
+          },
+          "calidad": {
+            "alfa": 79,
+            "omega": 77
+          }
+        },
+        {
+          "ronda": 11,
+          "ventasNetas": {
+            "alfa": 19244020,
+            "omega": 15651793
+          },
+          "margen": {
+            "alfa": 6300929,
+            "omega": 3059217
+          },
+          "calidad": {
+            "alfa": 70,
+            "omega": 76
+          }
+        },
+        {
+          "ronda": 12,
+          "ventasNetas": {
+            "alfa": 21671200,
+            "omega": 21589408
+          },
+          "margen": {
+            "alfa": 7240497,
+            "omega": 4852096
+          },
+          "calidad": {
+            "alfa": 78,
+            "omega": 79
+          }
+        }
+      ]
+    }
+  ]
+}

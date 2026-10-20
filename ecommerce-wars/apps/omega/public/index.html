@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>OMEGA Pulso · Tienda sintética</title>
+  <meta name="description" content="OMEGA Pulso, tienda sintética del experimento E-COMMERCE WARS. No se venden productos reales ni se cobra dinero.">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#111111">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%23111'/%3E%3Cpath d='M7 25 H12.5 V21.5 A8.5 8.5 0 1 1 19.5 21.5 V25 H25' fill='none' stroke='%23c8ff00' stroke-width='3.2' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/tienda-base.css">
+  <link rel="stylesheet" href="/omega.css">
+  <script type="module" src="/omega.js"></script>
+</head>
+<body class="omega">
+  <a class="saltar" href="#catalogo">Saltar al catálogo</a>
+
+  <svg class="defs-svg" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="omega-puntos" width="5" height="5" patternUnits="userSpaceOnUse">
+        <circle class="trama-punto" cx="2.5" cy="2.5" r="0.9"></circle>
+      </pattern>
+    </defs>
+  </svg>
+
+  <div class="marquesina" id="marquesina">
+    <div class="marquesina__ventana">
+      <div class="marquesina__pista" id="marquesina-pista" aria-hidden="true"></div>
+    </div>
+    <button type="button" class="marquesina__pausa" id="marquesina-pausa" aria-pressed="false"><span id="marquesina-verbo">Pausar</span><span class="marquesina__extra"> animación</span></button>
+  </div>
+
+  <p class="franja-aviso" id="franja-aviso" role="note"><strong>Tienda sintética</strong> del experimento E-COMMERCE WARS: no se venden productos reales ni se cobra dinero.</p>
+
+  <header class="cabecera" id="cabecera">
+    <div class="cabecera__marca">
+      <h1 class="logo" id="marca-nombre"><span class="logo__a">OMEGA</span> <span class="logo__b">Pulso</span></h1>
+      <p class="cabecera__lema" id="marca-lema">Lo que se usa hoy, al precio de hoy</p>
+    </div>
+    <div class="cabecera__lado">
+      <p class="en-vivo" id="estado-sim" data-estado="espera">
+        <span class="en-vivo__punto" aria-hidden="true"></span>
+        <span class="en-vivo__etiqueta" id="estado-etiqueta">Conectando</span>
+        <span class="sr-only">Estado de la simulación:</span>
+        <span class="en-vivo__texto" id="estado-texto">…</span>
+      </p>
+      <nav class="cabecera__nav" aria-label="Secciones de la tienda">
+        <ul>
+          <li><a href="#catalogo">Catálogo</a></li>
+          <li><a href="#rastreo">Rastreo</a></li>
+          <li><a href="#feed">Feed verificable</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="drops" id="drops" aria-labelledby="drops-titulo">
+    <h2 class="drops__titulo" id="drops-titulo">Drops de la semana</h2>
+    <ul class="drops__lista" id="drops-lista">
+      <li class="drop drop--neutro"><p class="drop__texto">Cargando promociones…</p></li>
+    </ul>
+    <div class="mensajes" id="mensajes" hidden>
+      <h3 class="mensajes__titulo">Mensajes de campaña</h3>
+      <ul class="mensajes__lista" id="mensajes-lista"></ul>
+    </div>
+  </section>
+
+  <div class="distribucion">
+    <main class="principal" id="principal">
+      <section class="bloque" id="catalogo" aria-labelledby="catalogo-titulo" tabindex="-1">
+        <div class="bloque__cabeza">
+          <h2 class="bloque__titulo" id="catalogo-titulo">Catálogo</h2>
+          <p class="bloque__dato" id="catalogo-cuenta" aria-live="polite"></p>
+        </div>
+        <div class="herramientas" id="herramientas" hidden>
+          <div class="chips" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
+          <div class="orden">
+            <label class="orden__etiqueta" for="orden">Ordenar</label>
+            <select class="control control--select" id="orden"></select>
+          </div>
+        </div>
+        <div class="estado-catalogo" id="catalogo-estado">
+          <p class="estado-catalogo__texto">Cargando catálogo…</p>
+        </div>
+        <ul class="mosaico" id="mosaico" aria-labelledby="catalogo-titulo" hidden></ul>
+      </section>
+
+      <section class="bloque" id="rastreo" aria-labelledby="rastreo-titulo">
+        <div class="bloque__cabeza">
+          <h2 class="bloque__titulo" id="rastreo-titulo">Rastreo</h2>
+          <p class="bloque__dato">Pedidos de demostración y pedidos sintéticos</p>
+        </div>
+        <div class="rastreo">
+          <div class="rastreo__consulta">
+            <form class="form-rastreo" id="form-rastreo" novalidate>
+              <label class="etiqueta" for="pedido-id">Número de pedido</label>
+              <div class="form-rastreo__fila">
+                <input class="control control--mono" id="pedido-id" name="pedido" type="text" autocomplete="off" spellcheck="false" autocapitalize="characters" maxlength="30" placeholder="DEMO-OMEGA-0001" aria-describedby="pedido-ayuda pedido-error">
+                <button type="submit" class="boton boton--lima">Rastrear</button>
+              </div>
+              <p class="ayuda" id="pedido-ayuda">Ej.: DEMO-OMEGA-0001 (demostración) u OMEGA-000123 (sintético).</p>
+              <p class="error-campo" id="pedido-error" hidden></p>
+            </form>
+            <div class="mis-demos" id="mis-demos" hidden>
+              <p class="etiqueta" id="mis-demos-etiqueta">Tus pedidos demo</p>
+              <ul class="mis-demos__lista" id="mis-demos-lista" aria-labelledby="mis-demos-etiqueta"></ul>
+            </div>
+            <div class="resultado" id="resultado-rastreo"></div>
+          </div>
+          <div class="recientes" aria-labelledby="recientes-titulo">
+            <h3 class="recientes__titulo" id="recientes-titulo">Pedidos recientes</h3>
+            <p class="ayuda">Clientes sintéticos de la simulación. Toca uno para rastrearlo.</p>
+            <ol class="recientes__lista" id="pedidos-recientes">
+              <li class="vacio">Cargando…</li>
+            </ol>
+          </div>
+        </div>
+      </section>
+
+      <section class="bloque" id="feed" aria-labelledby="feed-titulo">
+        <div class="bloque__cabeza">
+          <h2 class="bloque__titulo" id="feed-titulo">Feed verificable</h2>
+          <p class="bloque__dato" id="feed-resumen">Cargando eventos…</p>
+        </div>
+        <p class="feed__explica">Cada evento lleva su SHA-256, que el servidor recalcula y encadena con el hash del evento anterior. Si un registro se alterara, aparecería como ✗ no verificado.</p>
+        <div class="feed__barra">
+          <button type="button" class="boton boton--contorno boton--chico" id="feed-actualizar">Actualizar feed</button>
+        </div>
+        <ol class="feed" id="eventos" aria-labelledby="feed-titulo"></ol>
+      </section>
+    </main>
+
+    <aside class="carrito" id="carrito" aria-labelledby="carrito-titulo">
+      <div class="carrito__cabeza">
+        <h2 class="carrito__titulo" id="carrito-titulo" tabindex="-1">Carrito</h2>
+        <p class="carrito__conteo" id="carrito-conteo">0 piezas</p>
+        <button type="button" class="carrito__cerrar" id="carrito-cerrar" aria-label="Cerrar carrito">✕</button>
+      </div>
+
+      <div class="carrito__vista" id="vista-carrito"></div>
+
+      <div class="carrito__vista" id="vista-checkout" hidden>
+        <button type="button" class="volver" id="checkout-volver">← Volver al carrito</button>
+        <h3 class="carrito__subtitulo" id="checkout-titulo" tabindex="-1">Checkout exprés</h3>
+        <p class="aviso-pago" role="note"><strong>Simulación:</strong> no se solicitan ni se procesan datos de pago.</p>
+        <form class="form-checkout" id="form-checkout" novalidate>
+          <div class="campo">
+            <label class="etiqueta" for="alias">Alias</label>
+            <input class="control" id="alias" name="alias" type="text" required minlength="2" maxlength="40" autocomplete="off" spellcheck="false" aria-describedby="alias-ayuda alias-error">
+            <p class="ayuda" id="alias-ayuda">2 a 40 caracteres: letras, números, espacios y . ' -. Inventa uno.</p>
+            <p class="error-campo" id="alias-error" hidden></p>
+          </div>
+          <div class="campo">
+            <label class="etiqueta" for="ciudad">Ciudad</label>
+            <select class="control control--select" id="ciudad" name="ciudad" required aria-describedby="ciudad-error">
+              <option value="">Elige una ciudad</option>
+            </select>
+            <p class="error-campo" id="ciudad-error" hidden></p>
+          </div>
+          <div class="alerta" id="checkout-error" tabindex="-1" hidden></div>
+          <div class="checkout-resumen" id="checkout-resumen"></div>
+          <button type="submit" class="boton boton--lima boton--ancho boton--grande" id="checkout-enviar">Confirmar pedido simulado</button>
+          <p class="ayuda">Sin correo, teléfono, dirección ni tarjeta: es sólo una demostración.</p>
+        </form>
+      </div>
+
+      <div class="carrito__vista" id="vista-confirmacion" hidden></div>
+    </aside>
+  </div>
+
+  <footer class="pie" id="pie">
+    <p class="pie__logo" aria-hidden="true">OMEGA</p>
+    <p class="pie__texto" id="pie-descripcion">Tendencia al instante, precios bajos y envío rápido.</p>
+    <p class="pie__texto" id="pie-aviso"></p>
+    <p class="pie__texto">Experimento E-COMMERCE WARS · Tienda sintética: no se venden productos reales ni se cobra dinero.</p>
+  </footer>
+
+  <button type="button" class="barra-carrito" id="barra-carrito" aria-controls="carrito" aria-expanded="false">
+    <span class="barra-carrito__icono" aria-hidden="true">▲</span>
+    <span class="barra-carrito__texto" id="barra-carrito-texto">Carrito · 0 piezas</span>
+    <span class="barra-carrito__total" id="barra-carrito-total"></span>
+  </button>
+  <div class="velo" id="velo" hidden></div>
+
+  <dialog class="dialogo" id="detalle" aria-labelledby="detalle-titulo">
+    <div class="dialogo__marco">
+      <button type="button" class="dialogo__cerrar" data-cerrar aria-label="Cerrar detalle">✕</button>
+      <div class="detalle" id="detalle-contenido"></div>
+    </div>
+  </dialog>
+
+  <div class="sr-only" id="anuncio-vivo" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="aviso-flotante" id="aviso-flotante" aria-hidden="true"></div>
+  <noscript><p class="sin-js">Esta tienda necesita JavaScript para mostrar el catálogo.</p></noscript>
+</body>
+</html>

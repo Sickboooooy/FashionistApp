@@ -1,0 +1,41 @@
+{
+  "empresa": "omega",
+  "nombre": "OMEGA Pulso",
+  "posicionamiento": "Volumen y tendencia: surtido amplio, precios agresivos, promociones frecuentes y entrega rápida",
+  "multiplicadorPrecio": 0.92,
+  "rangoMultiplicador": [0.75, 1.1],
+  "margenMinimoSobreCosto": 1.3,
+  "seguirPrecioRival": true,
+  "pesosProveedor": { "calidad": 0.15, "costo": 0.55, "velocidad": 0.3 },
+  "participaciones": { "inventario": 0.5, "marketing": 0.22, "fichas": 0.01 },
+  "limitesParticipacion": { "inventario": [0.35, 0.7], "marketing": [0.1, 0.38], "fichas": [0.0, 0.04] },
+  "coberturaSemanas": 1.2,
+  "demandaInicialSemanal": {
+    "PLY-BAS": 20, "PLY-GRA": 18, "CAM-OXF": 10, "JEA-SLM": 12, "JEA-MOM": 14, "VES-MID": 10,
+    "SUD-CAP": 16, "CHA-MEZ": 8, "TEN-URB": 14, "BOL-TOT": 10, "GOR-BAS": 12, "CIN-PIE": 6
+  },
+  "surtido": ["PLY-BAS", "PLY-GRA", "CAM-OXF", "JEA-SLM", "JEA-MOM", "VES-MID", "SUD-CAP", "CHA-MEZ", "TEN-URB", "BOL-TOT", "GOR-BAS", "CIN-PIE"],
+  "segmentosObjetivo": ["jovenes_tendencia", "cazadores_ofertas"],
+  "canalesPreferidos": ["redes_sociales", "display", "correo"],
+  "angulos": ["tendencia", "precio"],
+  "brazosPorRonda": 4,
+  "exploracion": 0.3,
+  "roasMinimo": 1.8,
+  "promociones": {
+    "descuentoMax": 20,
+    "descuentoLiquidacion": 30,
+    "diasPromocion": [5, 6, 7],
+    "envioGratisDesde": 59900,
+    "costoEnvio": 9900,
+    "compraMultiple": { "minUnidades": 2, "pct": 10 },
+    "promocionSemanal": true
+  },
+  "fichasObjetivo": 0.6,
+  "mensajes": {
+    "precio": "OMEGA Pulso: precios que sí te alcanzan, toda la semana.",
+    "tendencia": "OMEGA Pulso: lo que se está usando, ya en tienda y con envío rápido.",
+    "calidad": "OMEGA Pulso: básicos resistentes a precio bajo.",
+    "exclusividad": "OMEGA Pulso: drops de temporada por tiempo limitado.",
+    "comodidad": "OMEGA Pulso: comodidad diaria sin pagar de más."
+  }
+}

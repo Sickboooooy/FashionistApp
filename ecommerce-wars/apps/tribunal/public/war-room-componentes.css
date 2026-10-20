@@ -1,0 +1,431 @@
+/*
+ * War Room · componentes: identidad de empresa, insignias de estado, hashes,
+ * definiciones, tablas y formularios. Tokens en war-room.css.
+ */
+
+/* --- Identidad, insignias y hashes ------------------------------------------------------------- */
+
+.chip-empresa {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 750;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.chip-empresa .marcador {
+  flex: none;
+  width: 9px;
+  height: 9px;
+}
+
+.chip-alfa .marcador {
+  border-radius: 50%;
+  background: var(--alfa);
+}
+
+.chip-omega .marcador {
+  border-radius: 1px;
+  background: var(--omega);
+}
+
+.chip-mercado {
+  color: var(--tinta-3);
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  padding: 2px 9px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: 999px;
+  background: var(--info-fondo);
+  color: var(--tinta);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.35;
+  vertical-align: middle;
+}
+
+.insignia > span:last-child {
+  overflow-wrap: break-word;
+}
+
+.tabla .insignia {
+  white-space: nowrap;
+}
+
+.insignia-icono {
+  flex: none;
+  font-weight: 800;
+}
+
+.insignia-ok {
+  border-color: var(--bien);
+  background: var(--bien-fondo);
+}
+
+.insignia-ok .insignia-icono {
+  color: var(--bien-icono);
+}
+
+.insignia-error,
+.insignia-critico {
+  border-color: var(--critico);
+  background: var(--critico-fondo);
+}
+
+.insignia-error .insignia-icono,
+.insignia-critico .insignia-icono {
+  color: var(--critico-icono);
+}
+
+.insignia-aviso {
+  border-color: var(--aviso);
+  background: var(--aviso-fondo);
+}
+
+.insignia-aviso .insignia-icono {
+  color: var(--aviso-icono);
+}
+
+.insignia-pendiente .insignia-icono,
+.insignia-info .insignia-icono {
+  color: var(--tinta-3);
+}
+
+.insignia-ganador {
+  border-color: var(--acento);
+  background: var(--acento-fondo);
+}
+
+.insignia-ganador .insignia-icono {
+  color: var(--acento-tinta);
+}
+
+.hash {
+  color: var(--tinta-2);
+  font-family: var(--mono);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.hash-completo {
+  word-break: break-all;
+}
+
+.texto-agente {
+  overflow-wrap: break-word;
+  color: var(--tinta-2);
+}
+
+/* --- Definiciones, tablas, formularios ---------------------------------------------------------- */
+
+.definiciones {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  gap: 10px 18px;
+  margin: 0;
+}
+
+.definicion {
+  min-width: 0;
+}
+
+.definicion dt {
+  color: var(--tinta-3);
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.definicion dd {
+  margin: 2px 0 0;
+  overflow-wrap: anywhere;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.definiciones-compactas {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  gap: 8px 14px;
+  margin-top: 8px;
+}
+
+.tabla-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla caption {
+  text-align: left;
+}
+
+.tabla-titulo {
+  padding-bottom: 8px;
+  color: var(--tinta-2);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.tabla th,
+.tabla td {
+  padding: 7px 9px;
+  border-bottom: 1px solid var(--borde);
+  text-align: left;
+  vertical-align: top;
+}
+
+.tabla thead th {
+  border-bottom-color: var(--borde-fuerte);
+  color: var(--tinta-3);
+  font-size: 11.5px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.tabla tbody th {
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.tabla tbody tr:hover {
+  background: var(--resalte);
+}
+
+.tabla .num {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.col-mensaje {
+  min-width: 220px;
+  max-width: 340px;
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.filtros-principales {
+  margin-bottom: 0;
+  padding: 12px 16px;
+  border: 1px solid var(--borde);
+  border-radius: var(--radio);
+  background: var(--superficie);
+}
+
+.campo {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.campo label {
+  color: var(--tinta-3);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.campo-boton {
+  align-self: end;
+}
+
+select,
+input[type='number'],
+input[type='password'],
+input[type='text'] {
+  min-height: 36px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+  color: var(--tinta);
+  font: inherit;
+}
+
+input[aria-invalid='true'] {
+  border-color: var(--critico);
+}
+
+.error-campo {
+  min-height: 1em;
+  color: var(--critico-icono);
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.error-campo:empty {
+  display: none;
+}
+
+.boton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 14px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+  color: var(--tinta);
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background-color var(--duracion), border-color var(--duracion), transform var(--duracion);
+}
+
+.boton:hover:not(:disabled) {
+  border-color: var(--acento);
+  background: var(--superficie-3);
+}
+
+.boton:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.boton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.boton-primario {
+  border-color: var(--acento);
+  background: var(--acento);
+  color: var(--acento-sobre);
+}
+
+.boton-primario:hover:not(:disabled) {
+  background: var(--acento-tinta);
+}
+
+.boton-peligro {
+  border-color: var(--critico);
+  background: var(--critico-fondo);
+}
+
+.boton-peligro:hover:not(:disabled) {
+  border-color: var(--critico);
+}
+
+.boton-mini {
+  min-height: 30px;
+  padding: 0 10px;
+  font-size: 12.5px;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.control-salida {
+  min-height: 1.4em;
+  margin-top: 8px;
+  color: var(--tinta-2);
+  font-size: 13px;
+}
+
+.form-reinicio {
+  display: grid;
+  gap: 8px;
+  justify-items: start;
+}
+
+.dialogo {
+  max-width: min(480px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--borde-fuerte);
+  border-radius: var(--radio);
+  background: var(--superficie);
+  color: var(--tinta);
+  box-shadow: var(--sombra);
+}
+
+.dialogo p {
+  margin-bottom: 10px;
+}
+
+.dialogo::backdrop {
+  background: rgba(5, 7, 10, 0.65);
+}
+
+.detalles summary {
+  color: var(--tinta-2);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.lista-simple {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.lista-compacta {
+  margin: 0;
+  padding-left: 16px;
+  font-size: 12px;
+}
+
+.lista-reglas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--tinta-2);
+  font-size: 12.5px;
+}
+
+.bloque-json {
+  max-height: 280px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: var(--radio-sm);
+  background: var(--superficie-2);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.progreso {
+  width: 100%;
+  height: 10px;
+  accent-color: var(--acento);
+}
+
+.progreso-texto {
+  margin-top: 6px;
+  color: var(--tinta-2);
+  font-variant-numeric: tabular-nums;
+}
+
+.pila-compacta {
+  display: grid;
+}
+
+.pila-compacta[aria-busy='true'] .boton {
+  cursor: progress;
+}

@@ -1,0 +1,50 @@
+{
+  "comprobadoEn": "2026-10-20T07:12:41.555Z",
+  "aislamiento": "en-proceso",
+  "rondasSolicitadas": 3,
+  "identicasConMismaSemilla": true,
+  "distintasConOtraSemilla": true,
+  "corridas": [
+    {
+      "semilla": 20261019,
+      "rondas": 3,
+      "ultimoHash": "747b6aea303b44a658024b1e9c34bd7c1464ea2b1c8ce333529ed60ff17166b1",
+      "expedientes": [
+        "1ce6765473a1f3c039284918d5e8783146ce8330053c0b4b6fb97fbe7855d686",
+        "4f04840b0365a80db6e7623e203e56e68a4279b9d86400960467c043cf2af906",
+        "1a2dd462bfdd9a8b6bdf60d696e7f64343a155b0d900e1bac211126618063fc8"
+      ],
+      "sentencias": [
+        "65e9540d114e3eb3f825acc7850337ddcdcc4e2f46d47c8423b6fbe2525e8d6e",
+        "3103907409e720270437ab581d2692c14fc9ec5efc53b3ca7420a4a724f6ff23",
+        "8f1e26cbc775e0d5aab4d3359a5324595824ad96ee1eae48578a1e233f1824a5"
+      ]
+    },
+    {
+      "semilla": 20261019,
+      "rondas": 3,
+      "ultimoHash": "747b6aea303b44a658024b1e9c34bd7c1464ea2b1c8ce333529ed60ff17166b1",
+      "expedientes": [
+        "1ce6765473a1f3c039284918d5e8783146ce8330053c0b4b6fb97fbe7855d686",
+        "4f04840b0365a80db6e7623e203e56e68a4279b9d86400960467c043cf2af906",
+        "1a2dd462bfdd9a8b6bdf60d696e7f64343a155b0d900e1bac211126618063fc8"
+      ],
+      "sentencias": [
+        "65e9540d114e3eb3f825acc7850337ddcdcc4e2f46d47c8423b6fbe2525e8d6e",
+        "3103907409e720270437ab581d2692c14fc9ec5efc53b3ca7420a4a724f6ff23",
+        "8f1e26cbc775e0d5aab4d3359a5324595824ad96ee1eae48578a1e233f1824a5"
+      ]
+    },
+    {
+      "semilla": 20261020,
+      "rondas": 1,
+      "ultimoHash": "94fd1a7fb9b3bce1713c24898c2aa492357013d53804acd9d5b35c836a9a43d7",
+      "expedientes": [
+        "42def3eef2e18975ffbe03ff6c7669f6b7ca88ec24320f2be5243b9b7e3aec1c"
+      ],
+      "sentencias": [
+        "ab4adb72d2cfa905de8a7699db4054060b256a8bbb1ec29ebe3505e4c550b9b6"
+      ]
+    }
+  ]
+}

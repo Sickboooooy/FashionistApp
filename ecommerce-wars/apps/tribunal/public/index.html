@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="color-scheme" content="dark light">
+    <meta name="description" content="War Room y Tribunal en vivo de E-COMMERCE WARS: observa, compara y audita la competencia simulada entre ALFA y OMEGA.">
+    <title>War Room · Tribunal en vivo · E-COMMERCE WARS</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/war-room.css">
+    <link rel="stylesheet" href="/war-room-componentes.css">
+    <link rel="stylesheet" href="/war-room-graficas.css">
+    <link rel="stylesheet" href="/war-room-vistas.css">
+    <script type="module" src="/war-room.js"></script>
+  </head>
+  <body class="es-publico">
+    <a class="saltar" href="#contenido">Saltar al contenido</a>
+
+    <header class="barra" role="banner">
+      <div class="barra-fila">
+        <div class="marca">
+          <span class="marca-sello" aria-hidden="true"></span>
+          <div>
+            <h1 class="marca-titulo">War Room <span class="marca-sub">· Tribunal en vivo</span></h1>
+            <p class="marca-desc">E-COMMERCE WARS · simulación sin dinero ni clientes reales</p>
+          </div>
+        </div>
+
+        <div class="sesion" aria-label="Sesión del observador">
+          <span id="sesion-insignia"></span>
+          <details id="acceso-detalles" class="acceso">
+            <summary class="boton boton-mini">Acceso de observador</summary>
+            <form id="form-acceso" class="form-acceso" autocomplete="off">
+              <label for="token-acceso">Token del observador</label>
+              <input id="token-acceso" name="token" type="password" autocomplete="off" spellcheck="false" maxlength="200" aria-describedby="error-acceso">
+              <button type="submit" class="boton boton-primario">Entrar</button>
+              <p id="error-acceso" class="error-campo" role="alert"></p>
+            </form>
+          </details>
+          <button id="boton-salir" type="button" class="boton boton-mini" hidden>Salir</button>
+        </div>
+      </div>
+
+      <dl class="estado-global" aria-label="Estado de la simulación">
+        <div class="estado-item"><dt>Corrida</dt><dd id="estado-corrida">—</dd></div>
+        <div class="estado-item"><dt>Ronda · día</dt><dd id="estado-ronda">—</dd></div>
+        <div class="estado-item"><dt>Fecha simulada</dt><dd id="estado-fecha">—</dd></div>
+        <div class="estado-item" hidden><dt>Reloj</dt><dd id="estado-reloj">—</dd></div>
+        <div class="estado-item"><dt>En vivo</dt><dd id="estado-conexion">—</dd></div>
+        <div class="estado-item"><dt>Último seq</dt><dd id="estado-seq" class="mono">—</dd></div>
+        <div class="estado-item"><dt>Diario</dt><dd id="estado-integridad">—</dd></div>
+      </dl>
+    </header>
+
+    <p id="aviso-vista" class="aviso-vista" role="note">
+      <span class="insignia insignia-info"><span class="insignia-icono" aria-hidden="true">i</span><span>Vista pública: sin información privada de las empresas</span></span>
+      <span class="aviso-vista-ayuda">Abre el enlace privilegiado que imprime el lanzador o pega el token en «Acceso de observador».</span>
+    </p>
+
+    <div id="error-global" class="error-global" role="status" hidden></div>
+
+    <nav class="pestanas-marco" aria-label="Secciones">
+      <div class="pestanas" role="tablist" aria-label="Secciones del War Room">
+        <button type="button" role="tab" id="tab-envivo" aria-controls="panel-envivo" aria-selected="true" data-pestana="envivo">En vivo</button>
+        <button type="button" role="tab" id="tab-escaparates" aria-controls="panel-escaparates" aria-selected="false" tabindex="-1" data-pestana="escaparates">Escaparates</button>
+        <button type="button" role="tab" id="tab-estrategias" aria-controls="panel-estrategias" aria-selected="false" tabindex="-1" data-pestana="estrategias" hidden>Estrategias</button>
+        <button type="button" role="tab" id="tab-tribunal" aria-controls="panel-tribunal" aria-selected="false" tabindex="-1" data-pestana="tribunal">Tribunal</button>
+        <button type="button" role="tab" id="tab-control" aria-controls="panel-control" aria-selected="false" tabindex="-1" data-pestana="control" hidden>Control</button>
+        <button type="button" role="tab" id="tab-reproducir" aria-controls="panel-reproducir" aria-selected="false" tabindex="-1" data-pestana="reproducir" hidden>Reproducir rondas</button>
+        <button type="button" role="tab" id="tab-supervision" aria-controls="panel-supervision" aria-selected="false" tabindex="-1" data-pestana="supervision" hidden>Supervisión</button>
+      </div>
+    </nav>
+
+    <main id="contenido" class="contenido" tabindex="-1">
+      <section role="tabpanel" id="panel-envivo" aria-labelledby="tab-envivo" tabindex="0" class="panel"></section>
+      <section role="tabpanel" id="panel-escaparates" aria-labelledby="tab-escaparates" tabindex="0" class="panel" hidden></section>
+      <section role="tabpanel" id="panel-estrategias" aria-labelledby="tab-estrategias" tabindex="0" class="panel" hidden></section>
+      <section role="tabpanel" id="panel-tribunal" aria-labelledby="tab-tribunal" tabindex="0" class="panel" hidden></section>
+      <section role="tabpanel" id="panel-control" aria-labelledby="tab-control" tabindex="0" class="panel" hidden></section>
+      <section role="tabpanel" id="panel-reproducir" aria-labelledby="tab-reproducir" tabindex="0" class="panel" hidden></section>
+      <section role="tabpanel" id="panel-supervision" aria-labelledby="tab-supervision" tabindex="0" class="panel" hidden></section>
+    </main>
+
+    <footer class="pie">
+      <p>Tiempo simulado independiente del tiempo real. Montos en pesos mexicanos ficticios. Los hashes acreditan la integridad del registro, no la veracidad de los datos de origen.</p>
+    </footer>
+
+    <div id="avisos" class="avisos" role="status" aria-live="polite" aria-atomic="false"></div>
+    <div id="anuncio-urgente" class="sr-only" role="alert" aria-live="assertive"></div>
+  </body>
+</html>

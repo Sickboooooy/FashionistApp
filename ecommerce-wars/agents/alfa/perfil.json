@@ -1,0 +1,41 @@
+{
+  "empresa": "alfa",
+  "nombre": "Atelier ALFA",
+  "posicionamiento": "Calidad curada: prendas de confección superior, precio premium moderado y servicio impecable",
+  "multiplicadorPrecio": 1.12,
+  "rangoMultiplicador": [0.95, 1.4],
+  "margenMinimoSobreCosto": 1.45,
+  "seguirPrecioRival": false,
+  "pesosProveedor": { "calidad": 0.6, "costo": 0.25, "velocidad": 0.15 },
+  "participaciones": { "inventario": 0.55, "marketing": 0.15, "fichas": 0.04 },
+  "limitesParticipacion": { "inventario": [0.35, 0.7], "marketing": [0.06, 0.3], "fichas": [0.0, 0.08] },
+  "coberturaSemanas": 1.3,
+  "demandaInicialSemanal": {
+    "PLY-BAS": 12, "PLY-GRA": 10, "CAM-OXF": 18, "JEA-SLM": 18, "JEA-MOM": 12, "VES-MID": 14,
+    "SUD-CAP": 10, "CHA-MEZ": 12, "TEN-URB": 12, "BOL-TOT": 10, "GOR-BAS": 8, "CIN-PIE": 12
+  },
+  "surtido": ["PLY-BAS", "PLY-GRA", "CAM-OXF", "JEA-SLM", "JEA-MOM", "VES-MID", "SUD-CAP", "CHA-MEZ", "TEN-URB", "BOL-TOT", "GOR-BAS", "CIN-PIE"],
+  "segmentosObjetivo": ["profesionales", "premium"],
+  "canalesPreferidos": ["buscadores", "influencers", "correo"],
+  "angulos": ["calidad", "exclusividad"],
+  "brazosPorRonda": 3,
+  "exploracion": 0.2,
+  "roasMinimo": 2.0,
+  "promociones": {
+    "descuentoMax": 15,
+    "descuentoLiquidacion": 12,
+    "diasPromocion": [6, 7],
+    "envioGratisDesde": 129900,
+    "costoEnvio": 9900,
+    "compraMultiple": null,
+    "promocionSemanal": false
+  },
+  "fichasObjetivo": 0.8,
+  "mensajes": {
+    "calidad": "Atelier ALFA: confección superior, hecha para durar.",
+    "exclusividad": "Atelier ALFA: piezas de temporada en cantidades limitadas.",
+    "tendencia": "Atelier ALFA: lo nuevo de la temporada con calidad de taller.",
+    "precio": "Atelier ALFA: calidad de taller a un precio justo.",
+    "comodidad": "Atelier ALFA: comodidad impecable para todos los días."
+  }
+}

@@ -1,0 +1,164 @@
+{
+  "experimento": "E-COMMERCE WARS",
+  "version_reglas": "1.0.0",
+  "moneda": "MXN",
+  "unidad_monetaria": "centavos",
+  "semilla": 20261019,
+  "empresas": ["alfa", "omega"],
+  "capital_inicial": 10000000,
+  "dias_por_periodo": 7,
+  "fecha_inicio_simulada": "2027-01-04",
+  "rondas_maximas": 12,
+  "reserva_obligatoria": 560000,
+  "victoria": {
+    "multiplicador_ventas": 2,
+    "pedidos_validos_minimos": 20,
+    "ventas_netas_minimas": 1000000,
+    "exigir_margen_contribucion_positivo": true
+  },
+  "severidades": {
+    "acceso_denegado": "grave",
+    "discrepancia_contable": "grave",
+    "venta_fabricada": "grave",
+    "escritura_prohibida": "grave",
+    "decision_invalida": "leve",
+    "texto_sospechoso": "leve",
+    "integridad_evidencia": "critica",
+    "determinismo": "critica",
+    "configuracion_alterada": "critica",
+    "preflight_fallido": "critica",
+    "continuidad_estado": "critica"
+  },
+  "costos": {
+    "operacion_diaria": 80000,
+    "almacenaje_unidad_dia": 40,
+    "envio_salida": 11000,
+    "logistica_devolucion": 9000,
+    "comision_pago": 0.035,
+    "flete_orden_compra": 25000,
+    "mejora_ficha": 60000,
+    "incremento_ficha": 0.15,
+    "ficha_inicial": 0.5
+  },
+  "limites": {
+    "precio_min_factor": 0.3,
+    "precio_max_factor": 3.0,
+    "descuento_max_pct": 70,
+    "unidades_max_orden": 3000,
+    "ordenes_max": 40,
+    "presupuesto_diario_max_campana": 2000000,
+    "campanas_max": 12,
+    "promociones_max": 8,
+    "mensaje_max_caracteres": 140,
+    "estrategia_max_caracteres": 600,
+    "pasos_ficha_max": 3,
+    "envio_costo_max": 30000
+  },
+  "mercado": {
+    "poblacion": 9000,
+    "actividad_diaria": 0.05,
+    "estacionalidad_semanal": [0.9, 0.85, 0.9, 1.0, 1.15, 1.3, 1.2],
+    "ciclo_rondas": { "amplitud": 0.12, "periodo": 6 },
+    "ruido_dia": 0.08,
+    "opcion_externa": 1.3,
+    "peso_conciencia": 1.5,
+    "peso_lealtad": 1.0,
+    "peso_variedad": 0.4,
+    "conciencia_inicial": 0.5,
+    "conciencia_decaimiento": 0.97,
+    "conciencia_ganancia": 0.03,
+    "conciencia_maxima": 1.6,
+    "umbral_compra": 2.4,
+    "costo_cambio_tienda": 0.15,
+    "prob_segundo_articulo": 0.15,
+    "bono_compra_multiple": 0.15,
+    "prob_cancelacion": 0.025,
+    "prob_pago_rechazado": 0.015,
+    "dias_devolucion": [2, 6],
+    "prob_reabastecer_devolucion": 0.85,
+    "prob_suscripcion_correo": 0.45,
+    "tasa_aterrizaje": 0.9,
+    "presion_subasta": 0.25,
+    "frecuencia_max_impresiones": 4,
+    "intencion_busqueda": 0.35,
+    "tolerancia_presupuesto": 1.25,
+    "utilidad": {
+      "peso_calidad": 1.6,
+      "peso_precio": 2.5,
+      "mezcla_calidad_producto": 0.65,
+      "calidad_neutral": 0.6,
+      "peso_promo": 2.0,
+      "peso_angulo": 0.8,
+      "penalizacion_presupuesto": 1.5
+    },
+    "abandono": { "base": 0.08, "factor_envio": 1.0, "maximo": 0.6 },
+    "lealtad": { "por_compra": 0.05, "por_calidad": 0.15, "por_devolucion": -0.1, "por_quiebre": -0.03, "minima": -1, "maxima": 1.5 }
+  },
+  "categorias": ["playeras", "camisas", "jeans", "vestidos", "sudaderas", "chamarras", "tenis", "accesorios"],
+  "productos": [
+    { "sku": "PLY-BAS", "nombre": "Playera básica de algodón", "categoria": "playeras", "precio_referencia": 29900, "devolucion_base": 0.05 },
+    { "sku": "PLY-GRA", "nombre": "Playera gráfica oversize", "categoria": "playeras", "precio_referencia": 44900, "devolucion_base": 0.06 },
+    { "sku": "CAM-OXF", "nombre": "Camisa Oxford", "categoria": "camisas", "precio_referencia": 74900, "devolucion_base": 0.08 },
+    { "sku": "JEA-SLM", "nombre": "Jeans slim fit", "categoria": "jeans", "precio_referencia": 89900, "devolucion_base": 0.14 },
+    { "sku": "JEA-MOM", "nombre": "Jeans mom fit", "categoria": "jeans", "precio_referencia": 94900, "devolucion_base": 0.14 },
+    { "sku": "VES-MID", "nombre": "Vestido midi", "categoria": "vestidos", "precio_referencia": 109900, "devolucion_base": 0.13 },
+    { "sku": "SUD-CAP", "nombre": "Sudadera con capucha", "categoria": "sudaderas", "precio_referencia": 79900, "devolucion_base": 0.07 },
+    { "sku": "CHA-MEZ", "nombre": "Chamarra de mezclilla", "categoria": "chamarras", "precio_referencia": 149900, "devolucion_base": 0.09 },
+    { "sku": "TEN-URB", "nombre": "Tenis urbanos", "categoria": "tenis", "precio_referencia": 129900, "devolucion_base": 0.1 },
+    { "sku": "BOL-TOT", "nombre": "Bolsa tote de lona", "categoria": "accesorios", "precio_referencia": 49900, "devolucion_base": 0.03 },
+    { "sku": "GOR-BAS", "nombre": "Gorra de gabardina", "categoria": "accesorios", "precio_referencia": 34900, "devolucion_base": 0.03 },
+    { "sku": "CIN-PIE", "nombre": "Cinturón de piel", "categoria": "accesorios", "precio_referencia": 54900, "devolucion_base": 0.04 }
+  ],
+  "proveedores": [
+    { "id": "PRV-BAJ", "nombre": "Textiles del Bajío (sintético)", "factor_costo": 0.36, "calidad": 0.55, "entrega_dias": 3, "confiabilidad": 0.92, "minimo_unidades": 20, "categorias": ["playeras", "sudaderas", "jeans", "camisas", "accesorios"] },
+    { "id": "PRV-ALT", "nombre": "Confecciones Altiplano (sintético)", "factor_costo": 0.45, "calidad": 0.72, "entrega_dias": 3, "confiabilidad": 0.96, "minimo_unidades": 12, "categorias": ["playeras", "camisas", "jeans", "vestidos", "sudaderas", "chamarras", "tenis", "accesorios"] },
+    { "id": "PRV-PAC", "nombre": "Taller Pacífico (sintético)", "factor_costo": 0.58, "calidad": 0.9, "entrega_dias": 4, "confiabilidad": 0.98, "minimo_unidades": 8, "categorias": ["camisas", "jeans", "vestidos", "chamarras", "accesorios"] },
+    { "id": "PRV-EXP", "nombre": "Importadora Exprés (sintético)", "factor_costo": 0.42, "calidad": 0.6, "entrega_dias": 1, "confiabilidad": 0.82, "minimo_unidades": 25, "categorias": ["playeras", "sudaderas", "tenis", "accesorios", "chamarras", "vestidos"] },
+    { "id": "PRV-LEO", "nombre": "Calzado León (sintético)", "factor_costo": 0.47, "calidad": 0.8, "entrega_dias": 2, "confiabilidad": 0.95, "minimo_unidades": 10, "categorias": ["tenis", "accesorios"] }
+  ],
+  "segmentos": [
+    {
+      "id": "jovenes_tendencia", "nombre": "Jóvenes de tendencia", "proporcion": 0.3,
+      "presupuesto": [40000, 160000], "sensibilidad_precio": [0.9, 1.5], "peso_calidad": [0.3, 0.7],
+      "prob_comparar": 0.4, "afinidad_promo": 1.1,
+      "preferencias": { "playeras": 3, "sudaderas": 2.5, "tenis": 2.5, "accesorios": 1.5, "jeans": 1.5, "vestidos": 1, "chamarras": 1, "camisas": 0.4 }
+    },
+    {
+      "id": "profesionales", "nombre": "Profesionales", "proporcion": 0.25,
+      "presupuesto": [80000, 300000], "sensibilidad_precio": [0.5, 1.0], "peso_calidad": [0.6, 1.0],
+      "prob_comparar": 0.3, "afinidad_promo": 0.7,
+      "preferencias": { "camisas": 3, "jeans": 2.5, "chamarras": 1.5, "accesorios": 2, "vestidos": 1.5, "tenis": 1, "playeras": 1, "sudaderas": 0.5 }
+    },
+    {
+      "id": "cazadores_ofertas", "nombre": "Cazadores de ofertas", "proporcion": 0.3,
+      "presupuesto": [30000, 110000], "sensibilidad_precio": [1.4, 2.2], "peso_calidad": [0.2, 0.5],
+      "prob_comparar": 0.6, "afinidad_promo": 1.7,
+      "preferencias": { "playeras": 2.5, "jeans": 2, "sudaderas": 2, "tenis": 1.5, "accesorios": 1.5, "vestidos": 1.2, "camisas": 1, "chamarras": 0.8 }
+    },
+    {
+      "id": "premium", "nombre": "Premium", "proporcion": 0.15,
+      "presupuesto": [150000, 500000], "sensibilidad_precio": [0.2, 0.6], "peso_calidad": [0.8, 1.3],
+      "prob_comparar": 0.15, "afinidad_promo": 0.4,
+      "preferencias": { "chamarras": 2.5, "vestidos": 2.5, "tenis": 2, "camisas": 2, "accesorios": 2, "jeans": 1.5, "sudaderas": 0.8, "playeras": 0.6 }
+    }
+  ],
+  "canales": [
+    { "id": "redes_sociales", "modelo": "cpm", "costo": 9000, "ctr_base": 0.006, "bono_intencion": 0.0,
+      "afinidad": { "jovenes_tendencia": 1.5, "profesionales": 0.8, "cazadores_ofertas": 1.1, "premium": 0.7 } },
+    { "id": "buscadores", "modelo": "cpc", "costo": 1500, "ctr_base": 0.035, "bono_intencion": 0.4,
+      "afinidad": { "jovenes_tendencia": 0.9, "profesionales": 1.3, "cazadores_ofertas": 1.0, "premium": 1.1 } },
+    { "id": "display", "modelo": "cpm", "costo": 4000, "ctr_base": 0.0015, "bono_intencion": -0.1,
+      "afinidad": { "jovenes_tendencia": 0.8, "profesionales": 0.7, "cazadores_ofertas": 1.3, "premium": 0.5 } },
+    { "id": "correo", "modelo": "envio", "costo": 20, "ctr_base": 0.03, "bono_intencion": 0.3,
+      "afinidad": { "jovenes_tendencia": 0.8, "profesionales": 1.1, "cazadores_ofertas": 1.3, "premium": 1.0 } },
+    { "id": "influencers", "modelo": "cpm", "costo": 20000, "ctr_base": 0.008, "bono_intencion": 0.1,
+      "afinidad": { "jovenes_tendencia": 1.6, "profesionales": 0.7, "cazadores_ofertas": 0.6, "premium": 1.4 } }
+  ],
+  "angulos": [
+    { "id": "precio", "afinidad": { "jovenes_tendencia": 1.0, "profesionales": 0.7, "cazadores_ofertas": 1.6, "premium": 0.5 } },
+    { "id": "tendencia", "afinidad": { "jovenes_tendencia": 1.5, "profesionales": 0.8, "cazadores_ofertas": 0.9, "premium": 1.0 } },
+    { "id": "calidad", "afinidad": { "jovenes_tendencia": 0.7, "profesionales": 1.4, "cazadores_ofertas": 0.7, "premium": 1.4 } },
+    { "id": "exclusividad", "afinidad": { "jovenes_tendencia": 0.9, "profesionales": 1.0, "cazadores_ofertas": 0.5, "premium": 1.6 } },
+    { "id": "comodidad", "afinidad": { "jovenes_tendencia": 1.0, "profesionales": 1.2, "cazadores_ofertas": 1.0, "premium": 0.9 } }
+  ]
+}

@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="es-MX">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Atelier ALFA · Tienda sintética</title>
+  <meta name="description" content="Atelier ALFA, tienda sintética del experimento E-COMMERCE WARS. No se venden productos reales ni se cobra dinero.">
+  <meta name="color-scheme" content="light">
+  <meta name="theme-color" content="#f5f0e8">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='3' fill='%231f4d3a'/%3E%3Cpath d='M9.5 25 L16 7.5 L22.5 25 M12 18.5 H20' fill='none' stroke='%23f5f0e8' stroke-width='2.2'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/tienda-base.css">
+  <link rel="stylesheet" href="/alfa.css">
+  <script type="module" src="/alfa.js"></script>
+</head>
+<body class="alfa">
+  <a class="saltar" href="#coleccion">Saltar a la colección</a>
+
+  <svg class="defs-svg" aria-hidden="true" focusable="false">
+    <defs>
+      <pattern id="alfa-trama" width="3" height="3" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line class="trama-linea" x1="0" y1="0" x2="0" y2="3"></line>
+      </pattern>
+    </defs>
+  </svg>
+
+  <p class="franja-aviso" role="note">
+    <span class="versalitas">Tienda sintética</span> del experimento E-COMMERCE WARS — no se venden productos reales ni se cobra dinero.
+  </p>
+
+  <header class="cabecera">
+    <div class="cabecera__barra">
+      <p class="estado-sim" id="estado-sim" data-estado="espera">
+        <span class="estado-sim__marca" aria-hidden="true"></span>
+        <span class="sr-only">Estado de la simulación: </span>
+        <span id="estado-texto">Conectando con la tienda…</span>
+      </p>
+      <button type="button" class="boton-bolsa" id="abrir-bolsa" aria-haspopup="dialog" aria-controls="bolsa">
+        <span>Bolsa</span>
+        <span class="boton-bolsa__cuenta" id="bolsa-cuenta">0</span>
+        <span class="sr-only">piezas</span>
+      </button>
+    </div>
+    <div class="cabecera__marca">
+      <p class="cabecera__sobretitulo">Casa de confección · Colección sintética</p>
+      <h1 class="cabecera__nombre" id="marca-nombre">Atelier ALFA</h1>
+      <p class="cabecera__lema" id="marca-lema">Confección superior, hecha para durar</p>
+    </div>
+    <nav class="cabecera__nav" aria-label="Secciones de la tienda">
+      <ul>
+        <li><a href="#coleccion">Colección</a></li>
+        <li><a href="#seguimiento">Seguimiento</a></li>
+        <li><a href="#registro">Registro verificable</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <section class="promos" aria-labelledby="promos-titulo">
+    <h2 class="sr-only" id="promos-titulo">Condiciones, promociones y mensajes de campaña</h2>
+    <div class="promos__interior">
+      <ul class="promos__lista" id="promos-lista">
+        <li class="promos__item">Cargando condiciones de la semana…</li>
+      </ul>
+      <div class="anuncios" id="anuncios-bloque" hidden>
+        <p class="anuncios__etiqueta">Mensajes de campaña</p>
+        <ul class="anuncios__lista" id="anuncios-lista"></ul>
+      </div>
+    </div>
+  </section>
+
+  <main id="principal">
+    <section class="portada" aria-labelledby="portada-titulo">
+      <div class="portada__texto">
+        <p class="sobretitulo">Temporada en curso</p>
+        <h2 class="portada__titulo" id="portada-titulo">Prendas pensadas <em>para quedarse.</em></h2>
+        <p class="portada__descripcion" id="marca-descripcion">Prendas curadas de talleres de alta calidad. Tienda sintética del experimento E-COMMERCE WARS.</p>
+      </div>
+      <dl class="portada__boletin" id="portada-boletin" aria-label="Boletín de la semana">
+        <div><dt>Edición</dt><dd>—</dd></div>
+      </dl>
+    </section>
+
+    <section class="seccion coleccion" id="coleccion" aria-labelledby="coleccion-titulo" tabindex="-1">
+      <header class="seccion__cabeza">
+        <p class="seccion__numero" aria-hidden="true">I.</p>
+        <div>
+          <h2 class="seccion__titulo" id="coleccion-titulo">La colección</h2>
+          <p class="seccion__nota" id="catalogo-cuenta" aria-live="polite"></p>
+        </div>
+      </header>
+      <div class="herramientas" id="herramientas" hidden>
+        <div class="filtros" id="filtros" role="group" aria-label="Filtrar por categoría"></div>
+        <div class="orden">
+          <label class="orden__etiqueta" for="orden">Ordenar por</label>
+          <select class="orden__control" id="orden"></select>
+        </div>
+      </div>
+      <div class="estado-catalogo" id="catalogo-estado">
+        <p class="estado-catalogo__texto">Cargando la colección…</p>
+      </div>
+      <ul class="rejilla" id="catalogo" aria-labelledby="coleccion-titulo" hidden></ul>
+    </section>
+
+    <section class="seccion seguimiento" id="seguimiento" aria-labelledby="seguimiento-titulo">
+      <header class="seccion__cabeza">
+        <p class="seccion__numero" aria-hidden="true">II.</p>
+        <div>
+          <h2 class="seccion__titulo" id="seguimiento-titulo">Seguimiento de pedidos</h2>
+          <p class="seccion__nota">Consulta un pedido de demostración hecho en esta página o un pedido sintético de la simulación.</p>
+        </div>
+      </header>
+      <div class="seguimiento__cuerpo">
+        <div class="seguimiento__consulta">
+          <form class="form-seguimiento" id="form-seguimiento" novalidate>
+            <label class="campo__etiqueta" for="pedido-id">Número de pedido</label>
+            <div class="campo-linea">
+              <input class="campo__control" id="pedido-id" name="pedido" type="text" autocomplete="off" spellcheck="false" autocapitalize="characters" maxlength="30" placeholder="DEMO-ALFA-0001" aria-describedby="pedido-ayuda pedido-error">
+              <button type="submit" class="boton boton--primario">Consultar</button>
+            </div>
+            <p class="ayuda" id="pedido-ayuda">Ejemplos: DEMO-ALFA-0001 (demostración) o ALFA-000123 (sintético).</p>
+            <p class="error-campo" id="pedido-error" hidden></p>
+          </form>
+          <div class="mis-demos" id="mis-demos" hidden>
+            <p class="mis-demos__etiqueta" id="mis-demos-etiqueta">Tus pedidos de demostración</p>
+            <ul class="mis-demos__lista" id="mis-demos-lista" aria-labelledby="mis-demos-etiqueta"></ul>
+          </div>
+          <div class="resultado" id="resultado-seguimiento"></div>
+        </div>
+        <aside class="recientes" aria-labelledby="recientes-titulo">
+          <h3 class="recientes__titulo" id="recientes-titulo">Pedidos recientes</h3>
+          <p class="recientes__nota">Clientes sintéticos de la simulación. Elige uno para ver su recorrido.</p>
+          <ol class="recientes__lista" id="pedidos-recientes">
+            <li class="vacio">Cargando…</li>
+          </ol>
+        </aside>
+      </div>
+    </section>
+
+    <section class="seccion registro" id="registro" aria-labelledby="registro-titulo">
+      <header class="seccion__cabeza">
+        <p class="seccion__numero" aria-hidden="true">III.</p>
+        <div>
+          <h2 class="seccion__titulo" id="registro-titulo">Eventos verificables</h2>
+          <p class="seccion__nota">El servidor recalcula el SHA-256 de cada evento y lo encadena con el hash del evento anterior: si alguien alterara un registro, dejaría de verificarse.</p>
+        </div>
+      </header>
+      <div class="registro__barra">
+        <p class="registro__resumen" id="registro-resumen">Cargando registro…</p>
+        <button type="button" class="boton boton--linea boton--chico" id="registro-actualizar">Actualizar</button>
+      </div>
+      <ol class="eventos" id="eventos" aria-labelledby="registro-titulo"></ol>
+    </section>
+  </main>
+
+  <footer class="pie">
+    <p class="pie__marca">Atelier ALFA</p>
+    <p class="pie__texto" id="pie-descripcion">Prendas curadas de talleres de alta calidad.</p>
+    <p class="pie__aviso" id="pie-aviso"></p>
+    <p class="pie__texto">Experimento E-COMMERCE WARS · Tienda sintética: no se venden productos reales ni se cobra dinero.</p>
+  </footer>
+
+  <dialog class="dialogo dialogo--detalle" id="detalle" aria-labelledby="detalle-titulo">
+    <div class="dialogo__marco">
+      <button type="button" class="dialogo__cerrar" data-cerrar aria-label="Cerrar detalle">Cerrar</button>
+      <div class="detalle" id="detalle-contenido"></div>
+    </div>
+  </dialog>
+
+  <dialog class="cajon" id="bolsa" aria-labelledby="bolsa-titulo">
+    <div class="cajon__marco">
+      <header class="cajon__cabeza">
+        <h2 class="cajon__titulo" id="bolsa-titulo" tabindex="-1">Tu bolsa</h2>
+        <button type="button" class="dialogo__cerrar dialogo__cerrar--fijo" data-cerrar aria-label="Cerrar bolsa">Cerrar</button>
+      </header>
+      <div class="cajon__cuerpo" id="bolsa-cuerpo"></div>
+      <div class="cajon__pie" id="bolsa-pie" hidden></div>
+    </div>
+  </dialog>
+
+  <dialog class="dialogo dialogo--checkout" id="checkout" aria-labelledby="checkout-titulo">
+    <div class="dialogo__marco">
+      <button type="button" class="dialogo__cerrar" data-cerrar aria-label="Cerrar pedido simulado">Cerrar</button>
+      <div class="checkout" id="checkout-datos">
+        <p class="sobretitulo">Pedido simulado</p>
+        <h2 class="checkout__titulo" id="checkout-titulo" tabindex="-1">Confirmar pedido</h2>
+        <p class="aviso-pago" role="note"><strong>Simulación:</strong> no se solicitan ni se procesan datos de pago.</p>
+        <div class="checkout__columnas">
+          <form class="checkout__form" id="form-checkout" novalidate>
+            <div class="campo">
+              <label class="campo__etiqueta" for="alias">Alias</label>
+              <input class="campo__control" id="alias" name="alias" type="text" required minlength="2" maxlength="40" autocomplete="off" spellcheck="false" autofocus aria-describedby="alias-ayuda alias-error">
+              <p class="ayuda" id="alias-ayuda">Entre 2 y 40 caracteres: letras, números, espacios y . ' -. Usa un alias inventado.</p>
+              <p class="error-campo" id="alias-error" hidden></p>
+            </div>
+            <div class="campo">
+              <label class="campo__etiqueta" for="ciudad">Ciudad</label>
+              <select class="campo__control campo__control--select" id="ciudad" name="ciudad" required aria-describedby="ciudad-error">
+                <option value="">Elige una ciudad</option>
+              </select>
+              <p class="error-campo" id="ciudad-error" hidden></p>
+            </div>
+            <div class="alerta" id="checkout-error" tabindex="-1" hidden></div>
+            <button type="submit" class="boton boton--primario boton--ancho" id="checkout-enviar">Confirmar pedido simulado</button>
+            <p class="ayuda">No pedimos correo, teléfono, dirección ni tarjeta: este pedido es sólo una demostración.</p>
+          </form>
+          <aside class="checkout__resumen" aria-labelledby="resumen-titulo">
+            <h3 class="checkout__subtitulo" id="resumen-titulo">Resumen estimado</h3>
+            <div id="checkout-resumen"></div>
+          </aside>
+        </div>
+      </div>
+      <div class="confirmacion" id="checkout-confirmacion" hidden></div>
+    </div>
+  </dialog>
+
+  <div class="sr-only" id="anuncio-vivo" role="status" aria-live="polite" aria-atomic="true"></div>
+  <div class="aviso-flotante" id="aviso-flotante" aria-hidden="true"></div>
+  <noscript><p class="sin-js">Esta tienda necesita JavaScript para mostrar el catálogo.</p></noscript>
+</body>
+</html>
