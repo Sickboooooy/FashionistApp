@@ -42,7 +42,9 @@ Ningún video, imagen ni texto visible reproduce el nombre o la cabecera de una 
 | 4.9–5.6 s | La página se cierra y vuelve la portada completa |
 | 5.6–6.0 s | Título, figura y titulares se desvanecen hasta dejar el fondo vacío con su marco |
 
-**Estado del bucle:** el fotograma 0 y el último (6.0 s) son idénticos: solo el fondo de la plantilla con su marco, sin título, figura ni titulares. Así el bucle no tiene salto. La imagen fija (A4) se toma en ~1.4 s, con la portada completa.
+**Estado del bucle:**
+- El fotograma 0 y el último (6.0 s) son idénticos: solo el fondo de la plantilla con su marco, sin título, figura ni titulares. Así el bucle no tiene salto.
+- La imagen fija (A4) se toma a **1.25 s**, con la portada completa y antes de que empiece el giro.
 
 ### A3. Fotos del interior
 
@@ -62,7 +64,7 @@ El tratamiento se hace con CSS dentro de la composición, en local y sin servici
 - **`media/revista/README.md`** documenta los requisitos, el comando de render y el de extracción de la imagen fija.
 - **Salida en `client/public/videos/revista/`:**
   - `<id>.mp4`: H.264, 600×800, 30 fps, 6 s, sin audio; objetivo, menos de 500 KB.
-  - `<id>.jpg`: imagen fija tomada hacia el segundo 1.4, con la portada completa.
+  - `<id>.jpg`: imagen fija tomada a 1.25 s, con la portada completa.
 - **Los 5 SVG de `client/public/images/magazines/` se eliminan.** Quedan sin uso y llevan nombres de revistas reales.
 
 ### A5. Componente `TemplatePreviewVideo`
@@ -71,11 +73,13 @@ Archivo: `client/src/components/magazine/template-preview-video.tsx`.
 
 - **Props:** `src` (mp4), `poster` (jpg) y `label` (texto accesible).
 - **Video:** `<video muted loop playsInline preload="metadata" poster>` con `aria-label` tomado de `label`.
+- **Sin salto al arrancar:** el `src` lleva el fragmento `#t=1.25`, así la primera reproducción empieza en el mismo fotograma que la imagen fija. Los bucles siguientes recorren los 6 s completos.
 - **Reproducción:** en bucle **mientras al menos un 40 % del elemento de video esté en pantalla** (`IntersectionObserver`). Fuera de pantalla, el video se pausa.
 - **Respaldo con imagen fija:** se muestra solo un `<img>` con `poster` y el mismo `alt` en tres casos:
   - con `prefers-reduced-motion: reduce`;
   - si el video falla (`onError`);
-  - si el navegador rechaza la promesa de `video.play()` (reproducción automática bloqueada).
+  - si `video.play()` se rechaza con `NotAllowedError` (reproducción automática bloqueada).
+- **Otros rechazos de `play()`** (p. ej. `AbortError`, cuando un desplazamiento rápido pausa el video antes de arrancar) se ignoran: la tarjeta vuelve a intentarlo al reaparecer.
 - El observer se limpia al desmontar.
 
 ### A6. Integración
@@ -101,15 +105,18 @@ Archivo: `client/src/components/magazine/template-preview-video.tsx`.
 - **`App.tsx`:** salen los imports y las rutas `/trips` y `/trips/:tripId/packing-lists`. Esas URL caen en el `NotFound` que ya existe.
 - **`navbar.tsx`:** sale el ítem `VIAJES`.
 - **`text-input-modal.tsx`:** sale la opción de ocasión «Viaje».
-- **`preferences-context.tsx` y `preference-manager.tsx`:** sale la ocasión `Travel` con su ícono `fa-plane`. El cliente no vuelve a leer preferencias guardadas, así que no hace falta ningún filtro de lectura en el frontend.
-- **Servidor:** las preferencias guardadas solo se leen en `formatPreferences` (`server/routes.ts:36`), que alimenta los prompts de outfits. Ahí se quita `Travel` de `occasions`, para que una preferencia antigua no siga pidiendo looks de viaje.
+- **`preferences-context.tsx` y `preference-manager.tsx`:** sale la ocasión `Travel` con su ícono `fa-plane`.
+- **No se agrega filtro para datos guardados.** Hoy no puede existir ninguna preferencia `Travel` guardada:
+  - no hay base de datos;
+  - el almacenamiento en memoria no persiste entre reinicios;
+  - el cliente nunca lee lo que guarda (`localStorage` solo se escribe) y envía sus preferencias a `/api/preferences`, un endpoint que no existe.
 
 ### B2. Backend y esquema
 
 - **`server/routes.ts`:** salen todos los endpoints de viajes, listas de equipaje y artículos (`/api/users/:userId/trips`, `/api/trips…` y los de packing lists e items).
 - **`server/storage.ts`:**
   - salen de `IStorage`, de la implementación en memoria y de `DatabaseStorage` los métodos de Trip, PackingList y PackingItem;
-  - salen `buildRecommendedPackingList`, los `Map` y contadores asociados y sus imports.
+  - salen `buildRecommendedPackingList`, `generatePackingListForTrip`, los `Map` y contadores asociados, sus imports y el comentario de viajes de la línea ~770.
 - **`shared/schema.ts`:** salen las tablas `trips`, `packing_lists` y `packing_items`, con sus schemas de inserción y sus tipos.
 
 ### B3. Base de datos
@@ -124,7 +131,9 @@ Salen las menciones del módulo de viajes en `README.md` y `replit.md`.
 
 ## Verificación
 
-1. `npm run check` (tsc): **ningún error nuevo**, y ningún error en los archivos que toca este trabajo. La línea base actual es de 50 errores. Al quitar Viajes desaparecen 29 (`packing-lists.tsx`, `trips.tsx` y 3 de `storage.ts`), así que se esperan **21**, todos previos y fuera de alcance.
+1. `npm run check` (tsc): la línea base actual es de 50 errores. Al quitar Viajes desaparecen 29 (`packing-lists.tsx`, `trips.tsx` y 3 de `storage.ts`).
+   - Se esperan **21**, y deben ser exactamente los de la lista «Fuera de alcance».
+   - No se acepta ningún error en archivos nuevos ni en líneas modificadas por este trabajo.
 2. `npm run build` sin errores.
 3. `npx hyperframes lint` sin errores en `media/revista/`.
 4. `ffprobe` sobre cada MP4: duración de 6 s ± 0.1, 600×800, sin pista de audio y menos de 500 KB. Si alguno pasa de 500 KB, se baja la tasa de bits antes de aceptarlo.
