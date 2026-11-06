@@ -22,7 +22,6 @@ const defaultPreferences: UserPreferences = {
   occasions: [
     { name: 'Work', priority: 0.75 },
     { name: 'Social Events', priority: 0.5 },
-    { name: 'Travel', priority: 0.25 },
     { name: 'Special Events', priority: 0.5 },
   ],
   seasons: ['Summer', 'Fall'],

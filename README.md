@@ -156,7 +156,6 @@ FASHIONISTA-MERGED/
 - API: `/api/products`, `/api/products/suggestions`, `/api/products/:id`
 
 ### 🚧 Coming Soon
-- [ ] Viajes y packing lists
 - [ ] Integración con e-commerce
 - [ ] Análisis de tendencias
 - [ ] Comunidad de estilos
@@ -205,7 +204,6 @@ El backend soporta:
 | `/magazine` | Revista de moda |
 | `/ai-images` | Generador de imágenes IA |
 | `/product-search` | Búsqueda de productos |
-| `/trips` | Gestión de viajes |
 | `/profile` | Perfil de usuario |
 | `/api-debug` | Panel de debug (dev only) |
 
@@ -268,6 +266,10 @@ PORT=3000 npm run dev
 # Reiniciar conexión
 npm run db:push
 ```
+
+> **Módulo de viajes eliminado:** el esquema ya no define `trips`, `packing_lists` ni
+> `packing_items`. Si conectas una Postgres que aún tenga esas tablas, `npm run db:push`
+> pedirá confirmación para borrarlas junto con sus datos. Respalda la base antes de aceptar.
 
 ### Vulnerabilidades npm
 ```bash
@@ -346,7 +348,6 @@ Las contribuciones son bienvenidas. Por favor:
 - **garments**: Piezas individuales con metadatos
 - **outfits**: Combinaciones generadas
 - **products**: 🆕 Inventario real para venta
-- **trips/packing_lists**: Planificación de viajes
 
 ## Flujo de datos (Híbrido)
 
