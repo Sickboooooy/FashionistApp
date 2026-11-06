@@ -36,7 +36,8 @@ Ningún video, imagen ni texto visible reproduce el nombre o la cabecera de una 
 
 | Tramo | Contenido |
 |---|---|
-| 0–1.4 s | La portada se arma sobre el fondo vacío: el título entra letra a letra, la figura aparece con un zoom lento y entran los titulares |
+| 0–1.2 s | La portada se arma sobre el fondo vacío: el título entra letra a letra, la figura aparece con un zoom lento y entran los titulares |
+| 1.2–1.4 s | La portada completa queda quieta |
 | 1.4–2.3 s | La portada gira sobre su borde izquierdo, como una página |
 | 2.3–4.9 s | El interior: entran escalonadas de 1 a 4 fotos, según la maqueta, con sus pies de foto |
 | 4.9–5.6 s | La página se cierra y vuelve la portada completa |
@@ -44,7 +45,7 @@ Ningún video, imagen ni texto visible reproduce el nombre o la cabecera de una 
 
 **Estado del bucle:**
 - El fotograma 0 y el último (6.0 s) son idénticos: solo el fondo de la plantilla con su marco, sin título, figura ni titulares. Así el bucle no tiene salto.
-- La imagen fija (A4) se toma a **1.25 s**, con la portada completa y antes de que empiece el giro.
+- La imagen fija (A4) se toma a **1.25 s**, dentro del tramo quieto de 1.2 a 1.4 s, con la portada completa. Como la portada no se mueve en ese tramo, da igual en qué fotograma exacto caigan `ffmpeg -ss 1.25` y el `#t=1.25` del navegador: los dos se ven idénticos.
 
 ### A3. Fotos del interior
 
@@ -60,8 +61,9 @@ El tratamiento se hace con CSS dentro de la composición, en local y sin servici
 - **Proyecto HyperFrames** en `media/revista/`: una composición por plantilla sobre una base común (estilos, guion y tratamiento de fotos).
 - **Fotos:** se copian, reducidas, de `products/` a `media/revista/assets/`, para que el proyecto sea autocontenido y no dependa de rutas `../`. El README indica qué foto usa cada plantilla.
 - **CLI fijada en `npx hyperframes@0.9.17`** (versión actual en npm; requiere Node ≥ 22). **No** se agrega a `package.json`.
-- **Requisitos de sistema:** Node ≥ 22 (hay 24) y FFmpeg (falta; se instala con Homebrew). La CLI usa su propio Chrome. `npx hyperframes doctor` debe pasar.
-- **`media/revista/README.md`** documenta los requisitos, el comando de render y el de extracción de la imagen fija.
+- **Requisitos de sistema:** Node ≥ 22 (hay 24) y FFmpeg (falta; se instala con Homebrew). La CLI usa su propio Chrome. `npx hyperframes@0.9.17 doctor` debe pasar.
+- **Paso de FFmpeg después del render:** recodifica a H.264 sin pista de audio, con la tasa de bits necesaria para quedar por debajo de 500 KB, `-movflags +faststart` y la extracción de la imagen fija.
+- **`media/revista/README.md`** documenta los requisitos, el comando de render, el paso de FFmpeg y la extracción de la imagen fija. Todos los comandos usan la versión fijada `hyperframes@0.9.17`.
 - **Salida en `client/public/videos/revista/`:**
   - `<id>.mp4`: H.264, 600×800, 30 fps, 6 s, sin audio; objetivo, menos de 500 KB.
   - `<id>.jpg`: imagen fija tomada a 1.25 s, con la portada completa.
@@ -89,7 +91,9 @@ Archivo: `client/src/components/magazine/template-preview-video.tsx`.
   - Toma nombre, descripción y premium de `shared/magazine-templates.ts`, y agrega `videoPath` y `posterPath`.
   - El `<img>` se sustituye por `TemplatePreviewVideo`.
   - Se conservan el velo «Solo Premium», la selección y el estado deshabilitado.
-- **Nombres en el servidor:** `server/services/magazine-service.ts:219` pasa el id crudo al prompt («plantilla "vogue"»). Se sustituye por el nombre visible y el `estilo` de `shared/magazine-templates.ts`. El `template` llega como `string`, así que se usa el valor por defecto si el id no es conocido.
+- **Nombres en el servidor:** dos lugares usan el id crudo. En ambos, `template` llega como `string`, así que se usa el valor por defecto si el id no es conocido.
+  - `server/services/magazine-service.ts:219` lo pasa al prompt («plantilla "vogue"»). Se sustituye por el nombre visible y el `estilo` de `shared/magazine-templates.ts`.
+  - `server/services/pdf-service.ts:92` lo imprime en el pie del PDF exportado (`Generado por Anna Style · ${content.template}`). Se sustituye por el nombre visible de `shared/magazine-templates.ts`.
 - **Marcas reales dentro de los textos de prompt:** se reemplazan por una descripción de estilo equivalente (p. ej. «Vogue magazine style» → «high-fashion magazine editorial style») en:
   - `client/src/services/geminiService.ts:30` y `:179`;
   - `server/services/gemini-image-service.ts:183`;
@@ -131,11 +135,11 @@ Salen las menciones del módulo de viajes en `README.md` y `replit.md`.
 
 ## Verificación
 
-1. `npm run check` (tsc): la línea base actual es de 50 errores. Al quitar Viajes desaparecen 29 (`packing-lists.tsx`, `trips.tsx` y 3 de `storage.ts`).
+1. `npm run check` (tsc), en esta misma copia de trabajo, con sus `node_modules` y los cambios de dependencias sin confirmar que ya tiene. La línea base actual es de 50 errores. Al quitar Viajes desaparecen 29 (`packing-lists.tsx`, `trips.tsx` y 3 de `storage.ts`).
    - Se esperan **21**, y deben ser exactamente los de la lista «Fuera de alcance».
    - No se acepta ningún error en archivos nuevos ni en líneas modificadas por este trabajo.
 2. `npm run build` sin errores.
-3. `npx hyperframes lint` sin errores en `media/revista/`.
+3. `npx hyperframes@0.9.17 lint` sin errores en `media/revista/`.
 4. `ffprobe` sobre cada MP4: duración de 6 s ± 0.1, 600×800, sin pista de audio y menos de 500 KB. Si alguno pasa de 500 KB, se baja la tasa de bits antes de aceptarlo.
 5. Bucle sin salto: en cada video, el primer y el último fotograma coinciden visualmente (comparación de capturas). Ambos deben mostrar solo el fondo con su marco (A2).
 6. En el navegador, con el servidor de desarrollo:
@@ -152,4 +156,4 @@ Salen las menciones del módulo de viajes en `README.md` y `replit.md`.
 1. `feat(revista): videos HyperFrames en las tarjetas de plantilla` (Parte A)
 2. `refactor: elimina el módulo de viajes` (Parte B)
 
-Sin push hasta que el usuario lo pida.
+Cada commit incluye **solo** los archivos de este trabajo. Los cambios previos sin confirmar en `package.json`, `package-lock.json` y `.github/` no se agregan. Sin push hasta que el usuario lo pida.
