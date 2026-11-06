@@ -7,7 +7,7 @@ Fuente de los 5 videos en bucle de las tarjetas de plantilla de Revista
 |---|---|---|
 | `vogue.html` | Clásica | top-rayas-manga-corta |
 | `elle.html` | Moderna | sueter-rosa-diamante, jogger-wide-leg-beige, sueter-rayas-bw, pantalon-wide-leg-sage |
-| `bazaar.html` | Galería | pantalon-deportivo-gris, cardigan-vintage, sueter-rayas-bw |
+| `bazaar.html` | Galería | pantalon-rayado-studio, cardigan-vintage, sueter-rayas-bw |
 | `vanity.html` | Editorial | sueter-rosa-diamante |
 | `anna.html` | Anna Signature | top-rayas-manga-corta, pantalon-wide-leg-sage |
 
@@ -27,6 +27,7 @@ inyecta las fuentes que aparecen nombradas en el HTML de la composición.
 
     scripts/tratar-fotos.sh     # recorta y da tono a las fotos de products/ (scripts/recortes.txt)
     scripts/render.sh           # renderiza, recodifica con ffmpeg y extrae la imagen fija (1.25 s)
+    scripts/render.sh bazaar    # solo una composición (acepta varios ids)
 
 `render.sh` usa QP 28 por defecto. Si algún MP4 pasa de 500 KB, súbelo: `QP=30 scripts/render.sh`.
 El render intermedio es sin pérdida y se fuerza un fotograma clave al final (5.96 s) para que el
