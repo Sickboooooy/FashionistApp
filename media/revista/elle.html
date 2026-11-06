@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=600, height=800" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/hojeo.css" />
+    <style>
+      :root {
+        --hj-papel: #fff5f6;
+        --hj-tinta: #1d1d1f;
+        --hj-acento: #9c2f46;
+        --hj-portada-fondo: linear-gradient(#ffe9ea, #f6c9cf);
+        --hj-figura: linear-gradient(#d64561, #7a1f33);
+        --hj-tinta-portada: #1d1d1f;
+        --hj-fuente-cabecera: "Archivo Black";
+        --hj-fuente-titulo: "Montserrat";
+        --hj-fuente-texto: "Inter";
+        --hj-cabecera-color: #1d1d1f;
+        --hj-cabecera-tam: 78px;
+        --hj-cabecera-espaciado: -0.01em;
+      }
+      /* `render` solo descubre las fuentes en los font-family de este HTML, no en assets/hojeo.css:
+         estas reglas repiten las de hojeo.css para que las descargue. */
+      .hj-cabecera { font-family: var(--hj-fuente-cabecera); }
+      .hj-int-tit { font-family: var(--hj-fuente-titulo); }
+      .hj-texto, .hj-sub, .hj-linea { font-family: var(--hj-fuente-texto); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="elle" data-start="0" data-duration="6" data-width="600" data-height="800">
+      <section class="hj-libro">
+        <div class="hj-interior" data-layout-allow-overlap>
+          <header class="hj-int-cab"><span class="hj-int-tit">Tus looks de la semana</span><span class="hj-int-num">N.º 12</span></header>
+          <div class="hj-int-cuerpo hj-l-moderna">
+            <figure class="hj-foto" id="foto-1"><img src="assets/fotos/sueter-rosa-diamante.jpg" alt="" /><figcaption>Rosa diamante</figcaption></figure>
+            <figure class="hj-foto" id="foto-2"><img src="assets/fotos/jogger-wide-leg-beige.jpg" alt="" /><figcaption>Wide leg arena</figcaption></figure>
+            <figure class="hj-foto" id="foto-3"><img src="assets/fotos/sueter-rayas-bw.jpg" alt="" /><figcaption>Rayas clásicas</figcaption></figure>
+            <figure class="hj-foto" id="foto-4"><img src="assets/fotos/pantalon-wide-leg-sage.jpg" alt="" /><figcaption>Wide leg salvia</figcaption></figure>
+          </div>
+          <footer class="hj-int-pie">ESTILO ANNA · EDICIÓN OTOÑO</footer>
+        </div>
+        <div class="hj-portada" id="portada" data-layout-allow-occlusion>
+          <div class="hj-marco"></div>
+          <h1 class="hj-cabecera" id="cabecera"><span class="hj-letra">M</span><span class="hj-letra">O</span><span class="hj-letra">D</span><span class="hj-letra">E</span><span class="hj-letra">R</span><span class="hj-letra">N</span><span class="hj-letra">A</span></h1>
+          <p class="hj-sub" id="subtitulo">TENDENCIAS</p>
+          <div class="hj-figura" id="figura"><div class="hj-cabeza"></div><div class="hj-cuerpo"></div></div>
+          <p class="hj-linea" id="linea-1">30 looks con color</p>
+          <p class="hj-linea" id="linea-2">Street style · Primavera</p>
+        </div>
+      </section>
+    </div>
+    <script src="assets/hojeo.js"></script>
+    <script>window.construirHojeo("elle");</script>
+  </body>
+</html>

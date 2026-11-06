@@ -180,7 +180,7 @@ Tu descripción debe incluir:
    - Atmósfera general de la imagen
 
 7. 📸 ESTILO FOTOGRÁFICO:
-   - Referencias de revistas (Vogue, Harper's Bazaar, etc.)
+   - Referencias editoriales de revistas de alta moda
    - Mood y sensación que transmite
    - Target de mercado específico
 

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { cacheService } from "./cacheService";
 import { log } from "../vite";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { getMagazineTemplate } from "@shared/magazine-templates";
 
 // Usar el cliente OpenAI compartido
 let openai: OpenAI | null = null;
@@ -207,6 +208,7 @@ async function generateMagazineWithGemini(request: MagazineGenerationRequest): P
  */
 function generateMagazinePrompt(request: MagazineGenerationRequest): string {
   const { outfits, template, userPreferences, userName } = request;
+  const plantilla = getMagazineTemplate(template);
   
   let prompt = `Genera contenido para una revista de moda personalizada con la siguiente estructura:
   
@@ -216,7 +218,7 @@ function generateMagazinePrompt(request: MagazineGenerationRequest): string {
 4. Contenido editorial para cada outfit
 5. Conclusión que resuma las tendencias y recomendaciones
   
-La revista usará la plantilla "${template}".`;
+La revista usará la plantilla "${plantilla.nombre}", de estilo ${plantilla.estilo}.`;
   
   if (userName) {
     prompt += `\nLa revista es personalizada para ${userName}.`;

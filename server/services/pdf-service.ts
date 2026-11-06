@@ -7,6 +7,7 @@
  */
 
 import PDFDocument from "pdfkit";
+import { getMagazineTemplate } from "@shared/magazine-templates";
 
 export interface MagazineOutfit {
   id: number;
@@ -89,7 +90,7 @@ export function generateMagazinePdf(content: MagazineContent): Promise<Buffer> {
       doc.fillColor(INK).font("Helvetica").fontSize(12).text(content.conclusion, { align: "justify", lineGap: 4 });
       doc.moveDown(3);
       doc.fillColor(MUTED).font("Helvetica").fontSize(9)
-        .text(`Generado por Anna Style · ${content.template}`, { align: "center" });
+        .text(`Generado por Anna Style · ${getMagazineTemplate(content.template).nombre}`, { align: "center" });
 
       doc.end();
     } catch (err) {

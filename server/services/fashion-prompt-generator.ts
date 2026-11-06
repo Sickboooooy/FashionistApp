@@ -50,7 +50,7 @@ export function generateMagazineStylePrompt(
 
   // 🏷️ PLANTILLAS ESPECIALIZADAS POR REVISTA
   const magazinePrompts = {
-    vogue: "High fashion editorial photography, ultra-sophisticated, avant-garde, luxury fashion shoot, professional model, dramatic lighting, minimalist composition, Italian Vogue style",
+    vogue: "High fashion editorial photography, ultra-sophisticated, avant-garde, luxury fashion shoot, professional model, dramatic lighting, minimalist composition, Italian high-fashion editorial style",
     
     cosmopolitan: "Glamorous fashion photography, confident and empowering, vibrant colors, contemporary style, accessible luxury, modern woman aesthetic, dynamic poses",
     

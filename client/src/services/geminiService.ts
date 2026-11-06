@@ -27,7 +27,7 @@ export const analyzeGarmentAndStyle = async (base64Image: string, mimeType: stri
     const modelId = "gemini-2.5-flash"; // Good balance of vision and reasoning
     
     const prompt = `
-      You are Anna, a high-end fashion editor and stylist for Vogue. 
+      You are Anna, a high-end fashion editor and stylist for a leading fashion magazine. 
       Analyze the uploaded fashion item image.
       
       1. Describe the garment in detail (cut, fabric, vibe).
@@ -176,7 +176,7 @@ export const generateCreativeDesign = async (
     parts.push({ 
       text: `Create a high-fashion magazine cover shot. ${prompt}. 
              Style Guidelines: The model should be centered and posed with confidence. 
-             Editorial fashion photography, cinematic lighting, detailed fabrics, photorealistic, 8k resolution, Vogue magazine aesthetic.
+             Editorial fashion photography, cinematic lighting, detailed fabrics, photorealistic, 8k resolution, high-fashion magazine aesthetic.
              Ensure the background is atmospheric but not cluttered, suitable for text overlays.` 
     });
 

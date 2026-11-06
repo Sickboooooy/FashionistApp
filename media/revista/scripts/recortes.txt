@@ -1,0 +1,8 @@
+# foto (sin .jpg en products/)   x     y     ancho  alto   ← fracciones de la imagen original
+top-rayas-manga-corta            0.00  0.00  1.00   1.00
+sueter-rosa-diamante             0.12  0.20  0.76   0.76
+sueter-rayas-bw                  0.10  0.22  0.80   0.75
+jogger-wide-leg-beige            0.05  0.09  0.90   0.90
+pantalon-wide-leg-sage           0.12  0.30  0.76   0.70
+pantalon-deportivo-gris          0.16  0.22  0.25   0.71
+cardigan-vintage                 0.05  0.262 0.48   0.23

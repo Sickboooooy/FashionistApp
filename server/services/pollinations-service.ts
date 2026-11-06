@@ -136,7 +136,7 @@ export async function generateFashionImageWithPollinations(
  */
 function enhanceFashionPromptForPollinations(basePrompt: string, fashionStyle: string): string {
   const styleModifiers: Record<string, string> = {
-    "editorial": "high-fashion editorial photography, Vogue magazine style, professional studio lighting, dramatic shadows",
+    "editorial": "high-fashion editorial photography, high-fashion magazine style, professional studio lighting, dramatic shadows",
     "street": "street style photography, urban fashion, natural lighting, candid pose, city background",
     "haute-couture": "haute couture fashion photography, luxury runway style, dramatic lighting, elegant pose",
     "casual": "casual fashion photography, relaxed lifestyle, soft natural lighting, friendly smile",

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=600, height=800" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/hojeo.css" />
+    <style>
+      :root {
+        --hj-fondo-exterior: #000;
+        --hj-papel: #0d0b09;
+        --hj-tinta: #efe7d6;
+        --hj-acento: #d4af37;
+        --hj-portada-fondo: radial-gradient(ellipse at 50% 45%, rgba(212, 175, 55, 0.3), transparent 65%), linear-gradient(#171310, #000);
+        --hj-figura: linear-gradient(#f6df9a, #d4af37 55%, #9c7a1e);
+        --hj-tinta-portada: #e7c477;
+        --hj-fuente-cabecera: "Playfair Display";
+        --hj-fuente-titulo: "Playfair Display";
+        --hj-fuente-texto: "EB Garamond";
+        --hj-cabecera-color: #e7c477;
+        --hj-cabecera-estilo: italic;
+        --hj-cabecera-tam: 96px;
+        --hj-cabecera-espaciado: 0.02em;
+      }
+      /* `render` solo descubre las fuentes en los font-family de este HTML, no en assets/hojeo.css:
+         estas reglas repiten las de hojeo.css para que las descargue. */
+      .hj-cabecera { font-family: var(--hj-fuente-cabecera); }
+      .hj-int-tit { font-family: var(--hj-fuente-titulo); }
+      .hj-texto, .hj-sub, .hj-linea { font-family: var(--hj-fuente-texto); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="anna" data-start="0" data-duration="6" data-width="600" data-height="800">
+      <section class="hj-libro">
+        <div class="hj-interior" data-layout-allow-overlap>
+          <header class="hj-int-cab"><span class="hj-int-tit">Selección Signature</span><span class="hj-int-num">N.º 12</span></header>
+          <div class="hj-int-cuerpo hj-l-anna">
+            <figure class="hj-foto" id="foto-1"><img src="assets/fotos/top-rayas-manga-corta.jpg" alt="" /><figcaption>Rayas al sol</figcaption></figure>
+            <figure class="hj-foto" id="foto-2"><img src="assets/fotos/pantalon-wide-leg-sage.jpg" alt="" /><figcaption>Wide leg salvia</figcaption></figure>
+          </div>
+          <footer class="hj-int-pie">ESTILO ANNA · EDICIÓN OTOÑO</footer>
+        </div>
+        <div class="hj-portada" id="portada" data-layout-allow-occlusion>
+          <div class="hj-marco"></div>
+          <h1 class="hj-cabecera" id="cabecera"><span class="hj-letra">A</span><span class="hj-letra">n</span><span class="hj-letra">n</span><span class="hj-letra">a</span></h1>
+          <p class="hj-sub" id="subtitulo">SIGNATURE</p>
+          <div class="hj-figura" id="figura"><div class="hj-cabeza"></div><div class="hj-cuerpo"></div></div>
+          <p class="hj-linea" id="linea-1">Colección de lujo</p>
+          <p class="hj-linea" id="linea-2">Hecho a mano · Edición limitada</p>
+        </div>
+      </section>
+    </div>
+    <script src="assets/hojeo.js"></script>
+    <script>window.construirHojeo("anna");</script>
+  </body>
+</html>
