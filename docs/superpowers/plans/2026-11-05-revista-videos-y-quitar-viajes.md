@@ -409,7 +409,7 @@ sueter-rayas-bw                  0.10  0.22  0.80   0.75
 jogger-wide-leg-beige            0.05  0.05  0.90   0.90
 pantalon-wide-leg-sage           0.12  0.30  0.76   0.70
 pantalon-wide-leg-cafe           0.12  0.30  0.76   0.68
-cardigan-vintage                 0.08  0.03  0.50   0.34
+cardigan-vintage                 0.05  0.235 0.48   0.24
 ```
 
 - [ ] **Paso 4: Script de tratamiento**
@@ -640,21 +640,39 @@ tmp="$(mktemp -d)"
 trap 'rm -rf "$tmp"' EXIT
 cp -R assets hyperframes.json "$tmp"/
 cp "$id.html" "$tmp/index.html"
-npx --yes hyperframes@0.9.17 check "$tmp" --json | head -80
 mkdir -p "renders/snapshots/$id"
+# check sale con código 1 si hay errores: se guarda el JSON completo, se resumen los
+# errores y advertencias, y se continúa con el snapshot igualmente.
+npx --yes hyperframes@0.9.17 check "$tmp" --json > "renders/check-$id.json" || true
+node -e '
+const d = require(process.argv[1]); const out = [];
+(function w(x) {
+  if (Array.isArray(x)) return x.forEach(w);
+  if (x && typeof x === "object") {
+    if (["error", "warning"].includes(x.severity)) out.push(`${x.severity} ${x.code || ""} ${x.selector || x.elementId || ""} ${String(x.message || "").slice(0, 140)}`);
+    Object.values(x).forEach(w);
+  }
+})(d);
+console.log("ok:", d.ok); console.log(out.join("\n") || "sin errores ni advertencias");
+' "$PWD/renders/check-$id.json"
 npx --yes hyperframes@0.9.17 snapshot "$tmp" --at 0,1.25,1.85,3.6,5.3,5.95 -o "renders/snapshots/$id"
 ls "renders/snapshots/$id"
 ```
 
 Run: `chmod +x media/revista/scripts/revisar.sh && media/revista/scripts/revisar.sh vogue`
 
-Expected: `"ok": true` con 0 errores.
+Expected: `ok: true` con 0 errores. El JSON completo queda en `media/revista/renders/check-vogue.json`.
+
+Advertencias normales, que no hay que perseguir:
+- `content_overlap` entre `#linea-1` y `#linea-2` hacia 1.75–1.875 s y 5.25 s, durante el giro de página;
+- `text_below_floor` en `#subtitulo`;
+- `line_unread` en los titulares de portada.
 - El `data-layout-allow-overlap` de `.hj-interior` silencia el `content_overlap` intencional: la portada se apoya sobre el título y el texto del interior.
 - El `data-layout-allow-occlusion` de `#portada` no basta para eso, pero se queda.
 
 - [ ] **Paso 6: Revisar los fotogramas clave**
 
-Abre con Read los PNG de `media/revista/renders/snapshots/vogue/`. La carpeta `renders/` está en `.gitignore`.
+Abre con Read los PNG de `media/revista/renders/snapshots/vogue/`. La carpeta `renders/` está en `.gitignore`. Además de los fotogramas pedidos, `snapshot` escribe `frame-06-at-5.82s.png` (portada a medio desvanecer) y `contact-sheet.jpg`; los dos son esperados.
 
 Abre cada PNG con Read y comprueba:
 
@@ -688,7 +706,7 @@ Las cuatro copian la estructura de `vogue.html`. Solo cambian los datos de esta 
 Variables de `:root`:
 
 ```css
---hj-papel: #fff5f6; --hj-tinta: #1d1d1f; --hj-acento: #d64561;
+--hj-papel: #fff5f6; --hj-tinta: #1d1d1f; --hj-acento: #9c2f46;
 --hj-portada-fondo: linear-gradient(#ffe9ea, #f6c9cf);
 --hj-figura: linear-gradient(#d64561, #7a1f33); --hj-tinta-portada: #1d1d1f;
 --hj-fuente-cabecera: "Archivo Black"; --hj-fuente-titulo: "Montserrat"; --hj-fuente-texto: "Inter";
@@ -743,7 +761,7 @@ Variables de `:root`:
 Variables de `:root`:
 
 ```css
---hj-papel: #f3efe8; --hj-tinta: #2a2622; --hj-acento: #7a5d17;
+--hj-papel: #f3efe8; --hj-tinta: #2a2622; --hj-acento: #6b5114;
 --hj-portada-fondo: linear-gradient(#f3efe8, #ddd3c4);
 --hj-figura: linear-gradient(#6b5a45, #2a2622); --hj-tinta-portada: #2a2622;
 --hj-fuente-cabecera: "Playfair Display"; --hj-fuente-titulo: "Playfair Display"; --hj-fuente-texto: "EB Garamond";
@@ -798,6 +816,10 @@ Variables de `:root`:
 - [ ] **Paso 5: Lint, check y snapshot de las cuatro**
 
 Repite el Paso 4 de la Tarea 5 y `scripts/revisar.sh <id>` (Pasos 5 y 6) con `elle.html`, `bazaar.html`, `vanity.html` y `anna.html`. Criterios:
+
+`ok: true` en las cuatro.
+- Si aparece un `contrast_aa_failure`, oscurece el `--hj-acento` de esa composición. Los valores del plan (`#9c2f46` en Moderna, `#6b5114` en Editorial) ya pasan.
+- Si el error está en el pie de una foto, oscurece el degradado de `.hj-foto::after` en `hojeo.css`.
 - a 0 s y a 5.95 s solo se ve el fondo con su marco;
 - a 1.25 s se ve la portada completa;
 - a 3.6 s se ve el interior con todas sus fotos y pies.
