@@ -256,7 +256,7 @@ export function getMagazineTemplate(id: string): MagazineTemplateInfo {
 
 Run: `node --import tsx --test tests/magazine-templates.test.ts`
 
-Expected: `# pass 5`, `# fail 0`.
+Expected: `ℹ pass 5` y `ℹ fail 0` (formato de Node 24).
 
 ---
 
@@ -429,7 +429,8 @@ TONO="eq=contrast=1.08:saturation=0.82:brightness=-0.01,colorchannelmixer=rr=0.9
 
 mkdir -p "$DESTINO"
 grep -v -E '^\s*(#|$)' scripts/recortes.txt | while read -r foto x y ancho alto; do
-  ffmpeg -loglevel error -y -i "$ORIGEN/$foto.jpg" \
+  # -nostdin: sin esto ffmpeg consume las líneas siguientes del bucle.
+  ffmpeg -nostdin -loglevel error -y -i "$ORIGEN/$foto.jpg" \
     -vf "crop=iw*$ancho:ih*$alto:iw*$x:ih*$y,scale=480:-2:flags=lanczos,$TONO" \
     -q:v 3 "$DESTINO/$foto.jpg"
   echo "tratada: $foto"
@@ -446,7 +447,8 @@ Abre cada JPG de `media/revista/assets/fotos/` con la herramienta Read, que mues
 
 Criterio:
 - no se ven ganchos, etiquetas, claves (como «ML-359») ni el logo «studio moda»;
-- la prenda llena el encuadre.
+- la prenda llena el encuadre;
+- ninguna se ve borrosa. `cardigan-vintage` (295 px de origen) y `jogger-wide-leg-beige` (395 px) se amplían a 480 px. Si se ven blandas, abre su recorte o cámbialas por otra foto de `products/`, y actualiza la composición y el README.
 
 Si alguna falla, ajusta su línea en `recortes.txt` y vuelve a correr el script.
 
@@ -589,7 +591,7 @@ Crea `media/revista/vogue.html`:
   <body>
     <div id="root" data-composition-id="vogue" data-start="0" data-duration="6" data-width="600" data-height="800">
       <section class="hj-libro">
-        <div class="hj-interior">
+        <div class="hj-interior" data-layout-allow-overlap>
           <header class="hj-int-cab"><span class="hj-int-tit">El look de la semana</span><span class="hj-int-num">N.º 12</span></header>
           <div class="hj-int-cuerpo hj-l-clasica">
             <figure class="hj-foto" id="foto-1"><img src="assets/fotos/top-rayas-manga-corta.jpg" alt="" /><figcaption>Rayas al sol</figcaption></figure>
@@ -619,21 +621,40 @@ Run: `cd media/revista && HYPERFRAMES_NO_TELEMETRY=1 npx --yes hyperframes@0.9.1
 
 Expected: `"ok": true` y `"errorCount": 0`. Corrige cada error con su `fixHint`. Valora cada advertencia.
 
-- [ ] **Paso 5: Check con auditorías de layout y contraste**
+- [ ] **Paso 5: Script de revisión (check y snapshot)**
 
-Run: `cd media/revista && HYPERFRAMES_NO_TELEMETRY=1 npx --yes hyperframes@0.9.17 check vogue.html --json | head -80; cd -`
+`check` y `snapshot` solo aceptan una carpeta de proyecto con `index.html`; no aceptan archivos sueltos ni `-c`. Tampoco sirve poner un `index.html` junto a las 5 composiciones, porque `lint` falla con `multiple_root_compositions`. La solución es montar cada composición como `index.html` en una carpeta temporal.
 
-Expected: sin errores.
-- La portada tapa el texto del interior a propósito; ya lleva `data-layout-allow-occlusion`.
-- Si `check` no acepta un archivo como argumento, ejecútalo sin él y lee los hallazgos de `vogue.html`.
+Crea `media/revista/scripts/revisar.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Revisa una composición con `check` y saca fotogramas clave con `snapshot`.
+# check/snapshot solo aceptan un proyecto con index.html, así que la composición se
+# monta en una carpeta temporal. Uso: scripts/revisar.sh vogue
+set -euo pipefail
+cd "$(dirname "$0")/.."
+export HYPERFRAMES_NO_TELEMETRY=1
+id="$1"
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+cp -R assets hyperframes.json "$tmp"/
+cp "$id.html" "$tmp/index.html"
+npx --yes hyperframes@0.9.17 check "$tmp" --json | head -80
+mkdir -p "renders/snapshots/$id"
+npx --yes hyperframes@0.9.17 snapshot "$tmp" --at 0,1.25,1.85,3.6,5.3,5.95 -o "renders/snapshots/$id"
+ls "renders/snapshots/$id"
+```
+
+Run: `chmod +x media/revista/scripts/revisar.sh && media/revista/scripts/revisar.sh vogue`
+
+Expected: `"ok": true` con 0 errores.
+- El `data-layout-allow-overlap` de `.hj-interior` silencia el `content_overlap` intencional: la portada se apoya sobre el título y el texto del interior.
+- El `data-layout-allow-occlusion` de `#portada` no basta para eso, pero se queda.
 
 - [ ] **Paso 6: Revisar los fotogramas clave**
 
-Run:
-
-```bash
-cd media/revista && HYPERFRAMES_NO_TELEMETRY=1 npx --yes hyperframes@0.9.17 snapshot -c vogue.html --at 0,1.25,1.85,3.6,5.3,5.95; ls .hyperframes/artifacts/snapshots/; cd -
-```
+Abre con Read los PNG de `media/revista/renders/snapshots/vogue/`. La carpeta `renders/` está en `.gitignore`.
 
 Abre cada PNG con Read y comprueba:
 
@@ -645,8 +666,6 @@ Abre cada PNG con Read y comprueba:
 | 3.6 s | El interior completo, con su foto y pie |
 | 5.3 s | La portada cerrándose |
 | 5.95 s | Otra vez solo el fondo con el marco |
-
-Si `snapshot` no acepta `-c`, prueba `--composition vogue.html` (ver `npx --yes hyperframes@0.9.17 snapshot --help`).
 
 ---
 
@@ -778,7 +797,7 @@ Variables de `:root`:
 
 - [ ] **Paso 5: Lint, check y snapshot de las cuatro**
 
-Repite los Pasos 4, 5 y 6 de la Tarea 5 con `elle.html`, `bazaar.html`, `vanity.html` y `anna.html`. Criterios:
+Repite el Paso 4 de la Tarea 5 y `scripts/revisar.sh <id>` (Pasos 5 y 6) con `elle.html`, `bazaar.html`, `vanity.html` y `anna.html`. Criterios:
 - a 0 s y a 5.95 s solo se ve el fondo con su marco;
 - a 1.25 s se ve la portada completa;
 - a 3.6 s se ve el interior con todas sus fotos y pies.
@@ -814,9 +833,9 @@ mkdir -p renders "$DESTINO"
 
 for id in vogue elle bazaar vanity anna; do
   npx --yes hyperframes@0.9.17 render -c "$id.html" --quality delivery --fps 30 -o "renders/$id.mp4"
-  ffmpeg -loglevel error -y -i "renders/$id.mp4" -an -c:v libx264 -preset slow -crf "$CRF" \
+  ffmpeg -nostdin -loglevel error -y -i "renders/$id.mp4" -an -c:v libx264 -preset slow -crf "$CRF" \
     -pix_fmt yuv420p -movflags +faststart "$DESTINO/$id.mp4"
-  ffmpeg -loglevel error -y -ss 1.25 -i "$DESTINO/$id.mp4" -frames:v 1 -q:v 3 "$DESTINO/$id.jpg"
+  ffmpeg -nostdin -loglevel error -y -ss 1.25 -i "$DESTINO/$id.mp4" -frames:v 1 -q:v 3 "$DESTINO/$id.jpg"
   echo "listo: $id"
 done
 ls -l "$DESTINO"
@@ -826,7 +845,7 @@ ls -l "$DESTINO"
 
 Run: `df -h /System/Volumes/Data | tail -1 && chmod +x media/revista/scripts/render.sh && media/revista/scripts/render.sh`
 
-Expected: 5 líneas `listo: …` y 10 archivos en `client/public/videos/revista/`.
+Expected: 5 líneas `listo: …` y 10 archivos en `client/public/videos/revista/`. En cada render aparece un recuadro `✗ No composition found / No index.html file found`; es inofensivo con `-c` (sale con código 0 y escribe los 180 fotogramas), no lo persigas.
 
 - [ ] **Paso 3: Verificar duración, tamaño, ausencia de audio y peso**
 
@@ -1131,6 +1150,7 @@ Base común: `assets/hojeo.css` (estructura y maquetas) y `assets/hojeo.js` (lí
 - FFmpeg (`brew install ffmpeg`)
 - La CLI fijada `hyperframes@0.9.17`. Descarga su propio Chrome; compruébalo con `npx --yes hyperframes@0.9.17 doctor`.
 - Telemetría desactivada: `export HYPERFRAMES_NO_TELEMETRY=1`.
+- Conexión a internet al renderizar: HyperFrames descarga GSAP y las fuentes de Google (Playfair Display, EB Garamond, etc.).
 
 ## Volver a generar
 
@@ -1142,7 +1162,7 @@ Base común: `assets/hojeo.css` (estructura y maquetas) y `assets/hojeo.js` (lí
 Revisar una composición antes de renderizar:
 
     npx --yes hyperframes@0.9.17 lint vogue.html
-    npx --yes hyperframes@0.9.17 snapshot -c vogue.html --at 0,1.25,3.6,5.95
+    scripts/revisar.sh vogue      # check + fotogramas clave en renders/snapshots/vogue/
 ```
 
 - [ ] **Paso 2: Agregar solo los archivos de esta parte**
@@ -1170,7 +1190,7 @@ Expected:
 
 Run: `node --import tsx --test tests/magazine-templates.test.ts`
 
-Expected: `# pass 5`, `# fail 0`
+Expected: `ℹ pass 5` y `ℹ fail 0` (formato de Node 24)
 
 - [ ] **Paso 4: Commit**
 
@@ -1476,7 +1496,7 @@ Expected: `sin viajes` y `sin marcas`
 
 Run: `node --import tsx --test tests/magazine-templates.test.ts`
 
-Expected: `# pass 5`, `# fail 0`
+Expected: `ℹ pass 5` y `ℹ fail 0` (formato de Node 24)
 
 - [ ] **Paso 5: Navegador**
 

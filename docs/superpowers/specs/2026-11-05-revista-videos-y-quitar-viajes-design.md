@@ -54,7 +54,7 @@ Las fotos salen de `products/`, el catálogo propio del repo, con **tratamiento 
 - tono cálido: sepia suave, saturación más baja y contraste más alto;
 - degradado inferior con un pie de foto que da el nombre de la prenda.
 
-El tratamiento se hace con CSS dentro de la composición, en local y sin servicios externos.
+El recorte y el tono se aplican **antes**, con FFmpeg (`scripts/tratar-fotos.sh`), porque el contrato de HyperFrames prohíbe filtros CSS sobre imágenes. El degradado y el pie de foto sí son CSS. Todo se hace en local, sin servicios externos.
 
 ### A4. Fuente y render
 
@@ -139,7 +139,7 @@ Salen las menciones del módulo de viajes en `README.md` y `replit.md`.
    - Se esperan **21**, y deben ser exactamente los de la lista «Fuera de alcance».
    - No se acepta ningún error en archivos nuevos ni en líneas modificadas por este trabajo.
 2. `npm run build` sin errores.
-3. `npx hyperframes@0.9.17 lint` sin errores en `media/revista/`.
+3. `npx hyperframes@0.9.17 lint <id>.html` sin errores para cada una de las 5 composiciones. El lint de la carpeta completa no aplica, porque no hay `index.html`. `check` y `snapshot` se ejecutan con `scripts/revisar.sh`, que monta cada composición como `index.html` en una carpeta temporal.
 4. `ffprobe` sobre cada MP4: duración de 6 s ± 0.1, 600×800, sin pista de audio y menos de 500 KB. Si alguno pasa de 500 KB, se baja la tasa de bits antes de aceptarlo.
 5. Bucle sin salto: en cada video, el primer y el último fotograma coinciden visualmente (comparación de capturas). Ambos deben mostrar solo el fondo con su marco (A2).
 6. En el navegador, con el servidor de desarrollo:
