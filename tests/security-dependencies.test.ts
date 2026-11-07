@@ -29,3 +29,11 @@ test('Drizzle upgrade preserves Zod insert validation', () => {
   assert.equal(insertGarmentSchema.safeParse({ userId: 1, name: 'Shirt', type: 'top' }).success, true);
   assert.equal(insertGarmentSchema.safeParse({ userId: 'invalid', name: 'Shirt', type: 'top' }).success, false);
 });
+
+test('Zod 4 keeps the ZodError name and partial insert schemas the routes rely on', () => {
+  const invalid = insertGarmentSchema.partial().safeParse({ userId: 'invalid' });
+  assert.equal(invalid.success, false);
+  assert.equal(invalid.error?.name, 'ZodError');
+  assert.ok(invalid.error && invalid.error.issues.length > 0);
+  assert.equal(insertGarmentSchema.partial().safeParse({ name: 'Shirt' }).success, true);
+});

@@ -60,7 +60,7 @@
     "date-fns": "^3.6.0",
     "dotenv": "^17.2.3",
     "drizzle-orm": "^0.45.3",
-    "drizzle-zod": "^0.7.0",
+    "drizzle-zod": "^0.8.3",
     "embla-carousel-react": "^8.3.0",
     "express": "^4.21.2",
     "express-rate-limit": "^7.5.0",
@@ -98,8 +98,7 @@
     "wouter": "^3.3.5",
     "ws": "^8.18.0",
     "xss-clean": "^0.1.4",
-    "zod": "^3.23.8",
-    "zod-validation-error": "^3.4.0"
+    "zod": "^4.6.7"
   },
   "devDependencies": {
     "@replit/vite-plugin-cartographer": "^0.2.7",
@@ -128,6 +127,9 @@
   "overrides": {
     "@esbuild-kit/core-utils": {
       "esbuild": "$esbuild"
+    },
+    "openai": {
+      "zod": "$zod"
     }
   },
   "optionalDependencies": {
