@@ -8,8 +8,20 @@ const __dirname = dirname(__filename);
 import { type Server } from "http";
 import viteConfig from "../vite.config";
 import { nanoid } from "nanoid";
+import rateLimit from "express-rate-limit";
 
 const viteLogger = createLogger();
+
+// Las rutas comodín leen index.html del disco en cada petición; se limitan por IP.
+const PAGE_RATE_LIMIT_WINDOW_MS = 60 * 1000;
+const PAGE_RATE_LIMIT_MAX = 300;
+
+const pageLimiter = rateLimit({
+  windowMs: PAGE_RATE_LIMIT_WINDOW_MS,
+  max: PAGE_RATE_LIMIT_MAX,
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 export function log(message: string, source = "express") {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -44,7 +56,7 @@ export async function setupVite(app: Express, server: Server) {
   });
 
   app.use(vite.middlewares);
-  app.use("*", async (req, res, next) => {
+  app.use("*", pageLimiter, async (req, res, next) => {
     const url = req.originalUrl;
 
     try {
@@ -82,7 +94,7 @@ export function serveStatic(app: Express) {
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist
-  app.use("*", (_req, res) => {
+  app.use("*", pageLimiter, (_req, res) => {
     res.sendFile(path.resolve(distPath, "index.html"));
   });
 }
