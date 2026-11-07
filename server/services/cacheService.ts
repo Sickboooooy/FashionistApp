@@ -45,7 +45,7 @@ class CacheService {
    */
   getImageAnalysisKey(imageBuffer: Buffer): string {
     // Usar MD5 hash para la imagen como clave
-    const hash = crypto.createHash('md5').update(imageBuffer).digest('hex');
+    const hash = crypto.createHash('sha256').update(imageBuffer).digest('hex');
     return `img_analysis_${hash}`;
   }
   
@@ -70,7 +70,7 @@ class CacheService {
     
     // Convertir a string y hashear
     const paramsStr = JSON.stringify(sortedParams);
-    const hash = crypto.createHash('md5').update(paramsStr).digest('hex');
+    const hash = crypto.createHash('sha256').update(paramsStr).digest('hex');
     
     return `outfits_gen_${hash}`;
   }
@@ -94,7 +94,7 @@ class CacheService {
     
     // Convertir a string y hashear
     const paramsStr = JSON.stringify(sortedParams);
-    const hash = crypto.createHash('md5').update(paramsStr).digest('hex');
+    const hash = crypto.createHash('sha256').update(paramsStr).digest('hex');
     
     return `magazine_gen_${hash}`;
   }

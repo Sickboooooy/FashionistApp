@@ -71,12 +71,12 @@ export async function generateMagazineContent(request: MagazineGenerationRequest
   try {
     // Generar hash para la clave de caché
     const outfitsStr = JSON.stringify(request.outfits);
-    const outfitsHash = crypto.createHash('md5').update(outfitsStr).digest('hex');
+    const outfitsHash = crypto.createHash('sha256').update(outfitsStr).digest('hex');
     
     let preferencesHash = '';
     if (request.userPreferences) {
       const preferencesStr = JSON.stringify(request.userPreferences);
-      preferencesHash = crypto.createHash('md5').update(preferencesStr).digest('hex');
+      preferencesHash = crypto.createHash('sha256').update(preferencesStr).digest('hex');
     }
     
     // Clave de caché completa

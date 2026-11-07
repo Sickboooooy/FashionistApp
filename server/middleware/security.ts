@@ -2,6 +2,7 @@ import { Express, Request, Response, NextFunction } from 'express';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import xssClean from 'xss-clean';
+import { stripAngleBrackets } from './sanitize';
 
 /**
  * Configura middlewares de seguridad en la aplicación Express
@@ -94,8 +95,7 @@ export function setupSecurity(app: Express): void {
     if (req.query) {
       Object.keys(req.query).forEach(key => {
         if (typeof req.query[key] === 'string') {
-          // Simple sanitization example (could be more robust)
-          req.query[key] = (req.query[key] as string).replace(/<[^>]*>?/gm, '');
+          req.query[key] = stripAngleBrackets(req.query[key] as string);
         }
       });
     }
