@@ -50,7 +50,6 @@ FashionistApp (Anna Style) is a sophisticated fashion styling application that l
 - **Garments**: Individual clothing items with metadata
 - **Outfits**: Generated outfit combinations
 - **Anna Designs**: Curated fashion pieces
-- **Trips & Packing**: Travel planning functionality
 
 ## Data Flow
 

@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=600, height=800" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/hojeo.css" />
+    <style>
+      :root {
+        --hj-papel: #faf7f0;
+        --hj-tinta: #1c1916;
+        --hj-acento: #b3322a;
+        --hj-portada-fondo: linear-gradient(#faf7f0, #e9dfcd);
+        --hj-figura: linear-gradient(#403b36, #111);
+        --hj-tinta-portada: #2a2622;
+        --hj-fuente-cabecera: "Playfair Display";
+        --hj-fuente-titulo: "Playfair Display";
+        --hj-fuente-texto: "EB Garamond";
+        --hj-cabecera-color: #141210;
+        --hj-cabecera-tam: 86px;
+        --hj-cabecera-espaciado: 0.06em;
+      }
+      /* `render` solo descubre las fuentes en los font-family de este HTML, no en assets/hojeo.css:
+         estas reglas repiten las de hojeo.css para que las descargue. */
+      .hj-cabecera { font-family: var(--hj-fuente-cabecera); }
+      .hj-int-tit { font-family: var(--hj-fuente-titulo); }
+      .hj-texto, .hj-sub, .hj-linea { font-family: var(--hj-fuente-texto); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="vogue" data-start="0" data-duration="6" data-width="600" data-height="800">
+      <section class="hj-libro">
+        <div class="hj-interior" data-layout-allow-overlap>
+          <header class="hj-int-cab"><span class="hj-int-tit">El look de la semana</span><span class="hj-int-num">N.º 12</span></header>
+          <div class="hj-int-cuerpo hj-l-clasica">
+            <figure class="hj-foto" id="foto-1"><img src="assets/fotos/top-rayas-manga-corta.jpg" alt="" /><figcaption>Rayas al sol</figcaption></figure>
+            <p class="hj-texto">Líneas limpias, punto ligero y un contraste que nunca falla. La pieza que resuelve la semana, de la oficina a la cena.</p>
+          </div>
+          <footer class="hj-int-pie">ESTILO ANNA · EDICIÓN OTOÑO</footer>
+        </div>
+        <div class="hj-portada" id="portada" data-layout-allow-occlusion>
+          <div class="hj-marco"></div>
+          <h1 class="hj-cabecera" id="cabecera"><span class="hj-letra">C</span><span class="hj-letra">L</span><span class="hj-letra">Á</span><span class="hj-letra">S</span><span class="hj-letra">I</span><span class="hj-letra">C</span><span class="hj-letra">A</span></h1>
+          <p class="hj-sub" id="subtitulo">MODA 2026</p>
+          <div class="hj-figura" id="figura"><div class="hj-cabeza"></div><div class="hj-cuerpo"></div></div>
+          <p class="hj-linea" id="linea-1">El nuevo lujo silencioso</p>
+          <p class="hj-linea" id="linea-2">Tendencias · Otoño</p>
+        </div>
+      </section>
+    </div>
+    <script src="assets/hojeo.js"></script>
+    <script>window.construirHojeo("vogue");</script>
+  </body>
+</html>

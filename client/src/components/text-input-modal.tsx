@@ -137,7 +137,6 @@ export const TextInputModal = () => {
               <option>Casual</option>
               <option>Formal</option>
               <option>Evento Especial</option>
-              <option>Viaje</option>
             </select>
           </div>
         </div>

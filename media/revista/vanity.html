@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=600, height=800" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/hojeo.css" />
+    <style>
+      :root {
+        --hj-papel: #f3efe8;
+        --hj-tinta: #2a2622;
+        --hj-acento: #6b5114;
+        --hj-portada-fondo: linear-gradient(#f3efe8, #ddd3c4);
+        --hj-figura: linear-gradient(#6b5a45, #2a2622);
+        --hj-tinta-portada: #2a2622;
+        --hj-fuente-cabecera: "Playfair Display";
+        --hj-fuente-titulo: "Playfair Display";
+        --hj-fuente-texto: "EB Garamond";
+        --hj-cabecera-color: #2a2622;
+        --hj-cabecera-tam: 74px;
+        --hj-cabecera-espaciado: 0.06em;
+      }
+      /* `render` solo descubre las fuentes en los font-family de este HTML, no en assets/hojeo.css:
+         estas reglas repiten las de hojeo.css para que las descargue. */
+      .hj-cabecera { font-family: var(--hj-fuente-cabecera); }
+      .hj-int-tit { font-family: var(--hj-fuente-titulo); }
+      .hj-texto, .hj-sub, .hj-linea { font-family: var(--hj-fuente-texto); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="vanity" data-start="0" data-duration="6" data-width="600" data-height="800">
+      <section class="hj-libro">
+        <div class="hj-interior" data-layout-allow-overlap>
+          <header class="hj-int-cab"><span class="hj-int-tit">La nueva silueta</span><span class="hj-int-num">N.º 12</span></header>
+          <div class="hj-int-cuerpo hj-l-editorial">
+            <figure class="hj-foto" id="foto-1"><img src="assets/fotos/sueter-rosa-diamante.jpg" alt="" /><figcaption>Rosa diamante</figcaption></figure>
+            <p class="hj-texto">El otoño llega con prendas que se sienten antes de verse: punto suave, tonos empolvados y volúmenes que abrazan sin apretar. La silueta se relaja, pero la intención se mantiene. Un suéter de textura marcada basta para ordenar el conjunto; lo demás acompaña en silencio. Así se escribe la temporada: con piezas que duran y combinaciones que no necesitan explicarse.</p>
+          </div>
+          <footer class="hj-int-pie">ESTILO ANNA · EDICIÓN OTOÑO</footer>
+        </div>
+        <div class="hj-portada" id="portada" data-layout-allow-occlusion>
+          <div class="hj-marco"></div>
+          <h1 class="hj-cabecera" id="cabecera"><span class="hj-letra">E</span><span class="hj-letra">D</span><span class="hj-letra">I</span><span class="hj-letra">T</span><span class="hj-letra">O</span><span class="hj-letra">R</span><span class="hj-letra">I</span><span class="hj-letra">A</span><span class="hj-letra">L</span></h1>
+          <p class="hj-sub" id="subtitulo">MODA, ARTE Y CULTURA</p>
+          <div class="hj-figura" id="figura"><div class="hj-cabeza"></div><div class="hj-cuerpo"></div></div>
+          <p class="hj-linea" id="linea-1">La nueva silueta del otoño</p>
+          <p class="hj-linea" id="linea-2">Ensayo · Tendencias</p>
+        </div>
+      </section>
+    </div>
+    <script src="assets/hojeo.js"></script>
+    <script>window.construirHojeo("vanity");</script>
+  </body>
+</html>

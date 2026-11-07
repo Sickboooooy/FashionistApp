@@ -1,0 +1,61 @@
+/* Estructura común del «Hojeo editorial» (600×800). Cada composición define la paleta
+   y la tipografía con variables --hj-* en su propio <style>. */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 600px; height: 800px; overflow: hidden; background: var(--hj-fondo-exterior, #000); }
+#root { position: relative; width: 100%; height: 100%; }
+
+/* Libro: la portada gira sobre el interior */
+.hj-libro { position: absolute; inset: 0; perspective: 1600px; }
+
+/* Interior */
+.hj-interior {
+  position: absolute; inset: 0; padding: 44px 40px 34px;
+  display: flex; flex-direction: column; gap: 18px;
+  background: var(--hj-papel); color: var(--hj-tinta);
+}
+.hj-int-cab {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: 10px; border-bottom: 1px solid var(--hj-acento);
+}
+.hj-int-tit { font-family: var(--hj-fuente-titulo); font-style: italic; font-size: 30px; }
+.hj-int-num { font-family: var(--hj-fuente-texto); font-size: 13px; letter-spacing: 0.3em; color: var(--hj-acento); }
+.hj-int-cuerpo { flex: 1; min-height: 0; display: grid; gap: 14px; }
+.hj-int-pie { font-family: var(--hj-fuente-texto); font-size: 12px; letter-spacing: 0.35em; text-align: center; color: var(--hj-acento); }
+
+.hj-foto { position: relative; overflow: hidden; border-radius: 3px; background: #1a1512; }
+.hj-foto img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.hj-foto::after { content: ""; position: absolute; inset: 0; background: linear-gradient(transparent 58%, rgba(15, 12, 9, 0.62)); }
+.hj-foto figcaption { position: absolute; left: 12px; bottom: 10px; z-index: 1; font-family: var(--hj-fuente-texto); font-size: 15px; color: #fff; }
+.hj-texto { font-family: var(--hj-fuente-texto); font-size: 15px; line-height: 1.55; color: var(--hj-tinta); }
+
+/* Maquetas interiores (una por plantilla) */
+.hj-l-clasica { grid-template-columns: 1.6fr 1fr; }
+.hj-l-moderna { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.hj-l-galeria { grid-template-columns: 1fr 1fr 1fr; }
+.hj-l-galeria .hj-foto figcaption { font-size: 13px; }
+.hj-l-editorial { grid-template-columns: 1fr 1.25fr; }
+.hj-l-editorial .hj-texto { column-count: 2; column-gap: 16px; font-size: 13.5px; }
+.hj-l-editorial .hj-texto::first-letter { float: left; font-family: var(--hj-fuente-titulo); font-size: 52px; line-height: 0.9; padding-right: 6px; color: var(--hj-acento); }
+.hj-l-anna { grid-template-columns: 1fr 1fr; padding: 6px; }
+.hj-l-anna .hj-foto { outline: 1.5px solid var(--hj-acento); outline-offset: 5px; }
+
+/* Portada */
+.hj-portada { position: absolute; inset: 0; background: var(--hj-portada-fondo); backface-visibility: hidden; }
+.hj-marco { position: absolute; inset: 16px; border: 1.5px solid var(--hj-acento); }
+.hj-cabecera {
+  position: absolute; top: 54px; width: 100%; text-align: center; white-space: nowrap; line-height: 1;
+  font-family: var(--hj-fuente-cabecera); font-style: var(--hj-cabecera-estilo, normal);
+  font-size: var(--hj-cabecera-tam, 86px); letter-spacing: var(--hj-cabecera-espaciado, 0.04em);
+  color: var(--hj-cabecera-color);
+}
+.hj-letra { display: inline-block; }
+.hj-sub { position: absolute; top: 158px; width: 100%; text-align: center; font-family: var(--hj-fuente-texto); font-size: 15px; letter-spacing: 0.45em; color: var(--hj-acento); }
+.hj-figura { position: absolute; left: 50%; top: 200px; width: 200px; height: 440px; margin-left: -100px; }
+.hj-cabeza { width: 66px; height: 66px; margin: 0 auto; border-radius: 50%; background: var(--hj-figura); }
+.hj-cuerpo {
+  width: 200px; height: 368px; margin-top: 6px; background: var(--hj-figura);
+  clip-path: polygon(38% 0, 62% 0, 70% 16%, 66% 28%, 100% 100%, 0 100%, 34% 28%, 30% 16%);
+}
+.hj-linea { position: absolute; left: 44px; font-family: var(--hj-fuente-texto); color: var(--hj-tinta-portada); }
+#linea-1 { bottom: 92px; font-size: 24px; font-weight: 700; letter-spacing: 0.06em; color: var(--hj-acento); }
+#linea-2 { bottom: 62px; font-size: 17px; }

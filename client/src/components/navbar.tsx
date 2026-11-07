@@ -14,7 +14,6 @@ const Navbar = () => {
     { name: 'IA', path: '/ai-images', icon: 'fa-magic' },
     { name: 'PROBADOR', path: '/probador', icon: 'fa-vest' },
     { name: 'PRODUCTOS', path: '/product-search', icon: 'fa-shopping-bag' },
-    { name: 'VIAJES', path: '/trips', icon: 'fa-plane' },
     { name: 'PERFIL', path: '/profile', icon: 'fa-user' },
   ];
 

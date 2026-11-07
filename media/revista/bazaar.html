@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=600, height=800" />
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.15.0/dist/gsap.min.js"></script>
+    <link rel="stylesheet" href="assets/hojeo.css" />
+    <style>
+      :root {
+        --hj-fondo-exterior: #000;
+        --hj-papel: #151515;
+        --hj-tinta: #f2f2f2;
+        --hj-acento: #d4af37;
+        --hj-portada-fondo: linear-gradient(#111, #262626);
+        --hj-figura: linear-gradient(#e9e9e9, #7d7d7d);
+        --hj-tinta-portada: #e9e9e9;
+        --hj-fuente-cabecera: "Playfair Display";
+        --hj-fuente-titulo: "Playfair Display";
+        --hj-fuente-texto: "EB Garamond";
+        --hj-cabecera-color: #f2f2f2;
+        --hj-cabecera-estilo: italic;
+        --hj-cabecera-tam: 76px;
+        --hj-cabecera-espaciado: 0.12em;
+      }
+      /* `render` solo descubre las fuentes en los font-family de este HTML, no en assets/hojeo.css:
+         estas reglas repiten las de hojeo.css para que las descargue. */
+      .hj-cabecera { font-family: var(--hj-fuente-cabecera); }
+      .hj-int-tit { font-family: var(--hj-fuente-titulo); }
+      .hj-texto, .hj-sub, .hj-linea { font-family: var(--hj-fuente-texto); }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="bazaar" data-start="0" data-duration="6" data-width="600" data-height="800">
+      <section class="hj-libro">
+        <div class="hj-interior" data-layout-allow-overlap>
+          <header class="hj-int-cab"><span class="hj-int-tit">Galería de la temporada</span><span class="hj-int-num">N.º 12</span></header>
+          <div class="hj-int-cuerpo hj-l-galeria">
+            <figure class="hj-foto" id="foto-1"><img src="assets/fotos/pantalon-rayado-studio.jpg" alt="" /><figcaption>Punto texturizado</figcaption></figure>
+            <figure class="hj-foto" id="foto-2"><img src="assets/fotos/cardigan-vintage.jpg" alt="" /><figcaption>Cárdigan vintage</figcaption></figure>
+            <figure class="hj-foto" id="foto-3"><img src="assets/fotos/sueter-rayas-bw.jpg" alt="" /><figcaption>Rayas clásicas</figcaption></figure>
+          </div>
+          <footer class="hj-int-pie">ESTILO ANNA · EDICIÓN OTOÑO</footer>
+        </div>
+        <div class="hj-portada" id="portada" data-layout-allow-occlusion>
+          <div class="hj-marco"></div>
+          <h1 class="hj-cabecera" id="cabecera"><span class="hj-letra">G</span><span class="hj-letra">A</span><span class="hj-letra">L</span><span class="hj-letra">E</span><span class="hj-letra">R</span><span class="hj-letra">Í</span><span class="hj-letra">A</span></h1>
+          <p class="hj-sub" id="subtitulo">ALTA COSTURA</p>
+          <div class="hj-figura" id="figura"><div class="hj-cabeza"></div><div class="hj-cuerpo"></div></div>
+          <p class="hj-linea" id="linea-1">Elegancia atemporal</p>
+          <p class="hj-linea" id="linea-2">Galería · Edición 12</p>
+        </div>
+      </section>
+    </div>
+    <script src="assets/hojeo.js"></script>
+    <script>window.construirHojeo("bazaar");</script>
+  </body>
+</html>

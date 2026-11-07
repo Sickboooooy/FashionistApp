@@ -34,7 +34,6 @@ const PreferenceManager = () => {
   const [occasionPreferences, setOccasionPreferences] = useState<OccasionPreference[]>([
     { name: 'Work', priority: 0.75, label: 'High Priority' },
     { name: 'Social Events', priority: 0.5, label: 'Medium Priority' },
-    { name: 'Travel', priority: 0.25, label: 'Low Priority' },
     { name: 'Special Events', priority: 0.5, label: 'Medium Priority' },
   ]);
 
@@ -297,7 +296,6 @@ const PreferenceManager = () => {
                         <i className={`fas ${
                           occasion.name === 'Work' ? 'fa-briefcase' :
                           occasion.name === 'Social Events' ? 'fa-users' :
-                          occasion.name === 'Travel' ? 'fa-plane' :
                           'fa-glass-cheers'
                         } mr-2 text-amber-500/50`}></i>
                         {occasion.name}

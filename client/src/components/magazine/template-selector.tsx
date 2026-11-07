@@ -3,55 +3,27 @@ import GoldBorder from '@/components/ui/gold-border';
 import GoldText from '@/components/ui/gold-text';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  MAGAZINE_TEMPLATE_IDS,
+  MAGAZINE_TEMPLATES,
+  type MagazineTemplateId,
+  type MagazineTemplateInfo,
+} from '@shared/magazine-templates';
+import TemplatePreviewVideo from './template-preview-video';
 
-// Define las plantillas disponibles
-export type MagazineTemplate = 'vogue' | 'elle' | 'bazaar' | 'vanity' | 'anna';
+// Se reexporta para no cambiar los imports existentes (magazine-view, magazine-preview).
+export type MagazineTemplate = MagazineTemplateId;
 
-interface Template {
-  id: MagazineTemplate;
-  name: string;
-  description: string;
-  isPremium: boolean;
-  imagePath: string;
+interface Template extends MagazineTemplateInfo {
+  videoPath: string;
+  posterPath: string;
 }
 
-const templates: Template[] = [
-  {
-    id: 'vogue',
-    name: 'Vogue',
-    description: 'Diseño clásico con enfoque en una imagen principal y espacio editorial minimalista.',
-    isPremium: false,
-    imagePath: '/images/magazines/vogue-template.svg',
-  },
-  {
-    id: 'elle',
-    name: 'Elle',
-    description: 'Diseño moderno con división de página para mostrar múltiples conjuntos.',
-    isPremium: false,
-    imagePath: '/images/magazines/elle-template.svg',
-  },
-  {
-    id: 'bazaar',
-    name: "Harper's Bazaar",
-    description: 'Elegante diseño con presentación de imágenes en galería y espacio para detalles.',
-    isPremium: true,
-    imagePath: '/images/magazines/bazaar-template.svg',
-  },
-  {
-    id: 'vanity',
-    name: 'Vanity Fair',
-    description: 'Diseño sofisticado con enfoque en contenido editorial extenso.',
-    isPremium: true,
-    imagePath: '/images/magazines/vanity-template.svg',
-  },
-  {
-    id: 'anna',
-    name: 'Anna Signature',
-    description: 'Exclusivo diseño premium con detalles dorados y presentación de lujo.',
-    isPremium: true,
-    imagePath: '/images/magazines/anna-template.svg',
-  },
-];
+const templates: Template[] = MAGAZINE_TEMPLATE_IDS.map((id) => ({
+  ...MAGAZINE_TEMPLATES[id],
+  videoPath: `/videos/revista/${id}.mp4`,
+  posterPath: `/videos/revista/${id}.jpg`,
+}));
 
 interface TemplateCardProps {
   template: Template;
@@ -73,19 +45,19 @@ const TemplateCard: FC<TemplateCardProps> = ({ template, isPremiumUser, isSelect
     >
       <CardHeader className="p-4">
         <CardTitle className="flex items-center justify-between">
-          <GoldText>{template.name}</GoldText>
+          <GoldText>{template.nombre}</GoldText>
           {template.isPremium && (
             <span className="text-xs text-amber-deep font-semibold">PREMIUM</span>
           )}
         </CardTitle>
-        <CardDescription className="text-sm">{template.description}</CardDescription>
+        <CardDescription className="text-sm">{template.descripcion}</CardDescription>
       </CardHeader>
       <CardContent className="p-4 pt-0">
         <GoldBorder className="aspect-[3/4] relative overflow-hidden">
-          <img
-            src={`${template.imagePath}?v=2`}
-            alt={`Vista previa de la plantilla ${template.name}`}
-            className="w-full h-full object-cover"
+          <TemplatePreviewVideo
+            src={template.videoPath}
+            poster={template.posterPath}
+            label={`Vista previa animada de la plantilla ${template.nombre}`}
           />
           {isDisabled && (
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
