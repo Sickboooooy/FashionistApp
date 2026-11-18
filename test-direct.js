@@ -8,8 +8,8 @@ async function testGeminiDirectly() {
     // API key desde .env (GEMINI2APIKEY); nunca hardcodeada en el código
     const apiKey = process.env.GEMINI2APIKEY ?? "";
     
-    console.log("✅ Usando API Key directa:", apiKey.substring(0, 10) + "...");
-    console.log("🔍 Longitud de la API Key:", apiKey.length);
+    // No imprimir fragmentos ni longitud de la llave (CodeQL: clear-text logging)
+    console.log("✅ API Key cargada desde .env:", apiKey ? "sí" : "no (define GEMINI2APIKEY)");
     console.log("🔍 Formato de la API Key:", apiKey.startsWith('AIza') ? "✅ Formato correcto" : "❌ Formato incorrecto");
     
     if (!apiKey.startsWith('AIza')) {

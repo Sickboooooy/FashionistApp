@@ -7,8 +7,8 @@ async function basicGeminiTest() {
     
     const apiKey = process.env.GEMINI2APIKEY ?? "";
     
-    console.log("🔍 API Key:", apiKey.substring(0, 15) + "..." + apiKey.substring(-5));
-    console.log("📏 Longitud:", apiKey.length, "caracteres");
+    // No imprimir fragmentos ni longitud de la llave (CodeQL: clear-text logging)
+    console.log("🔍 API Key cargada desde .env:", apiKey ? "sí" : "no (define GEMINI2APIKEY)");
     
     try {
         const genAI = new GoogleGenerativeAI(apiKey);
