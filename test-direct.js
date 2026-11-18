@@ -1,11 +1,12 @@
-// Test directo de la API de Gemini sin variables de entorno problemáticas
+// Test directo de la API de Gemini (lee la llave desde .env)
+import "dotenv/config";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 async function testGeminiDirectly() {
     console.log("🧪 Probando conectividad DIRECTA con API de Gemini...");
     
-    // API key directa (modo YOLO)
-    const apiKey = "AIzaSyAKoywngiGZdb678cAGJSaqGOJQJmpjIIM";
+    // API key desde .env (GEMINI2APIKEY); nunca hardcodeada en el código
+    const apiKey = process.env.GEMINI2APIKEY ?? "";
     
     console.log("✅ Usando API Key directa:", apiKey.substring(0, 10) + "...");
     console.log("🔍 Longitud de la API Key:", apiKey.length);

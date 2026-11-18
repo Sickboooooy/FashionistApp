@@ -1,10 +1,11 @@
 // Test básico de conectividad con Google AI
+import "dotenv/config";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 async function basicGeminiTest() {
     console.log("🔐 Verificando API Key de Google AI...");
     
-    const apiKey = "AIzaSyAKoywngiGZdb678cAGJSaqGOJQJmpjIIM";
+    const apiKey = process.env.GEMINI2APIKEY ?? "";
     
     console.log("🔍 API Key:", apiKey.substring(0, 15) + "..." + apiKey.substring(-5));
     console.log("📏 Longitud:", apiKey.length, "caracteres");
